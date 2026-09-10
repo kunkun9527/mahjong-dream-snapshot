@@ -53,9 +53,17 @@ var RiichiSession = class {
     });
     this.log = opts.log || (() => {
     });
+    // 存档/上一场缓存没有通过开局协议同步到 Unity，不能作为当前 UI 的自动操作授权。
+    // 仅本次客户端 ReqSetInternalState 明确提交的项可用于自动和牌/不鸣/摸切。
+    this.clientInternalState = {};
     this.engine = null;
     this.stopped = false;
     this.matchOver = false;
+  }
+  /** 新连接尚未同步自动操作开关，不得继承旧页面的授权；不改存档或计时。 */
+  resetClientSettings() {
+    this.clientInternalState = {};
+    if (this.engine) this.engine.setInternalState({ 1: false, 2: false, 3: false, 4: false, 5: false });
   }
   /** 编码并回推一个服务端事件 */
   send(ev, payload) {
@@ -92,7 +100,7 @@ var RiichiSession = class {
       seed,
       baseTime: o.baseTime,
       extraTime: o.extraTime,
-      internalState: o.internalState,
+      internalState: this.clientInternalState,
       uids: o.uids,
       autoHuman: o.autoHuman,
       onFinalResult: (scores, engine) => this.onFinalResult(scores, engine),
@@ -152,6 +160,7 @@ var RiichiSession = class {
       case RiichiMsg.EReqSetInternalState: {
         const values = payload.InternalState || payload.internalState || {};
         this.opts.internalState = { ...this.opts.internalState, ...values };
+        this.clientInternalState = { ...this.clientInternalState, ...values };
         if (this.engine) this.engine.setInternalState(values);
         this.onSettingsChange({ ...this.opts.internalState });
         this.send(RiichiMsg.ERspSetInternalState, { result: 0 });

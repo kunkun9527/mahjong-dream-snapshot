@@ -992,7 +992,7 @@ var GameEngine = class {
     if (!claims.length) return false;
     const distance = (seat) => (seat - kanSeat + this.playersN) % this.playersN;
     claims.sort((left, right) => distance(left.seat) - distance(right.seat));
-    await this.winRons(claims.map((claim) => claim.seat), kanSeat, tile, winExtra);
+    await this.winRons(claims.map((claim) => claim.seat), kanSeat, tile, winExtra, { robbed: true });
     return true;
   }
   async doKan(seat, card, kind) {
@@ -1118,8 +1118,10 @@ var GameEngine = class {
   async winRon(seat, loser, card, extra = {}) {
     await this.winRons([seat], loser, card, extra);
   }
-  async winRons(seats, loser, card, extra = {}) {
-    this.rollbackRiichiDeclaration(this.players[loser]);
+  async winRons(seats, loser, card, extra = {}, { robbed = false } = {}) {
+    const donor = this.players[loser];
+    const robbedIndex = robbed ? donor.hand.indexOf(card) : -1;
+    if (robbed && robbedIndex < 0) throw new Error(`被抢牌不在手中 seat=${loser} card=${card}`);
     const wins = new Map();
     for (const seat of seats) {
       const p = this.players[seat];
@@ -1131,6 +1133,13 @@ var GameEngine = class {
       );
       if (!win.isAgari || !win.hasYaku) throw new Error(`非法荣和 seat=${seat}`);
       wins.set(seat, win);
+    }
+    // 所有赢家通过校验后才提交状态；多响也只移除一次被抢牌。
+    this.rollbackRiichiDeclaration(donor);
+    if (robbed) {
+      donor.hand.splice(robbedIndex, 1);
+      donor.drawnTile = null;
+      this.updateWaits(donor);
     }
     await this.endHand({ type: "ron", winners: seats.slice(), loser, card, wins });
   }
@@ -1689,10 +1698,14 @@ var GameEngine = class {
     return suit === 4 && (rank >= 5 || rank === this.roundWind || rank === this.seatWindOf(p.seat));
   }
   hasOpenYakuRoute(p, card, claimKind, used = []) {
-    const proposedType = claimKind === "chi" ? "chi" : "pon";
-    const proposed = { type: proposedType, tiles: [...used, card] };
-    const melds = p.melds.concat([proposed]);
-    const tiles = p.hand.concat([card], used).concat(melds.flatMap((meld) => meld.tiles || []));
+    const proposedType = claimKind === "chi" ? "chi" : claimKind === "kan" ? "kan" : "pon";
+    const claimTiles = claimKind === "chi" ? used : this.previewTiles(p, card, claimKind === "kan" ? 3 : 2);
+    const hand = p.hand.filter((tile) => !claimTiles.includes(tile));
+    const proposed = { type: proposedType, tiles: [...claimTiles, card] };
+    // 拔北不是面子，也不是断幺九/混一色牌形中的字牌。
+    // 拟鸣牌的实体牌从暗手移到面子，只能计数一次。
+    const melds = realMelds(p.melds).concat([proposed]);
+    const tiles = hand.concat(melds.flatMap((meld) => meld.tiles));
     const tripletKinds = new Set(melds
       .filter((meld) => meld.type === "pon" || meld.type === "kan" || meld.type === "ankan")
       .map((meld) => kindOf2(meld.tiles[0])));
@@ -1704,7 +1717,7 @@ var GameEngine = class {
     if (suits.size <= 1) return true;
     if (melds.every((meld) => meld.type !== "chi")) {
       const counts = new Map();
-      for (const tile of p.hand) counts.set(kindOf2(tile), (counts.get(kindOf2(tile)) || 0) + 1);
+      for (const tile of hand) counts.set(kindOf2(tile), (counts.get(kindOf2(tile)) || 0) + 1);
       const pairOrTriplet = [...counts.values()].filter((count) => count >= 2).length;
       if (pairOrTriplet + melds.length >= 4) return true;
     }
@@ -1826,13 +1839,8 @@ var GameEngine = class {
         this.resolveHumanPending(pending, buffered);
         return;
       }
-      const automatic = this.automaticHumanAction(kind);
-      if (automatic) {
-        queueMicrotask(() => this.resolveHumanPending(pending, automatic));
-        return;
-      }
       if (this.autoHuman) {
-        const payload = this.timeoutHumanAction(kind);
+        const payload = this.automaticHumanAction(kind) || this.timeoutHumanAction(kind);
         queueMicrotask(() => this.resolveHumanPending(pending, payload));
         return;
       }
@@ -1842,6 +1850,15 @@ var GameEngine = class {
         const payload = this.timeoutHumanAction(kind);
         this.resolveHumanPending(pending, payload);
       }, timeoutMs);
+      if (this.automaticHumanAction(kind)) {
+        // 客户端可能在微任务执行前取消不鸣，或重连后清除旧授权。
+        // 此时保留原截止时间等待真人，不能继续执行捕获的旧自动动作。
+        queueMicrotask(() => {
+          if (this._pending !== pending) return;
+          const automatic = this.automaticHumanAction(kind);
+          if (automatic) this.resolveHumanPending(pending, automatic);
+        });
+      }
     });
   }
   submitDraw(payload) {

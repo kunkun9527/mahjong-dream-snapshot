@@ -13731,7 +13731,7 @@
       if (!claims.length) return false;
       const distance = (seat) => (seat - kanSeat + this.playersN) % this.playersN;
       claims.sort((left, right) => distance(left.seat) - distance(right.seat));
-      await this.winRons(claims.map((claim) => claim.seat), kanSeat, tile, winExtra);
+      await this.winRons(claims.map((claim) => claim.seat), kanSeat, tile, winExtra, { robbed: true });
       return true;
     }
     async doKan(seat, card, kind) {
@@ -13853,8 +13853,10 @@
     async winRon(seat, loser, card, extra = {}) {
       await this.winRons([seat], loser, card, extra);
     }
-    async winRons(seats, loser, card, extra = {}) {
-      this.rollbackRiichiDeclaration(this.players[loser]);
+    async winRons(seats, loser, card, extra = {}, { robbed = false } = {}) {
+      const donor = this.players[loser];
+      const robbedIndex = robbed ? donor.hand.indexOf(card) : -1;
+      if (robbed && robbedIndex < 0) throw new Error(`\u88AB\u62A2\u724C\u4E0D\u5728\u624B\u4E2D seat=${loser} card=${card}`);
       const wins = /* @__PURE__ */ new Map();
       for (const seat of seats) {
         const p = this.players[seat];
@@ -13866,6 +13868,12 @@
         );
         if (!win.isAgari || !win.hasYaku) throw new Error(`\u975E\u6CD5\u8363\u548C seat=${seat}`);
         wins.set(seat, win);
+      }
+      this.rollbackRiichiDeclaration(donor);
+      if (robbed) {
+        donor.hand.splice(robbedIndex, 1);
+        donor.drawnTile = null;
+        this.updateWaits(donor);
       }
       await this.endHand({ type: "ron", winners: seats.slice(), loser, card, wins });
     }
@@ -14409,10 +14417,12 @@
       return suit === 4 && (rank >= 5 || rank === this.roundWind || rank === this.seatWindOf(p.seat));
     }
     hasOpenYakuRoute(p, card, claimKind, used = []) {
-      const proposedType = claimKind === "chi" ? "chi" : "pon";
-      const proposed = { type: proposedType, tiles: [...used, card] };
-      const melds = p.melds.concat([proposed]);
-      const tiles = p.hand.concat([card], used).concat(melds.flatMap((meld) => meld.tiles || []));
+      const proposedType = claimKind === "chi" ? "chi" : claimKind === "kan" ? "kan" : "pon";
+      const claimTiles = claimKind === "chi" ? used : this.previewTiles(p, card, claimKind === "kan" ? 3 : 2);
+      const hand = p.hand.filter((tile) => !claimTiles.includes(tile));
+      const proposed = { type: proposedType, tiles: [...claimTiles, card] };
+      const melds = realMelds(p.melds).concat([proposed]);
+      const tiles = hand.concat(melds.flatMap((meld) => meld.tiles));
       const tripletKinds = new Set(melds.filter((meld) => meld.type === "pon" || meld.type === "kan" || meld.type === "ankan").map((meld) => kindOf2(meld.tiles[0])));
       if (claimKind !== "chi" && this.isYakuhaiKind(p, kindOf2(card))) return true;
       if ([...tripletKinds].some((kind) => this.isYakuhaiKind(p, kind))) return true;
@@ -14422,7 +14432,7 @@
       if (suits.size <= 1) return true;
       if (melds.every((meld) => meld.type !== "chi")) {
         const counts = /* @__PURE__ */ new Map();
-        for (const tile of p.hand) counts.set(kindOf2(tile), (counts.get(kindOf2(tile)) || 0) + 1);
+        for (const tile of hand) counts.set(kindOf2(tile), (counts.get(kindOf2(tile)) || 0) + 1);
         const pairOrTriplet = [...counts.values()].filter((count) => count >= 2).length;
         if (pairOrTriplet + melds.length >= 4) return true;
       }
@@ -14544,13 +14554,8 @@
           this.resolveHumanPending(pending, buffered);
           return;
         }
-        const automatic = this.automaticHumanAction(kind);
-        if (automatic) {
-          queueMicrotask(() => this.resolveHumanPending(pending, automatic));
-          return;
-        }
         if (this.autoHuman) {
-          const payload = this.timeoutHumanAction(kind);
+          const payload = this.automaticHumanAction(kind) || this.timeoutHumanAction(kind);
           queueMicrotask(() => this.resolveHumanPending(pending, payload));
           return;
         }
@@ -14560,6 +14565,13 @@
           const payload = this.timeoutHumanAction(kind);
           this.resolveHumanPending(pending, payload);
         }, timeoutMs);
+        if (this.automaticHumanAction(kind)) {
+          queueMicrotask(() => {
+            if (this._pending !== pending) return;
+            const automatic = this.automaticHumanAction(kind);
+            if (automatic) this.resolveHumanPending(pending, automatic);
+          });
+        }
       });
     }
     submitDraw(payload) {
@@ -14700,9 +14712,15 @@
       });
       this.log = opts.log || (() => {
       });
+      this.clientInternalState = {};
       this.engine = null;
       this.stopped = false;
       this.matchOver = false;
+    }
+    /** 新连接尚未同步自动操作开关，不得继承旧页面的授权；不改存档或计时。 */
+    resetClientSettings() {
+      this.clientInternalState = {};
+      if (this.engine) this.engine.setInternalState({ 1: false, 2: false, 3: false, 4: false, 5: false });
     }
     /** 编码并回推一个服务端事件 */
     send(ev, payload) {
@@ -14739,7 +14757,7 @@
         seed,
         baseTime: o.baseTime,
         extraTime: o.extraTime,
-        internalState: o.internalState,
+        internalState: this.clientInternalState,
         uids: o.uids,
         autoHuman: o.autoHuman,
         onFinalResult: (scores, engine) => this.onFinalResult(scores, engine),
@@ -14799,6 +14817,7 @@
         case RiichiMsg.EReqSetInternalState: {
           const values = payload.InternalState || payload.internalState || {};
           this.opts.internalState = { ...this.opts.internalState, ...values };
+          this.clientInternalState = { ...this.clientInternalState, ...values };
           if (this.engine) this.engine.setInternalState(values);
           this.onSettingsChange({ ...this.opts.internalState });
           this.send(RiichiMsg.ERspSetInternalState, { result: 0 });

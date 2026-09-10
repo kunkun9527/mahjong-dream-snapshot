@@ -265,10 +265,14 @@
   Session.prototype.push = function (msgId, payload, ptype, extra, seq) {
     var sock = this.socket;
     if (!sock || sock.readyState !== OPEN) return;
-    // 默认 seq=null（通知帧，不写 f11）；对局引擎的 Rsp* 响应帧会显式传入请求 seq
-    var frame = this.wrap(msgId, payload, seq === undefined ? null : seq, ptype || 1, extra);
+    var self = this;
+    // 只在实际投递时分配 f27 下行序号。提前 wrap 后再延迟发送，会被
+    // dispatch 的即时心跳响应超车，使客户端收到 38、37 这样的倒序。
+    // f11 RPC 序号仍取 push 调用时的参数，不能读取后续请求的 lastSeq。
     setTimeout(function () {
-      if (sock.readyState === OPEN) sock._deliver(frame);
+      if (self.socket !== sock || sock.readyState !== OPEN) return;
+      var frame = self.wrap(msgId, payload, seq === undefined ? null : seq, ptype || 1, extra);
+      sock._deliver(frame);
     }, 0);
   };
 
@@ -292,6 +296,9 @@
   /** 重连时把旧会话的引擎接到新 WS 上 */
   Session.prototype.resume = function (socket) {
     var self = this;
+    if (this.socket !== socket && this.riichi && this.riichi.resetClientSettings) {
+      this.riichi.resetClientSettings();
+    }
     this.socket = socket;
     this.replaying = false;
     this._replayStarted = false;
@@ -683,13 +690,10 @@
    *  问「我是不是还在一局没打完的牌里」。mock 的 20002 必须补 f22=1 才会触发本分支
    *  （见 HANDLERS[20001]）；缺了它，客户端判定牌局已不存在，直接发 20102 退大厅。
    *
-   *  ★ 这是「Bye! 之后直接退出对局」的根因所在。
-   *  客户端用的 BestHTTP，WebSocket.Close() 无参时的默认 reason 就是 "Bye!"；
-   *  发起者是 BH_NetworkManager.ForceCloseWhenTimeout —— UpdateNetTimes 靠
-   *  Time.unscaledDeltaTime 累加判超时，只要 Unity 主线程卡顿一段时间，恢复后
-   *  这段时间会被一次性补进计时器，立刻判定网络超时并主动关连接。
-   *  这在连正式服的抓包里同样出现过（capture/dongfeng1 帧 108→109：客户端发完
-   *  心跳后整整 11.7s 一帧未发，随后重连），属于客户端自我保护，服务端无法根治。
+   *  这里修复的是「重连后误判无对局」，不是所有 Bye! 断线的原因。
+   *  BestHTTP WebSocket.Close() 无参时的默认 reason 是 "Bye!"，不能据此
+   *  确定唯一关闭调用点。BH_NetworkManager.ForceCloseWhenTimeout 是可能路径；
+   *  还需核对心跳、通知投递顺序及客户端处理时序，不能先认定服务端无问题。
    *
    *  能治的是「重连之后」：真实服在这里回 f4=TableInfo，客户端于是知道自己还在
    *  局内、继续等服务器同步牌局；而这里原先无条件回「无对局」，客户端就认定牌局
