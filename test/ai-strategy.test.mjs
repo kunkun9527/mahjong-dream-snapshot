@@ -121,3 +121,39 @@ test('AI 决策确定且远低于两秒硬预算', () => {
   assert.ok(decisions.every((decision) => decision.action === decisions[0].action && decision.card === decisions[0].card));
   assert.ok(elapsed < 2_000, `30 次决策耗时 ${elapsed.toFixed(1)}ms`);
 });
+
+test('AI 弃牌、立直和鸣牌评估不读取对手暗手、未来牌山或里宝牌', () => {
+  const hand = makeTiles([
+    [1, [1, 2, 3, 4, 5, 6, 7, 8, 9]],
+    [2, [2, 3, 9]],
+    [3, [5, 5]],
+  ]);
+  const engine = makeEngine([makePlayer(0, hand), makePlayer(1), makePlayer(2), makePlayer(3)]);
+  engine.players[1].riichi = true;
+  engine.players[1].discards = [194];
+  engine.players[1].discardKinds.add(19);
+  const evaluate = () => {
+    const turn = {
+      discard: engine.aiTurn(0, true, [PlayAction.Normal]),
+      riichi: engine.aiTurn(0, true, [PlayAction.Normal, PlayAction.Riichi]),
+    };
+    engine.players[0].hand = hand.filter((tile) => tile !== 291);
+    engine.players[0].drawnTile = null;
+    const claims = {
+      chi: engine.aiClaim(0, 3, 214, [PlayAction.Chi, PlayAction.Guo]),
+      pon: engine.aiClaim(0, 2, 353, [PlayAction.Peng, PlayAction.Guo]),
+    };
+    engine.players[0].hand = hand.slice();
+    engine.players[0].drawnTile = hand.at(-1);
+    return { ...turn, ...claims };
+  };
+  const expected = evaluate();
+  const denyRead = (object, key) => Object.defineProperty(object, key, {
+    get() { assert.fail(`AI 读取了隐藏字段 ${key}`); },
+  });
+  for (const opponent of engine.players.slice(1)) {
+    for (const key of ['hand', 'drawnTile', 'waits', 'waitTiles', 'shanten']) denyRead(opponent, key);
+  }
+  for (const key of ['wall', 'replacements', 'uraIndicators']) denyRead(engine, key);
+  assert.deepEqual(evaluate(), expected);
+});

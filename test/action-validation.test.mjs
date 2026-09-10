@@ -64,7 +64,8 @@ test('非法吃牌不会先移除供牌者牌河', async () => {
   const claimed = tileId(1, 1, 1);
   const two = tileId(1, 2, 1);
   const three = tileId(1, 3, 1);
-  const players = [player(0), player(1, [two, three]), player(2), player(3)];
+  const hand = [two, three, 151, 161, 211, 221, 231, 311, 321, 331, 411, 412, 441];
+  const players = [player(0), player(1, hand), player(2), player(3)];
   players[0].discards.push(claimed);
   const engine = engineWith(players);
   engine.lastDiscard = { seat: 0, card: claimed };
@@ -72,7 +73,7 @@ test('非法吃牌不会先移除供牌者牌河', async () => {
   const result = await engine.executeClaim(1, PlayAction.Chi, claimed, 0, [two, two]);
   assert.equal(result, Result.Fail_InvalidOtherCards);
   assert.deepEqual(players[0].discards, [claimed]);
-  assert.deepEqual(players[1].hand, [two, three]);
+  assert.deepEqual(players[1].hand, hand);
   assert.deepEqual(players[1].melds, []);
 });
 

@@ -358,7 +358,8 @@ var GameEngine = class {
       const all = [...otherCards, expected.card].map(decodeId);
       if (all.some((tile) => tile.suit === 4 || tile.suit !== all[0].suit)) return Result.Fail_InvalidOtherCards;
       const ranks = all.map((tile) => tile.rank).sort((a, b) => a - b);
-      return ranks[0] + 1 === ranks[1] && ranks[1] + 1 === ranks[2] ? Result.Succ : Result.Fail_InvalidOtherCards;
+      const isSequence = ranks[0] + 1 === ranks[1] && ranks[1] + 1 === ranks[2];
+      return isSequence && this.canDiscardAfterClaim(p, action, expected.card, otherCards) ? Result.Succ : Result.Fail_InvalidOtherCards;
     }
     return Result.Fail_ActionNotInCanQiangActions;
   }
@@ -588,9 +589,10 @@ var GameEngine = class {
   isFormalTenpaiHand(hand, melds) {
     const info = handWaits(hand, melds);
     if (info.shanten !== 0 || !info.waitKinds.length) return false;
-    if (info.waitKinds.length !== 1) return true;
-    const waitKind = info.waitKinds[0];
-    return hand.filter((tile) => kindOf2(tile) === waitKind).length < 4;
+    // 自己的副露也属于牌形；不能把手中第四张误作等待第五张。
+    // 他家的明牌/自己的弃牌耗尽等待牌仍允许空听，不在这里排除。
+    const ownTiles = hand.concat(realMelds(melds).flatMap((meld) => meld.tiles));
+    return info.waitKinds.some((kind) => ownTiles.filter((tile) => kindOf2(tile) === kind).length < 4);
   }
   formalTenpaiDiscards(p) {
     if (p.hand.length % 3 !== 2) return [];
@@ -796,6 +798,10 @@ var GameEngine = class {
     const w = calcWin(p.hand, p.melds, this.akaSet, { ...this.winOpts(p, true, card), ...extra });
     return w.isAgari && w.hasYaku;
   }
+  canDiscardAfterClaim(p, action, card, used) {
+    const forbidden = this.kuikaeKinds(action, [...used, card], card);
+    return p.hand.some((tile) => !used.includes(tile) && !forbidden.has(kindOf2(tile)));
+  }
   chiOptions(p, card) {
     const { suit, rank } = decodeId(card);
     if (suit === 4) return [];
@@ -812,7 +818,7 @@ var GameEngine = class {
         const decoded = decodeId(tile);
         return tile !== left && decoded.suit === suit && decoded.rank === rightRank;
       });
-      if (right != null) options.push([left, right]);
+      if (right != null && this.canDiscardAfterClaim(p, PlayAction.Chi, card, [left, right])) options.push([left, right]);
     }
     return options;
   }
@@ -827,10 +833,11 @@ var GameEngine = class {
       if (!this._expectedClaim && this._bufferedClaim == null) this.expectClaim(0, discarderSeat, card, canQiang[0]);
       const payload = await this.waitHuman("claim");
       humanHandled = true;
+      if (payload?.action !== PlayAction.Hu && canQiang[0].includes(PlayAction.Hu)) {
+        this.markPassedRon(this.players[0]);
+      }
       if (payload?.action != null && payload.action !== PlayAction.Guo) {
         all.push({ seat: 0, action: payload.action, otherCards: payload.otherCards || [] });
-      } else if (canQiang[0].includes(PlayAction.Hu)) {
-        this.markPassedRon(this.players[0]);
       }
     } else {
       this._expectedClaim = null;
@@ -840,7 +847,7 @@ var GameEngine = class {
       if (!canQiang[seat]?.length) continue;
       const claim = this.aiClaim(seat, discarderSeat, card, canQiang[seat]);
       if (claim) all.push({ seat, ...claim });
-      else if (canQiang[seat].includes(PlayAction.Hu)) this.markPassedRon(this.players[seat]);
+      if (claim?.action !== PlayAction.Hu && canQiang[seat].includes(PlayAction.Hu)) this.markPassedRon(this.players[seat]);
     }
     if (!all.length) {
       this.confirmRiichiDeclaration(this.players[discarderSeat]);
