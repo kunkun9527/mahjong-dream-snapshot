@@ -1,0 +1,21 @@
+{
+  "name": "mahjong-dream-snapshot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node local/launcher.mjs",
+    "build": "node mockjs/build_browser.mjs",
+    "check": "node --check mock/proto.js && node --check mock/data.js && node --check mock/userdata.js && node --check mock/server.js && node --check offline-patch.js && node --check local/profile.mjs && node --check local/server.mjs && node --check local/launcher.mjs && node --check mockjs/tiles.mjs && node --check mockjs/shanten.mjs && node --check mockjs/ai.mjs && node --check mockjs/proto_enum.mjs && node --check mockjs/yaku_map.mjs && node --check mockjs/engine.mjs && node --check mockjs/pb.mjs && node --check mockjs/browser_entry.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "assert": "2.1.0",
+    "protobufjs": "8.8.0",
+    "riichi": "1.2.0",
+    "ws": "8.21.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

@@ -1,30 +1,11 @@
-/* 立直麻将对局引擎（浏览器版）—— 由 mockjs/build_browser.mjs 打包生成，请勿手改。
- * 源码见 mockjs/{engine,ai,shanten,tiles,yaku_map,pb}.mjs + npm 包 riichi/protobufjs。
- * 挂载点：window.__mj.riichi */
+/* 由 mockjs/build_browser.mjs 自动生成，请修改 mockjs/ 源码后重新构建。 */
 (() => {
   var __create = Object.create;
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __commonJS = (cb, mod) => function __require() {
     try {
       return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
@@ -491,56 +472,4610 @@
     }
   });
 
-  // shims/assert.js
-  var require_assert = __commonJS({
-    "shims/assert.js"(exports2, module2) {
-      function deepEqual(a, b) {
-        if (a === b) return true;
-        if (typeof a !== typeof b) return false;
-        if (a === null || b === null || a === void 0 || b === void 0) return false;
-        if (typeof a !== "object") return a !== a && b !== b;
-        if (Array.isArray(a) !== Array.isArray(b)) return false;
-        if (Array.isArray(a)) {
-          if (a.length !== b.length) return false;
-          for (var i = 0; i < a.length; i++) if (!deepEqual(a[i], b[i])) return false;
+  // node_modules/has-symbols/shams.js
+  var require_shams = __commonJS({
+    "node_modules/has-symbols/shams.js"(exports2, module2) {
+      "use strict";
+      module2.exports = function hasSymbols() {
+        if (typeof Symbol !== "function" || typeof Object.getOwnPropertySymbols !== "function") {
+          return false;
+        }
+        if (typeof Symbol.iterator === "symbol") {
           return true;
         }
-        var ka = Object.keys(a), kb = Object.keys(b);
-        if (ka.length !== kb.length) return false;
-        for (var j = 0; j < ka.length; j++) {
-          if (!Object.prototype.hasOwnProperty.call(b, ka[j])) return false;
-          if (!deepEqual(a[ka[j]], b[ka[j]])) return false;
+        var obj = {};
+        var sym = /* @__PURE__ */ Symbol("test");
+        var symObj = Object(sym);
+        if (typeof sym === "string") {
+          return false;
+        }
+        if (Object.prototype.toString.call(sym) !== "[object Symbol]") {
+          return false;
+        }
+        if (Object.prototype.toString.call(symObj) !== "[object Symbol]") {
+          return false;
+        }
+        var symVal = 42;
+        obj[sym] = symVal;
+        for (var _ in obj) {
+          return false;
+        }
+        if (typeof Object.keys === "function" && Object.keys(obj).length !== 0) {
+          return false;
+        }
+        if (typeof Object.getOwnPropertyNames === "function" && Object.getOwnPropertyNames(obj).length !== 0) {
+          return false;
+        }
+        var syms = Object.getOwnPropertySymbols(obj);
+        if (syms.length !== 1 || syms[0] !== sym) {
+          return false;
+        }
+        if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) {
+          return false;
+        }
+        if (typeof Object.getOwnPropertyDescriptor === "function") {
+          var descriptor = (
+            /** @type {PropertyDescriptor} */
+            Object.getOwnPropertyDescriptor(obj, sym)
+          );
+          if (descriptor.value !== symVal || descriptor.enumerable !== true) {
+            return false;
+          }
+        }
+        return true;
+      };
+    }
+  });
+
+  // node_modules/has-tostringtag/shams.js
+  var require_shams2 = __commonJS({
+    "node_modules/has-tostringtag/shams.js"(exports2, module2) {
+      "use strict";
+      var hasSymbols = require_shams();
+      module2.exports = function hasToStringTagShams() {
+        return hasSymbols() && !!Symbol.toStringTag;
+      };
+    }
+  });
+
+  // node_modules/es-object-atoms/index.js
+  var require_es_object_atoms = __commonJS({
+    "node_modules/es-object-atoms/index.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Object;
+    }
+  });
+
+  // node_modules/es-errors/index.js
+  var require_es_errors = __commonJS({
+    "node_modules/es-errors/index.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Error;
+    }
+  });
+
+  // node_modules/es-errors/eval.js
+  var require_eval = __commonJS({
+    "node_modules/es-errors/eval.js"(exports2, module2) {
+      "use strict";
+      module2.exports = EvalError;
+    }
+  });
+
+  // node_modules/es-errors/range.js
+  var require_range = __commonJS({
+    "node_modules/es-errors/range.js"(exports2, module2) {
+      "use strict";
+      module2.exports = RangeError;
+    }
+  });
+
+  // node_modules/es-errors/ref.js
+  var require_ref = __commonJS({
+    "node_modules/es-errors/ref.js"(exports2, module2) {
+      "use strict";
+      module2.exports = ReferenceError;
+    }
+  });
+
+  // node_modules/es-errors/syntax.js
+  var require_syntax = __commonJS({
+    "node_modules/es-errors/syntax.js"(exports2, module2) {
+      "use strict";
+      module2.exports = SyntaxError;
+    }
+  });
+
+  // node_modules/es-errors/type.js
+  var require_type = __commonJS({
+    "node_modules/es-errors/type.js"(exports2, module2) {
+      "use strict";
+      module2.exports = TypeError;
+    }
+  });
+
+  // node_modules/es-errors/uri.js
+  var require_uri = __commonJS({
+    "node_modules/es-errors/uri.js"(exports2, module2) {
+      "use strict";
+      module2.exports = URIError;
+    }
+  });
+
+  // node_modules/math-intrinsics/abs.js
+  var require_abs = __commonJS({
+    "node_modules/math-intrinsics/abs.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Math.abs;
+    }
+  });
+
+  // node_modules/math-intrinsics/floor.js
+  var require_floor = __commonJS({
+    "node_modules/math-intrinsics/floor.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Math.floor;
+    }
+  });
+
+  // node_modules/math-intrinsics/max.js
+  var require_max = __commonJS({
+    "node_modules/math-intrinsics/max.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Math.max;
+    }
+  });
+
+  // node_modules/math-intrinsics/min.js
+  var require_min = __commonJS({
+    "node_modules/math-intrinsics/min.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Math.min;
+    }
+  });
+
+  // node_modules/math-intrinsics/pow.js
+  var require_pow = __commonJS({
+    "node_modules/math-intrinsics/pow.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Math.pow;
+    }
+  });
+
+  // node_modules/math-intrinsics/round.js
+  var require_round = __commonJS({
+    "node_modules/math-intrinsics/round.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Math.round;
+    }
+  });
+
+  // node_modules/math-intrinsics/isNaN.js
+  var require_isNaN = __commonJS({
+    "node_modules/math-intrinsics/isNaN.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Number.isNaN || function isNaN2(a) {
+        return a !== a;
+      };
+    }
+  });
+
+  // node_modules/math-intrinsics/sign.js
+  var require_sign = __commonJS({
+    "node_modules/math-intrinsics/sign.js"(exports2, module2) {
+      "use strict";
+      var $isNaN = require_isNaN();
+      module2.exports = function sign(number) {
+        if ($isNaN(number) || number === 0) {
+          return number;
+        }
+        return number < 0 ? -1 : 1;
+      };
+    }
+  });
+
+  // node_modules/gopd/gOPD.js
+  var require_gOPD = __commonJS({
+    "node_modules/gopd/gOPD.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Object.getOwnPropertyDescriptor;
+    }
+  });
+
+  // node_modules/gopd/index.js
+  var require_gopd = __commonJS({
+    "node_modules/gopd/index.js"(exports2, module2) {
+      "use strict";
+      var $gOPD = require_gOPD();
+      if ($gOPD) {
+        try {
+          $gOPD([], "length");
+        } catch (e) {
+          $gOPD = null;
+        }
+      }
+      module2.exports = $gOPD;
+    }
+  });
+
+  // node_modules/es-define-property/index.js
+  var require_es_define_property = __commonJS({
+    "node_modules/es-define-property/index.js"(exports2, module2) {
+      "use strict";
+      var $defineProperty = Object.defineProperty || false;
+      if ($defineProperty) {
+        try {
+          $defineProperty({}, "a", { value: 1 });
+        } catch (e) {
+          $defineProperty = false;
+        }
+      }
+      module2.exports = $defineProperty;
+    }
+  });
+
+  // node_modules/has-symbols/index.js
+  var require_has_symbols = __commonJS({
+    "node_modules/has-symbols/index.js"(exports2, module2) {
+      "use strict";
+      var origSymbol = typeof Symbol !== "undefined" && Symbol;
+      var hasSymbolSham = require_shams();
+      module2.exports = function hasNativeSymbols() {
+        if (typeof origSymbol !== "function") {
+          return false;
+        }
+        if (typeof Symbol !== "function") {
+          return false;
+        }
+        if (typeof origSymbol("foo") !== "symbol") {
+          return false;
+        }
+        if (typeof /* @__PURE__ */ Symbol("bar") !== "symbol") {
+          return false;
+        }
+        return hasSymbolSham();
+      };
+    }
+  });
+
+  // node_modules/get-proto/Reflect.getPrototypeOf.js
+  var require_Reflect_getPrototypeOf = __commonJS({
+    "node_modules/get-proto/Reflect.getPrototypeOf.js"(exports2, module2) {
+      "use strict";
+      module2.exports = typeof Reflect !== "undefined" && Reflect.getPrototypeOf || null;
+    }
+  });
+
+  // node_modules/get-proto/Object.getPrototypeOf.js
+  var require_Object_getPrototypeOf = __commonJS({
+    "node_modules/get-proto/Object.getPrototypeOf.js"(exports2, module2) {
+      "use strict";
+      var $Object = require_es_object_atoms();
+      module2.exports = $Object.getPrototypeOf || null;
+    }
+  });
+
+  // node_modules/function-bind/implementation.js
+  var require_implementation = __commonJS({
+    "node_modules/function-bind/implementation.js"(exports2, module2) {
+      "use strict";
+      var ERROR_MESSAGE = "Function.prototype.bind called on incompatible ";
+      var toStr = Object.prototype.toString;
+      var max = Math.max;
+      var funcType = "[object Function]";
+      var concatty = function concatty2(a, b) {
+        var arr = [];
+        for (var i = 0; i < a.length; i += 1) {
+          arr[i] = a[i];
+        }
+        for (var j = 0; j < b.length; j += 1) {
+          arr[j + a.length] = b[j];
+        }
+        return arr;
+      };
+      var slicy = function slicy2(arrLike, offset) {
+        var arr = [];
+        for (var i = offset || 0, j = 0; i < arrLike.length; i += 1, j += 1) {
+          arr[j] = arrLike[i];
+        }
+        return arr;
+      };
+      var joiny = function(arr, joiner) {
+        var str = "";
+        for (var i = 0; i < arr.length; i += 1) {
+          str += arr[i];
+          if (i + 1 < arr.length) {
+            str += joiner;
+          }
+        }
+        return str;
+      };
+      module2.exports = function bind(that) {
+        var target = this;
+        if (typeof target !== "function" || toStr.apply(target) !== funcType) {
+          throw new TypeError(ERROR_MESSAGE + target);
+        }
+        var args = slicy(arguments, 1);
+        var bound;
+        var binder = function() {
+          if (this instanceof bound) {
+            var result = target.apply(
+              this,
+              concatty(args, arguments)
+            );
+            if (Object(result) === result) {
+              return result;
+            }
+            return this;
+          }
+          return target.apply(
+            that,
+            concatty(args, arguments)
+          );
+        };
+        var boundLength = max(0, target.length - args.length);
+        var boundArgs = [];
+        for (var i = 0; i < boundLength; i++) {
+          boundArgs[i] = "$" + i;
+        }
+        bound = Function("binder", "return function (" + joiny(boundArgs, ",") + "){ return binder.apply(this,arguments); }")(binder);
+        if (target.prototype) {
+          var Empty = function Empty2() {
+          };
+          Empty.prototype = target.prototype;
+          bound.prototype = new Empty();
+          Empty.prototype = null;
+        }
+        return bound;
+      };
+    }
+  });
+
+  // node_modules/function-bind/index.js
+  var require_function_bind = __commonJS({
+    "node_modules/function-bind/index.js"(exports2, module2) {
+      "use strict";
+      var implementation = require_implementation();
+      module2.exports = Function.prototype.bind || implementation;
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/functionCall.js
+  var require_functionCall = __commonJS({
+    "node_modules/call-bind-apply-helpers/functionCall.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Function.prototype.call;
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/functionApply.js
+  var require_functionApply = __commonJS({
+    "node_modules/call-bind-apply-helpers/functionApply.js"(exports2, module2) {
+      "use strict";
+      module2.exports = Function.prototype.apply;
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/reflectApply.js
+  var require_reflectApply = __commonJS({
+    "node_modules/call-bind-apply-helpers/reflectApply.js"(exports2, module2) {
+      "use strict";
+      module2.exports = typeof Reflect !== "undefined" && Reflect && Reflect.apply;
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/actualApply.js
+  var require_actualApply = __commonJS({
+    "node_modules/call-bind-apply-helpers/actualApply.js"(exports2, module2) {
+      "use strict";
+      var bind = require_function_bind();
+      var $apply = require_functionApply();
+      var $call = require_functionCall();
+      var $reflectApply = require_reflectApply();
+      module2.exports = $reflectApply || bind.call($call, $apply);
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/index.js
+  var require_call_bind_apply_helpers = __commonJS({
+    "node_modules/call-bind-apply-helpers/index.js"(exports2, module2) {
+      "use strict";
+      var bind = require_function_bind();
+      var $TypeError = require_type();
+      var $call = require_functionCall();
+      var $actualApply = require_actualApply();
+      module2.exports = function callBindBasic(args) {
+        if (args.length < 1 || typeof args[0] !== "function") {
+          throw new $TypeError("a function is required");
+        }
+        return $actualApply(bind, $call, args);
+      };
+    }
+  });
+
+  // node_modules/dunder-proto/get.js
+  var require_get = __commonJS({
+    "node_modules/dunder-proto/get.js"(exports2, module2) {
+      "use strict";
+      var callBind = require_call_bind_apply_helpers();
+      var gOPD = require_gopd();
+      var hasProtoAccessor;
+      try {
+        hasProtoAccessor = /** @type {{ __proto__?: typeof Array.prototype }} */
+        [].__proto__ === Array.prototype;
+      } catch (e) {
+        if (!e || typeof e !== "object" || !("code" in e) || e.code !== "ERR_PROTO_ACCESS") {
+          throw e;
+        }
+      }
+      var desc = !!hasProtoAccessor && gOPD && gOPD(
+        Object.prototype,
+        /** @type {keyof typeof Object.prototype} */
+        "__proto__"
+      );
+      var $Object = Object;
+      var $getPrototypeOf = $Object.getPrototypeOf;
+      module2.exports = desc && typeof desc.get === "function" ? callBind([desc.get]) : typeof $getPrototypeOf === "function" ? (
+        /** @type {import('./get')} */
+        function getDunder(value) {
+          return $getPrototypeOf(value == null ? value : $Object(value));
+        }
+      ) : false;
+    }
+  });
+
+  // node_modules/get-proto/index.js
+  var require_get_proto = __commonJS({
+    "node_modules/get-proto/index.js"(exports2, module2) {
+      "use strict";
+      var reflectGetProto = require_Reflect_getPrototypeOf();
+      var originalGetProto = require_Object_getPrototypeOf();
+      var getDunderProto = require_get();
+      module2.exports = reflectGetProto ? function getProto(O) {
+        return reflectGetProto(O);
+      } : originalGetProto ? function getProto(O) {
+        if (!O || typeof O !== "object" && typeof O !== "function") {
+          throw new TypeError("getProto: not an object");
+        }
+        return originalGetProto(O);
+      } : getDunderProto ? function getProto(O) {
+        return getDunderProto(O);
+      } : null;
+    }
+  });
+
+  // node_modules/hasown/index.js
+  var require_hasown = __commonJS({
+    "node_modules/hasown/index.js"(exports2, module2) {
+      "use strict";
+      var call = Function.prototype.call;
+      var $hasOwn = Object.prototype.hasOwnProperty;
+      var bind = require_function_bind();
+      module2.exports = bind.call(call, $hasOwn);
+    }
+  });
+
+  // node_modules/get-intrinsic/index.js
+  var require_get_intrinsic = __commonJS({
+    "node_modules/get-intrinsic/index.js"(exports2, module2) {
+      "use strict";
+      var undefined2;
+      var $Object = require_es_object_atoms();
+      var $Error = require_es_errors();
+      var $EvalError = require_eval();
+      var $RangeError = require_range();
+      var $ReferenceError = require_ref();
+      var $SyntaxError = require_syntax();
+      var $TypeError = require_type();
+      var $URIError = require_uri();
+      var abs = require_abs();
+      var floor = require_floor();
+      var max = require_max();
+      var min = require_min();
+      var pow = require_pow();
+      var round = require_round();
+      var sign = require_sign();
+      var $Function = Function;
+      var getEvalledConstructor = function(expressionSyntax) {
+        try {
+          return $Function('"use strict"; return (' + expressionSyntax + ").constructor;")();
+        } catch (e) {
+        }
+      };
+      var $gOPD = require_gopd();
+      var $defineProperty = require_es_define_property();
+      var throwTypeError = function() {
+        throw new $TypeError();
+      };
+      var ThrowTypeError = $gOPD ? (function() {
+        try {
+          arguments.callee;
+          return throwTypeError;
+        } catch (calleeThrows) {
+          try {
+            return $gOPD(arguments, "callee").get;
+          } catch (gOPDthrows) {
+            return throwTypeError;
+          }
+        }
+      })() : throwTypeError;
+      var hasSymbols = require_has_symbols()();
+      var getProto = require_get_proto();
+      var $ObjectGPO = require_Object_getPrototypeOf();
+      var $ReflectGPO = require_Reflect_getPrototypeOf();
+      var $apply = require_functionApply();
+      var $call = require_functionCall();
+      var needsEval = {};
+      var TypedArray = typeof Uint8Array === "undefined" || !getProto ? undefined2 : getProto(Uint8Array);
+      var INTRINSICS = {
+        __proto__: null,
+        "%AggregateError%": typeof AggregateError === "undefined" ? undefined2 : AggregateError,
+        "%Array%": Array,
+        "%ArrayBuffer%": typeof ArrayBuffer === "undefined" ? undefined2 : ArrayBuffer,
+        "%ArrayIteratorPrototype%": hasSymbols && getProto ? getProto([][Symbol.iterator]()) : undefined2,
+        "%AsyncFromSyncIteratorPrototype%": undefined2,
+        "%AsyncFunction%": needsEval,
+        "%AsyncGenerator%": needsEval,
+        "%AsyncGeneratorFunction%": needsEval,
+        "%AsyncIteratorPrototype%": needsEval,
+        "%Atomics%": typeof Atomics === "undefined" ? undefined2 : Atomics,
+        "%BigInt%": typeof BigInt === "undefined" ? undefined2 : BigInt,
+        "%BigInt64Array%": typeof BigInt64Array === "undefined" ? undefined2 : BigInt64Array,
+        "%BigUint64Array%": typeof BigUint64Array === "undefined" ? undefined2 : BigUint64Array,
+        "%Boolean%": Boolean,
+        "%DataView%": typeof DataView === "undefined" ? undefined2 : DataView,
+        "%Date%": Date,
+        "%decodeURI%": decodeURI,
+        "%decodeURIComponent%": decodeURIComponent,
+        "%encodeURI%": encodeURI,
+        "%encodeURIComponent%": encodeURIComponent,
+        "%Error%": $Error,
+        "%eval%": eval,
+        // eslint-disable-line no-eval
+        "%EvalError%": $EvalError,
+        "%Float16Array%": typeof Float16Array === "undefined" ? undefined2 : Float16Array,
+        "%Float32Array%": typeof Float32Array === "undefined" ? undefined2 : Float32Array,
+        "%Float64Array%": typeof Float64Array === "undefined" ? undefined2 : Float64Array,
+        "%FinalizationRegistry%": typeof FinalizationRegistry === "undefined" ? undefined2 : FinalizationRegistry,
+        "%Function%": $Function,
+        "%GeneratorFunction%": needsEval,
+        "%Int8Array%": typeof Int8Array === "undefined" ? undefined2 : Int8Array,
+        "%Int16Array%": typeof Int16Array === "undefined" ? undefined2 : Int16Array,
+        "%Int32Array%": typeof Int32Array === "undefined" ? undefined2 : Int32Array,
+        "%isFinite%": isFinite,
+        "%isNaN%": isNaN,
+        "%IteratorPrototype%": hasSymbols && getProto ? getProto(getProto([][Symbol.iterator]())) : undefined2,
+        "%JSON%": typeof JSON === "object" ? JSON : undefined2,
+        "%Map%": typeof Map === "undefined" ? undefined2 : Map,
+        "%MapIteratorPrototype%": typeof Map === "undefined" || !hasSymbols || !getProto ? undefined2 : getProto((/* @__PURE__ */ new Map())[Symbol.iterator]()),
+        "%Math%": Math,
+        "%Number%": Number,
+        "%Object%": $Object,
+        "%Object.getOwnPropertyDescriptor%": $gOPD,
+        "%parseFloat%": parseFloat,
+        "%parseInt%": parseInt,
+        "%Promise%": typeof Promise === "undefined" ? undefined2 : Promise,
+        "%Proxy%": typeof Proxy === "undefined" ? undefined2 : Proxy,
+        "%RangeError%": $RangeError,
+        "%ReferenceError%": $ReferenceError,
+        "%Reflect%": typeof Reflect === "undefined" ? undefined2 : Reflect,
+        "%RegExp%": RegExp,
+        "%Set%": typeof Set === "undefined" ? undefined2 : Set,
+        "%SetIteratorPrototype%": typeof Set === "undefined" || !hasSymbols || !getProto ? undefined2 : getProto((/* @__PURE__ */ new Set())[Symbol.iterator]()),
+        "%SharedArrayBuffer%": typeof SharedArrayBuffer === "undefined" ? undefined2 : SharedArrayBuffer,
+        "%String%": String,
+        "%StringIteratorPrototype%": hasSymbols && getProto ? getProto(""[Symbol.iterator]()) : undefined2,
+        "%Symbol%": hasSymbols ? Symbol : undefined2,
+        "%SyntaxError%": $SyntaxError,
+        "%ThrowTypeError%": ThrowTypeError,
+        "%TypedArray%": TypedArray,
+        "%TypeError%": $TypeError,
+        "%Uint8Array%": typeof Uint8Array === "undefined" ? undefined2 : Uint8Array,
+        "%Uint8ClampedArray%": typeof Uint8ClampedArray === "undefined" ? undefined2 : Uint8ClampedArray,
+        "%Uint16Array%": typeof Uint16Array === "undefined" ? undefined2 : Uint16Array,
+        "%Uint32Array%": typeof Uint32Array === "undefined" ? undefined2 : Uint32Array,
+        "%URIError%": $URIError,
+        "%WeakMap%": typeof WeakMap === "undefined" ? undefined2 : WeakMap,
+        "%WeakRef%": typeof WeakRef === "undefined" ? undefined2 : WeakRef,
+        "%WeakSet%": typeof WeakSet === "undefined" ? undefined2 : WeakSet,
+        "%Function.prototype.call%": $call,
+        "%Function.prototype.apply%": $apply,
+        "%Object.defineProperty%": $defineProperty,
+        "%Object.getPrototypeOf%": $ObjectGPO,
+        "%Math.abs%": abs,
+        "%Math.floor%": floor,
+        "%Math.max%": max,
+        "%Math.min%": min,
+        "%Math.pow%": pow,
+        "%Math.round%": round,
+        "%Math.sign%": sign,
+        "%Reflect.getPrototypeOf%": $ReflectGPO
+      };
+      if (getProto) {
+        try {
+          null.error;
+        } catch (e) {
+          errorProto = getProto(getProto(e));
+          INTRINSICS["%Error.prototype%"] = errorProto;
+        }
+      }
+      var errorProto;
+      var doEval = function doEval2(name) {
+        var value;
+        if (name === "%AsyncFunction%") {
+          value = getEvalledConstructor("async function () {}");
+        } else if (name === "%GeneratorFunction%") {
+          value = getEvalledConstructor("function* () {}");
+        } else if (name === "%AsyncGeneratorFunction%") {
+          value = getEvalledConstructor("async function* () {}");
+        } else if (name === "%AsyncGenerator%") {
+          var fn = doEval2("%AsyncGeneratorFunction%");
+          if (fn) {
+            value = fn.prototype;
+          }
+        } else if (name === "%AsyncIteratorPrototype%") {
+          var gen = doEval2("%AsyncGenerator%");
+          if (gen && getProto) {
+            value = getProto(gen.prototype);
+          }
+        }
+        INTRINSICS[name] = value;
+        return value;
+      };
+      var LEGACY_ALIASES = {
+        __proto__: null,
+        "%ArrayBufferPrototype%": ["ArrayBuffer", "prototype"],
+        "%ArrayPrototype%": ["Array", "prototype"],
+        "%ArrayProto_entries%": ["Array", "prototype", "entries"],
+        "%ArrayProto_forEach%": ["Array", "prototype", "forEach"],
+        "%ArrayProto_keys%": ["Array", "prototype", "keys"],
+        "%ArrayProto_values%": ["Array", "prototype", "values"],
+        "%AsyncFunctionPrototype%": ["AsyncFunction", "prototype"],
+        "%AsyncGenerator%": ["AsyncGeneratorFunction", "prototype"],
+        "%AsyncGeneratorPrototype%": ["AsyncGeneratorFunction", "prototype", "prototype"],
+        "%BooleanPrototype%": ["Boolean", "prototype"],
+        "%DataViewPrototype%": ["DataView", "prototype"],
+        "%DatePrototype%": ["Date", "prototype"],
+        "%ErrorPrototype%": ["Error", "prototype"],
+        "%EvalErrorPrototype%": ["EvalError", "prototype"],
+        "%Float32ArrayPrototype%": ["Float32Array", "prototype"],
+        "%Float64ArrayPrototype%": ["Float64Array", "prototype"],
+        "%FunctionPrototype%": ["Function", "prototype"],
+        "%Generator%": ["GeneratorFunction", "prototype"],
+        "%GeneratorPrototype%": ["GeneratorFunction", "prototype", "prototype"],
+        "%Int8ArrayPrototype%": ["Int8Array", "prototype"],
+        "%Int16ArrayPrototype%": ["Int16Array", "prototype"],
+        "%Int32ArrayPrototype%": ["Int32Array", "prototype"],
+        "%JSONParse%": ["JSON", "parse"],
+        "%JSONStringify%": ["JSON", "stringify"],
+        "%MapPrototype%": ["Map", "prototype"],
+        "%NumberPrototype%": ["Number", "prototype"],
+        "%ObjectPrototype%": ["Object", "prototype"],
+        "%ObjProto_toString%": ["Object", "prototype", "toString"],
+        "%ObjProto_valueOf%": ["Object", "prototype", "valueOf"],
+        "%PromisePrototype%": ["Promise", "prototype"],
+        "%PromiseProto_then%": ["Promise", "prototype", "then"],
+        "%Promise_all%": ["Promise", "all"],
+        "%Promise_reject%": ["Promise", "reject"],
+        "%Promise_resolve%": ["Promise", "resolve"],
+        "%RangeErrorPrototype%": ["RangeError", "prototype"],
+        "%ReferenceErrorPrototype%": ["ReferenceError", "prototype"],
+        "%RegExpPrototype%": ["RegExp", "prototype"],
+        "%SetPrototype%": ["Set", "prototype"],
+        "%SharedArrayBufferPrototype%": ["SharedArrayBuffer", "prototype"],
+        "%StringPrototype%": ["String", "prototype"],
+        "%SymbolPrototype%": ["Symbol", "prototype"],
+        "%SyntaxErrorPrototype%": ["SyntaxError", "prototype"],
+        "%TypedArrayPrototype%": ["TypedArray", "prototype"],
+        "%TypeErrorPrototype%": ["TypeError", "prototype"],
+        "%Uint8ArrayPrototype%": ["Uint8Array", "prototype"],
+        "%Uint8ClampedArrayPrototype%": ["Uint8ClampedArray", "prototype"],
+        "%Uint16ArrayPrototype%": ["Uint16Array", "prototype"],
+        "%Uint32ArrayPrototype%": ["Uint32Array", "prototype"],
+        "%URIErrorPrototype%": ["URIError", "prototype"],
+        "%WeakMapPrototype%": ["WeakMap", "prototype"],
+        "%WeakSetPrototype%": ["WeakSet", "prototype"]
+      };
+      var bind = require_function_bind();
+      var hasOwn = require_hasown();
+      var $concat = bind.call($call, Array.prototype.concat);
+      var $spliceApply = bind.call($apply, Array.prototype.splice);
+      var $replace = bind.call($call, String.prototype.replace);
+      var $strSlice = bind.call($call, String.prototype.slice);
+      var $exec = bind.call($call, RegExp.prototype.exec);
+      var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
+      var reEscapeChar = /\\(\\)?/g;
+      var stringToPath = function stringToPath2(string) {
+        var first = $strSlice(string, 0, 1);
+        var last = $strSlice(string, -1);
+        if (first === "%" && last !== "%") {
+          throw new $SyntaxError("invalid intrinsic syntax, expected closing `%`");
+        } else if (last === "%" && first !== "%") {
+          throw new $SyntaxError("invalid intrinsic syntax, expected opening `%`");
+        }
+        var result = [];
+        $replace(string, rePropName, function(match, number, quote, subString) {
+          result[result.length] = quote ? $replace(subString, reEscapeChar, "$1") : number || match;
+        });
+        return result;
+      };
+      var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
+        var intrinsicName = name;
+        var alias;
+        if (hasOwn(LEGACY_ALIASES, intrinsicName)) {
+          alias = LEGACY_ALIASES[intrinsicName];
+          intrinsicName = "%" + alias[0] + "%";
+        }
+        if (hasOwn(INTRINSICS, intrinsicName)) {
+          var value = INTRINSICS[intrinsicName];
+          if (value === needsEval) {
+            value = doEval(intrinsicName);
+          }
+          if (typeof value === "undefined" && !allowMissing) {
+            throw new $TypeError("intrinsic " + name + " exists, but is not available. Please file an issue!");
+          }
+          return {
+            alias,
+            name: intrinsicName,
+            value
+          };
+        }
+        throw new $SyntaxError("intrinsic " + name + " does not exist!");
+      };
+      module2.exports = function GetIntrinsic(name, allowMissing) {
+        if (typeof name !== "string" || name.length === 0) {
+          throw new $TypeError("intrinsic name must be a non-empty string");
+        }
+        if (arguments.length > 1 && typeof allowMissing !== "boolean") {
+          throw new $TypeError('"allowMissing" argument must be a boolean');
+        }
+        if ($exec(/^%?[^%]*%?$/, name) === null) {
+          throw new $SyntaxError("`%` may not be present anywhere but at the beginning and end of the intrinsic name");
+        }
+        var parts = stringToPath(name);
+        var intrinsicBaseName = parts.length > 0 ? parts[0] : "";
+        var intrinsic = getBaseIntrinsic("%" + intrinsicBaseName + "%", allowMissing);
+        var intrinsicRealName = intrinsic.name;
+        var value = intrinsic.value;
+        var skipFurtherCaching = false;
+        var alias = intrinsic.alias;
+        if (alias) {
+          intrinsicBaseName = alias[0];
+          $spliceApply(parts, $concat([0, 1], alias));
+        }
+        for (var i = 1, isOwn = true; i < parts.length; i += 1) {
+          var part = parts[i];
+          var first = $strSlice(part, 0, 1);
+          var last = $strSlice(part, -1);
+          if ((first === '"' || first === "'" || first === "`" || (last === '"' || last === "'" || last === "`")) && first !== last) {
+            throw new $SyntaxError("property names with quotes must have matching quotes");
+          }
+          if (part === "constructor" || !isOwn) {
+            skipFurtherCaching = true;
+          }
+          intrinsicBaseName += "." + part;
+          intrinsicRealName = "%" + intrinsicBaseName + "%";
+          if (hasOwn(INTRINSICS, intrinsicRealName)) {
+            value = INTRINSICS[intrinsicRealName];
+          } else if (value != null) {
+            if (!(part in value)) {
+              if (!allowMissing) {
+                throw new $TypeError("base intrinsic for " + name + " exists, but the property is not available.");
+              }
+              return void undefined2;
+            }
+            if ($gOPD && i + 1 >= parts.length) {
+              var desc = $gOPD(value, part);
+              isOwn = !!desc;
+              if (isOwn && "get" in desc && !("originalValue" in desc.get)) {
+                value = desc.get;
+              } else {
+                value = value[part];
+              }
+            } else {
+              isOwn = hasOwn(value, part);
+              value = value[part];
+            }
+            if (isOwn && !skipFurtherCaching) {
+              INTRINSICS[intrinsicRealName] = value;
+            }
+          }
+        }
+        return value;
+      };
+    }
+  });
+
+  // node_modules/call-bound/index.js
+  var require_call_bound = __commonJS({
+    "node_modules/call-bound/index.js"(exports2, module2) {
+      "use strict";
+      var GetIntrinsic = require_get_intrinsic();
+      var callBindBasic = require_call_bind_apply_helpers();
+      var $indexOf = callBindBasic([GetIntrinsic("%String.prototype.indexOf%")]);
+      module2.exports = function callBoundIntrinsic(name, allowMissing) {
+        var intrinsic = (
+          /** @type {(this: unknown, ...args: unknown[]) => unknown} */
+          GetIntrinsic(name, !!allowMissing)
+        );
+        if (typeof intrinsic === "function" && $indexOf(name, ".prototype.") > -1) {
+          return callBindBasic(
+            /** @type {const} */
+            [intrinsic]
+          );
+        }
+        return intrinsic;
+      };
+    }
+  });
+
+  // node_modules/is-arguments/index.js
+  var require_is_arguments = __commonJS({
+    "node_modules/is-arguments/index.js"(exports2, module2) {
+      "use strict";
+      var hasToStringTag = require_shams2()();
+      var callBound = require_call_bound();
+      var $toString = callBound("Object.prototype.toString");
+      var isStandardArguments = function isArguments(value) {
+        if (hasToStringTag && value && typeof value === "object" && Symbol.toStringTag in value) {
+          return false;
+        }
+        return $toString(value) === "[object Arguments]";
+      };
+      var isLegacyArguments = function isArguments(value) {
+        if (isStandardArguments(value)) {
+          return true;
+        }
+        return value !== null && typeof value === "object" && "length" in value && typeof value.length === "number" && value.length >= 0 && $toString(value) !== "[object Array]" && "callee" in value && $toString(value.callee) === "[object Function]";
+      };
+      var supportsStandardArguments = (function() {
+        return isStandardArguments(arguments);
+      })();
+      isStandardArguments.isLegacyArguments = isLegacyArguments;
+      module2.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
+    }
+  });
+
+  // node_modules/is-regex/index.js
+  var require_is_regex = __commonJS({
+    "node_modules/is-regex/index.js"(exports2, module2) {
+      "use strict";
+      var callBound = require_call_bound();
+      var hasToStringTag = require_shams2()();
+      var hasOwn = require_hasown();
+      var gOPD = require_gopd();
+      var fn;
+      if (hasToStringTag) {
+        $exec = callBound("RegExp.prototype.exec");
+        isRegexMarker = {};
+        throwRegexMarker = function() {
+          throw isRegexMarker;
+        };
+        badStringifier = {
+          toString: throwRegexMarker,
+          valueOf: throwRegexMarker
+        };
+        if (typeof Symbol.toPrimitive === "symbol") {
+          badStringifier[Symbol.toPrimitive] = throwRegexMarker;
+        }
+        fn = function isRegex(value) {
+          if (!value || typeof value !== "object") {
+            return false;
+          }
+          var descriptor = (
+            /** @type {NonNullable<typeof gOPD>} */
+            gOPD(
+              /** @type {{ lastIndex?: unknown }} */
+              value,
+              "lastIndex"
+            )
+          );
+          var hasLastIndexDataProperty = descriptor && hasOwn(descriptor, "value");
+          if (!hasLastIndexDataProperty) {
+            return false;
+          }
+          try {
+            $exec(
+              value,
+              /** @type {string} */
+              /** @type {unknown} */
+              badStringifier
+            );
+          } catch (e) {
+            return e === isRegexMarker;
+          }
+        };
+      } else {
+        $toString = callBound("Object.prototype.toString");
+        regexClass = "[object RegExp]";
+        fn = function isRegex(value) {
+          if (!value || typeof value !== "object" && typeof value !== "function") {
+            return false;
+          }
+          return $toString(value) === regexClass;
+        };
+      }
+      var $exec;
+      var isRegexMarker;
+      var throwRegexMarker;
+      var badStringifier;
+      var $toString;
+      var regexClass;
+      module2.exports = fn;
+    }
+  });
+
+  // node_modules/safe-regex-test/index.js
+  var require_safe_regex_test = __commonJS({
+    "node_modules/safe-regex-test/index.js"(exports2, module2) {
+      "use strict";
+      var callBound = require_call_bound();
+      var isRegex = require_is_regex();
+      var $exec = callBound("RegExp.prototype.exec");
+      var $TypeError = require_type();
+      module2.exports = function regexTester(regex) {
+        if (!isRegex(regex)) {
+          throw new $TypeError("`regex` must be a RegExp");
+        }
+        return function test(s) {
+          return $exec(regex, s) !== null;
+        };
+      };
+    }
+  });
+
+  // node_modules/generator-function/index.js
+  var require_generator_function = __commonJS({
+    "node_modules/generator-function/index.js"(exports2, module2) {
+      "use strict";
+      var cached = (
+        /** @type {GeneratorFunctionConstructor} */
+        function* () {
+        }.constructor
+      );
+      module2.exports = () => cached;
+    }
+  });
+
+  // node_modules/is-generator-function/index.js
+  var require_is_generator_function = __commonJS({
+    "node_modules/is-generator-function/index.js"(exports2, module2) {
+      "use strict";
+      var callBound = require_call_bound();
+      var safeRegexTest = require_safe_regex_test();
+      var isFnRegex = safeRegexTest(/^\s*(?:function)?\*/);
+      var hasToStringTag = require_shams2()();
+      var getProto = require_get_proto();
+      var toStr = callBound("Object.prototype.toString");
+      var fnToStr = callBound("Function.prototype.toString");
+      var getGeneratorFunction = require_generator_function();
+      module2.exports = function isGeneratorFunction(fn) {
+        if (typeof fn !== "function") {
+          return false;
+        }
+        if (isFnRegex(fnToStr(fn))) {
+          return true;
+        }
+        if (!hasToStringTag) {
+          var str = toStr(fn);
+          return str === "[object GeneratorFunction]";
+        }
+        if (!getProto) {
+          return false;
+        }
+        var GeneratorFunction = getGeneratorFunction();
+        return GeneratorFunction && getProto(fn) === GeneratorFunction.prototype;
+      };
+    }
+  });
+
+  // node_modules/is-callable/index.js
+  var require_is_callable = __commonJS({
+    "node_modules/is-callable/index.js"(exports2, module2) {
+      "use strict";
+      var fnToStr = Function.prototype.toString;
+      var reflectApply = typeof Reflect === "object" && Reflect !== null && Reflect.apply;
+      var badArrayLike;
+      var isCallableMarker;
+      if (typeof reflectApply === "function" && typeof Object.defineProperty === "function") {
+        try {
+          badArrayLike = Object.defineProperty({}, "length", {
+            get: function() {
+              throw isCallableMarker;
+            }
+          });
+          isCallableMarker = {};
+          reflectApply(function() {
+            throw 42;
+          }, null, badArrayLike);
+        } catch (_) {
+          if (_ !== isCallableMarker) {
+            reflectApply = null;
+          }
+        }
+      } else {
+        reflectApply = null;
+      }
+      var constructorRegex = /^\s*class\b/;
+      var isES6ClassFn = function isES6ClassFunction(value) {
+        try {
+          var fnStr = fnToStr.call(value);
+          return constructorRegex.test(fnStr);
+        } catch (e) {
+          return false;
+        }
+      };
+      var tryFunctionObject = function tryFunctionToStr(value) {
+        try {
+          if (isES6ClassFn(value)) {
+            return false;
+          }
+          fnToStr.call(value);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      };
+      var toStr = Object.prototype.toString;
+      var objectClass = "[object Object]";
+      var fnClass = "[object Function]";
+      var genClass = "[object GeneratorFunction]";
+      var ddaClass = "[object HTMLAllCollection]";
+      var ddaClass2 = "[object HTML document.all class]";
+      var ddaClass3 = "[object HTMLCollection]";
+      var hasToStringTag = typeof Symbol === "function" && !!Symbol.toStringTag;
+      var isIE68 = !(0 in [,]);
+      var isDDA = function isDocumentDotAll() {
+        return false;
+      };
+      if (typeof document === "object") {
+        all = document.all;
+        if (toStr.call(all) === toStr.call(document.all)) {
+          isDDA = function isDocumentDotAll(value) {
+            if ((isIE68 || !value) && (typeof value === "undefined" || typeof value === "object")) {
+              try {
+                var str = toStr.call(value);
+                return (str === ddaClass || str === ddaClass2 || str === ddaClass3 || str === objectClass) && value("") == null;
+              } catch (e) {
+              }
+            }
+            return false;
+          };
+        }
+      }
+      var all;
+      module2.exports = reflectApply ? function isCallable(value) {
+        if (isDDA(value)) {
+          return true;
+        }
+        if (!value) {
+          return false;
+        }
+        if (typeof value !== "function" && typeof value !== "object") {
+          return false;
+        }
+        try {
+          reflectApply(value, null, badArrayLike);
+        } catch (e) {
+          if (e !== isCallableMarker) {
+            return false;
+          }
+        }
+        return !isES6ClassFn(value) && tryFunctionObject(value);
+      } : function isCallable(value) {
+        if (isDDA(value)) {
+          return true;
+        }
+        if (!value) {
+          return false;
+        }
+        if (typeof value !== "function" && typeof value !== "object") {
+          return false;
+        }
+        if (hasToStringTag) {
+          return tryFunctionObject(value);
+        }
+        if (isES6ClassFn(value)) {
+          return false;
+        }
+        var strClass = toStr.call(value);
+        if (strClass !== fnClass && strClass !== genClass && !/^\[object HTML/.test(strClass)) {
+          return false;
+        }
+        return tryFunctionObject(value);
+      };
+    }
+  });
+
+  // node_modules/for-each/index.js
+  var require_for_each = __commonJS({
+    "node_modules/for-each/index.js"(exports2, module2) {
+      "use strict";
+      var isCallable = require_is_callable();
+      var toStr = Object.prototype.toString;
+      var hasOwnProperty = Object.prototype.hasOwnProperty;
+      var forEachArray = function forEachArray2(array, iterator, receiver) {
+        for (var i = 0, len = array.length; i < len; i++) {
+          if (hasOwnProperty.call(array, i)) {
+            if (receiver == null) {
+              iterator(array[i], i, array);
+            } else {
+              iterator.call(receiver, array[i], i, array);
+            }
+          }
+        }
+      };
+      var forEachString = function forEachString2(string, iterator, receiver) {
+        for (var i = 0, len = string.length; i < len; i++) {
+          if (receiver == null) {
+            iterator(string.charAt(i), i, string);
+          } else {
+            iterator.call(receiver, string.charAt(i), i, string);
+          }
+        }
+      };
+      var forEachObject = function forEachObject2(object, iterator, receiver) {
+        for (var k in object) {
+          if (hasOwnProperty.call(object, k)) {
+            if (receiver == null) {
+              iterator(object[k], k, object);
+            } else {
+              iterator.call(receiver, object[k], k, object);
+            }
+          }
+        }
+      };
+      function isArray(x) {
+        return toStr.call(x) === "[object Array]";
+      }
+      module2.exports = function forEach(list, iterator, thisArg) {
+        if (!isCallable(iterator)) {
+          throw new TypeError("iterator must be a function");
+        }
+        var receiver;
+        if (arguments.length >= 3) {
+          receiver = thisArg;
+        }
+        if (isArray(list)) {
+          forEachArray(list, iterator, receiver);
+        } else if (typeof list === "string") {
+          forEachString(list, iterator, receiver);
+        } else {
+          forEachObject(list, iterator, receiver);
+        }
+      };
+    }
+  });
+
+  // node_modules/possible-typed-array-names/index.js
+  var require_possible_typed_array_names = __commonJS({
+    "node_modules/possible-typed-array-names/index.js"(exports2, module2) {
+      "use strict";
+      module2.exports = [
+        "Float16Array",
+        "Float32Array",
+        "Float64Array",
+        "Int8Array",
+        "Int16Array",
+        "Int32Array",
+        "Uint8Array",
+        "Uint8ClampedArray",
+        "Uint16Array",
+        "Uint32Array",
+        "BigInt64Array",
+        "BigUint64Array"
+      ];
+    }
+  });
+
+  // node_modules/available-typed-arrays/index.js
+  var require_available_typed_arrays = __commonJS({
+    "node_modules/available-typed-arrays/index.js"(exports2, module2) {
+      "use strict";
+      var possibleNames = require_possible_typed_array_names();
+      var g = typeof globalThis === "undefined" ? global : globalThis;
+      module2.exports = function availableTypedArrays() {
+        var out = [];
+        for (var i = 0; i < possibleNames.length; i++) {
+          if (typeof g[possibleNames[i]] === "function") {
+            out[out.length] = possibleNames[i];
+          }
+        }
+        return out;
+      };
+    }
+  });
+
+  // node_modules/define-data-property/index.js
+  var require_define_data_property = __commonJS({
+    "node_modules/define-data-property/index.js"(exports2, module2) {
+      "use strict";
+      var $defineProperty = require_es_define_property();
+      var $SyntaxError = require_syntax();
+      var $TypeError = require_type();
+      var gopd = require_gopd();
+      module2.exports = function defineDataProperty(obj, property, value) {
+        if (!obj || typeof obj !== "object" && typeof obj !== "function") {
+          throw new $TypeError("`obj` must be an object or a function`");
+        }
+        if (typeof property !== "string" && typeof property !== "symbol") {
+          throw new $TypeError("`property` must be a string or a symbol`");
+        }
+        if (arguments.length > 3 && typeof arguments[3] !== "boolean" && arguments[3] !== null) {
+          throw new $TypeError("`nonEnumerable`, if provided, must be a boolean or null");
+        }
+        if (arguments.length > 4 && typeof arguments[4] !== "boolean" && arguments[4] !== null) {
+          throw new $TypeError("`nonWritable`, if provided, must be a boolean or null");
+        }
+        if (arguments.length > 5 && typeof arguments[5] !== "boolean" && arguments[5] !== null) {
+          throw new $TypeError("`nonConfigurable`, if provided, must be a boolean or null");
+        }
+        if (arguments.length > 6 && typeof arguments[6] !== "boolean") {
+          throw new $TypeError("`loose`, if provided, must be a boolean");
+        }
+        var nonEnumerable = arguments.length > 3 ? arguments[3] : null;
+        var nonWritable = arguments.length > 4 ? arguments[4] : null;
+        var nonConfigurable = arguments.length > 5 ? arguments[5] : null;
+        var loose = arguments.length > 6 ? arguments[6] : false;
+        var desc = !!gopd && gopd(obj, property);
+        if ($defineProperty) {
+          $defineProperty(obj, property, {
+            configurable: nonConfigurable === null && desc ? desc.configurable : !nonConfigurable,
+            enumerable: nonEnumerable === null && desc ? desc.enumerable : !nonEnumerable,
+            value,
+            writable: nonWritable === null && desc ? desc.writable : !nonWritable
+          });
+        } else if (loose || !nonEnumerable && !nonWritable && !nonConfigurable) {
+          obj[property] = value;
+        } else {
+          throw new $SyntaxError("This environment does not support defining a property as non-configurable, non-writable, or non-enumerable.");
+        }
+      };
+    }
+  });
+
+  // node_modules/has-property-descriptors/index.js
+  var require_has_property_descriptors = __commonJS({
+    "node_modules/has-property-descriptors/index.js"(exports2, module2) {
+      "use strict";
+      var $defineProperty = require_es_define_property();
+      var hasPropertyDescriptors = function hasPropertyDescriptors2() {
+        return !!$defineProperty;
+      };
+      hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
+        if (!$defineProperty) {
+          return null;
+        }
+        try {
+          return $defineProperty([], "length", { value: 1 }).length !== 1;
+        } catch (e) {
+          return true;
+        }
+      };
+      module2.exports = hasPropertyDescriptors;
+    }
+  });
+
+  // node_modules/set-function-length/index.js
+  var require_set_function_length = __commonJS({
+    "node_modules/set-function-length/index.js"(exports2, module2) {
+      "use strict";
+      var GetIntrinsic = require_get_intrinsic();
+      var define2 = require_define_data_property();
+      var hasDescriptors = require_has_property_descriptors()();
+      var gOPD = require_gopd();
+      var $TypeError = require_type();
+      var $floor = GetIntrinsic("%Math.floor%");
+      module2.exports = function setFunctionLength(fn, length) {
+        if (typeof fn !== "function") {
+          throw new $TypeError("`fn` is not a function");
+        }
+        if (typeof length !== "number" || length < 0 || length > 4294967295 || $floor(length) !== length) {
+          throw new $TypeError("`length` must be a positive 32-bit integer");
+        }
+        var loose = arguments.length > 2 && !!arguments[2];
+        var functionLengthIsConfigurable = true;
+        var functionLengthIsWritable = true;
+        if ("length" in fn && gOPD) {
+          var desc = gOPD(fn, "length");
+          if (desc && !desc.configurable) {
+            functionLengthIsConfigurable = false;
+          }
+          if (desc && !desc.writable) {
+            functionLengthIsWritable = false;
+          }
+        }
+        if (functionLengthIsConfigurable || functionLengthIsWritable || !loose) {
+          if (hasDescriptors) {
+            define2(
+              /** @type {Parameters<define>[0]} */
+              fn,
+              "length",
+              length,
+              true,
+              true
+            );
+          } else {
+            define2(
+              /** @type {Parameters<define>[0]} */
+              fn,
+              "length",
+              length
+            );
+          }
+        }
+        return fn;
+      };
+    }
+  });
+
+  // node_modules/call-bind-apply-helpers/applyBind.js
+  var require_applyBind = __commonJS({
+    "node_modules/call-bind-apply-helpers/applyBind.js"(exports2, module2) {
+      "use strict";
+      var bind = require_function_bind();
+      var $apply = require_functionApply();
+      var actualApply = require_actualApply();
+      module2.exports = function applyBind() {
+        return actualApply(bind, $apply, arguments);
+      };
+    }
+  });
+
+  // node_modules/call-bind/index.js
+  var require_call_bind = __commonJS({
+    "node_modules/call-bind/index.js"(exports2, module2) {
+      "use strict";
+      var setFunctionLength = require_set_function_length();
+      var $defineProperty = require_es_define_property();
+      var callBindBasic = require_call_bind_apply_helpers();
+      var applyBind = require_applyBind();
+      module2.exports = function callBind(originalFunction) {
+        var func = callBindBasic(arguments);
+        var adjustedLength = 1 + originalFunction.length - (arguments.length - 1);
+        return setFunctionLength(
+          func,
+          adjustedLength > 0 ? adjustedLength : 0,
+          true
+        );
+      };
+      if ($defineProperty) {
+        $defineProperty(module2.exports, "apply", { value: applyBind });
+      } else {
+        module2.exports.apply = applyBind;
+      }
+    }
+  });
+
+  // node_modules/which-typed-array/index.js
+  var require_which_typed_array = __commonJS({
+    "node_modules/which-typed-array/index.js"(exports2, module2) {
+      "use strict";
+      var forEach = require_for_each();
+      var availableTypedArrays = require_available_typed_arrays();
+      var callBind = require_call_bind();
+      var callBound = require_call_bound();
+      var gOPD = require_gopd();
+      var getProto = require_get_proto();
+      var $toString = callBound("Object.prototype.toString");
+      var hasToStringTag = require_shams2()();
+      var g = typeof globalThis === "undefined" ? global : globalThis;
+      var typedArrays = availableTypedArrays();
+      var $slice = callBound("String.prototype.slice");
+      var $indexOf = callBound("Array.prototype.indexOf", true) || function indexOf(array, value) {
+        for (var i = 0; i < array.length; i += 1) {
+          if (array[i] === value) {
+            return i;
+          }
+        }
+        return -1;
+      };
+      var cache = { __proto__: null };
+      if (hasToStringTag && gOPD && getProto) {
+        forEach(typedArrays, function(typedArray) {
+          var arr = new g[typedArray]();
+          if (Symbol.toStringTag in arr && getProto) {
+            var proto = getProto(arr);
+            var descriptor = gOPD(proto, Symbol.toStringTag);
+            if (!descriptor && proto) {
+              var superProto = getProto(proto);
+              descriptor = gOPD(superProto, Symbol.toStringTag);
+            }
+            if (descriptor && descriptor.get) {
+              var bound = callBind(descriptor.get);
+              cache[
+                /** @type {`$${TypedArrayName}`} */
+                "$" + typedArray
+              ] = bound;
+            }
+          }
+        });
+      } else {
+        forEach(typedArrays, function(typedArray) {
+          var arr = new g[typedArray]();
+          var fn = arr.slice || arr.set;
+          if (fn) {
+            var bound = (
+              /** @type {BoundSlice | BoundSet} */
+              // @ts-expect-error TODO FIXME
+              callBind(fn)
+            );
+            cache[
+              /** @type {`$${TypedArrayName}`} */
+              "$" + typedArray
+            ] = bound;
+          }
+        });
+      }
+      function tryTypedArrays(value) {
+        var found = false;
+        forEach(
+          /** @type {Record<`$${TypedArrayName}`, Getter>} */
+          cache,
+          /** @param {Getter} getter @param {`$${TypedArrayName}`} typedArray */
+          function(getter, typedArray) {
+            if (!found) {
+              try {
+                if ("$" + getter(value) === typedArray) {
+                  found = /** @type {TypedArrayName} */
+                  $slice(typedArray, 1);
+                }
+              } catch (e) {
+              }
+            }
+          }
+        );
+        return found;
+      }
+      function trySlices(value) {
+        var found = false;
+        forEach(
+          /** @type {Record<`$${TypedArrayName}`, Getter>} */
+          cache,
+          /** @param {Getter} getter @param {`$${TypedArrayName}`} name */
+          function(getter, name) {
+            if (!found) {
+              try {
+                getter(value);
+                found = /** @type {TypedArrayName} */
+                $slice(name, 1);
+              } catch (e) {
+              }
+            }
+          }
+        );
+        return found;
+      }
+      function isTATag(tag) {
+        return $indexOf(typedArrays, tag) > -1;
+      }
+      module2.exports = function whichTypedArray(value) {
+        if (!value || typeof value !== "object") {
+          return false;
+        }
+        if (!hasToStringTag) {
+          var tag = $slice($toString(value), 8, -1);
+          if (isTATag(tag)) {
+            return tag;
+          }
+          if (tag !== "Object") {
+            return false;
+          }
+          return trySlices(value);
+        }
+        if (!gOPD) {
+          return null;
+        }
+        return tryTypedArrays(value);
+      };
+    }
+  });
+
+  // node_modules/is-typed-array/index.js
+  var require_is_typed_array = __commonJS({
+    "node_modules/is-typed-array/index.js"(exports2, module2) {
+      "use strict";
+      var whichTypedArray = require_which_typed_array();
+      module2.exports = function isTypedArray(value) {
+        return !!whichTypedArray(value);
+      };
+    }
+  });
+
+  // node_modules/util/support/types.js
+  var require_types = __commonJS({
+    "node_modules/util/support/types.js"(exports2) {
+      "use strict";
+      var isArgumentsObject = require_is_arguments();
+      var isGeneratorFunction = require_is_generator_function();
+      var whichTypedArray = require_which_typed_array();
+      var isTypedArray = require_is_typed_array();
+      function uncurryThis(f) {
+        return f.call.bind(f);
+      }
+      var BigIntSupported = typeof BigInt !== "undefined";
+      var SymbolSupported = typeof Symbol !== "undefined";
+      var ObjectToString = uncurryThis(Object.prototype.toString);
+      var numberValue = uncurryThis(Number.prototype.valueOf);
+      var stringValue = uncurryThis(String.prototype.valueOf);
+      var booleanValue = uncurryThis(Boolean.prototype.valueOf);
+      if (BigIntSupported) {
+        bigIntValue = uncurryThis(BigInt.prototype.valueOf);
+      }
+      var bigIntValue;
+      if (SymbolSupported) {
+        symbolValue = uncurryThis(Symbol.prototype.valueOf);
+      }
+      var symbolValue;
+      function checkBoxedPrimitive(value, prototypeValueOf) {
+        if (typeof value !== "object") {
+          return false;
+        }
+        try {
+          prototypeValueOf(value);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      exports2.isArgumentsObject = isArgumentsObject;
+      exports2.isGeneratorFunction = isGeneratorFunction;
+      exports2.isTypedArray = isTypedArray;
+      function isPromise(input) {
+        return typeof Promise !== "undefined" && input instanceof Promise || input !== null && typeof input === "object" && typeof input.then === "function" && typeof input.catch === "function";
+      }
+      exports2.isPromise = isPromise;
+      function isArrayBufferView(value) {
+        if (typeof ArrayBuffer !== "undefined" && ArrayBuffer.isView) {
+          return ArrayBuffer.isView(value);
+        }
+        return isTypedArray(value) || isDataView(value);
+      }
+      exports2.isArrayBufferView = isArrayBufferView;
+      function isUint8Array(value) {
+        return whichTypedArray(value) === "Uint8Array";
+      }
+      exports2.isUint8Array = isUint8Array;
+      function isUint8ClampedArray(value) {
+        return whichTypedArray(value) === "Uint8ClampedArray";
+      }
+      exports2.isUint8ClampedArray = isUint8ClampedArray;
+      function isUint16Array(value) {
+        return whichTypedArray(value) === "Uint16Array";
+      }
+      exports2.isUint16Array = isUint16Array;
+      function isUint32Array(value) {
+        return whichTypedArray(value) === "Uint32Array";
+      }
+      exports2.isUint32Array = isUint32Array;
+      function isInt8Array(value) {
+        return whichTypedArray(value) === "Int8Array";
+      }
+      exports2.isInt8Array = isInt8Array;
+      function isInt16Array(value) {
+        return whichTypedArray(value) === "Int16Array";
+      }
+      exports2.isInt16Array = isInt16Array;
+      function isInt32Array(value) {
+        return whichTypedArray(value) === "Int32Array";
+      }
+      exports2.isInt32Array = isInt32Array;
+      function isFloat32Array(value) {
+        return whichTypedArray(value) === "Float32Array";
+      }
+      exports2.isFloat32Array = isFloat32Array;
+      function isFloat64Array(value) {
+        return whichTypedArray(value) === "Float64Array";
+      }
+      exports2.isFloat64Array = isFloat64Array;
+      function isBigInt64Array(value) {
+        return whichTypedArray(value) === "BigInt64Array";
+      }
+      exports2.isBigInt64Array = isBigInt64Array;
+      function isBigUint64Array(value) {
+        return whichTypedArray(value) === "BigUint64Array";
+      }
+      exports2.isBigUint64Array = isBigUint64Array;
+      function isMapToString(value) {
+        return ObjectToString(value) === "[object Map]";
+      }
+      isMapToString.working = typeof Map !== "undefined" && isMapToString(/* @__PURE__ */ new Map());
+      function isMap(value) {
+        if (typeof Map === "undefined") {
+          return false;
+        }
+        return isMapToString.working ? isMapToString(value) : value instanceof Map;
+      }
+      exports2.isMap = isMap;
+      function isSetToString(value) {
+        return ObjectToString(value) === "[object Set]";
+      }
+      isSetToString.working = typeof Set !== "undefined" && isSetToString(/* @__PURE__ */ new Set());
+      function isSet(value) {
+        if (typeof Set === "undefined") {
+          return false;
+        }
+        return isSetToString.working ? isSetToString(value) : value instanceof Set;
+      }
+      exports2.isSet = isSet;
+      function isWeakMapToString(value) {
+        return ObjectToString(value) === "[object WeakMap]";
+      }
+      isWeakMapToString.working = typeof WeakMap !== "undefined" && isWeakMapToString(/* @__PURE__ */ new WeakMap());
+      function isWeakMap(value) {
+        if (typeof WeakMap === "undefined") {
+          return false;
+        }
+        return isWeakMapToString.working ? isWeakMapToString(value) : value instanceof WeakMap;
+      }
+      exports2.isWeakMap = isWeakMap;
+      function isWeakSetToString(value) {
+        return ObjectToString(value) === "[object WeakSet]";
+      }
+      isWeakSetToString.working = typeof WeakSet !== "undefined" && isWeakSetToString(/* @__PURE__ */ new WeakSet());
+      function isWeakSet(value) {
+        return isWeakSetToString(value);
+      }
+      exports2.isWeakSet = isWeakSet;
+      function isArrayBufferToString(value) {
+        return ObjectToString(value) === "[object ArrayBuffer]";
+      }
+      isArrayBufferToString.working = typeof ArrayBuffer !== "undefined" && isArrayBufferToString(new ArrayBuffer());
+      function isArrayBuffer(value) {
+        if (typeof ArrayBuffer === "undefined") {
+          return false;
+        }
+        return isArrayBufferToString.working ? isArrayBufferToString(value) : value instanceof ArrayBuffer;
+      }
+      exports2.isArrayBuffer = isArrayBuffer;
+      function isDataViewToString(value) {
+        return ObjectToString(value) === "[object DataView]";
+      }
+      isDataViewToString.working = typeof ArrayBuffer !== "undefined" && typeof DataView !== "undefined" && isDataViewToString(new DataView(new ArrayBuffer(1), 0, 1));
+      function isDataView(value) {
+        if (typeof DataView === "undefined") {
+          return false;
+        }
+        return isDataViewToString.working ? isDataViewToString(value) : value instanceof DataView;
+      }
+      exports2.isDataView = isDataView;
+      var SharedArrayBufferCopy = typeof SharedArrayBuffer !== "undefined" ? SharedArrayBuffer : void 0;
+      function isSharedArrayBufferToString(value) {
+        return ObjectToString(value) === "[object SharedArrayBuffer]";
+      }
+      function isSharedArrayBuffer(value) {
+        if (typeof SharedArrayBufferCopy === "undefined") {
+          return false;
+        }
+        if (typeof isSharedArrayBufferToString.working === "undefined") {
+          isSharedArrayBufferToString.working = isSharedArrayBufferToString(new SharedArrayBufferCopy());
+        }
+        return isSharedArrayBufferToString.working ? isSharedArrayBufferToString(value) : value instanceof SharedArrayBufferCopy;
+      }
+      exports2.isSharedArrayBuffer = isSharedArrayBuffer;
+      function isAsyncFunction(value) {
+        return ObjectToString(value) === "[object AsyncFunction]";
+      }
+      exports2.isAsyncFunction = isAsyncFunction;
+      function isMapIterator(value) {
+        return ObjectToString(value) === "[object Map Iterator]";
+      }
+      exports2.isMapIterator = isMapIterator;
+      function isSetIterator(value) {
+        return ObjectToString(value) === "[object Set Iterator]";
+      }
+      exports2.isSetIterator = isSetIterator;
+      function isGeneratorObject(value) {
+        return ObjectToString(value) === "[object Generator]";
+      }
+      exports2.isGeneratorObject = isGeneratorObject;
+      function isWebAssemblyCompiledModule(value) {
+        return ObjectToString(value) === "[object WebAssembly.Module]";
+      }
+      exports2.isWebAssemblyCompiledModule = isWebAssemblyCompiledModule;
+      function isNumberObject(value) {
+        return checkBoxedPrimitive(value, numberValue);
+      }
+      exports2.isNumberObject = isNumberObject;
+      function isStringObject(value) {
+        return checkBoxedPrimitive(value, stringValue);
+      }
+      exports2.isStringObject = isStringObject;
+      function isBooleanObject(value) {
+        return checkBoxedPrimitive(value, booleanValue);
+      }
+      exports2.isBooleanObject = isBooleanObject;
+      function isBigIntObject(value) {
+        return BigIntSupported && checkBoxedPrimitive(value, bigIntValue);
+      }
+      exports2.isBigIntObject = isBigIntObject;
+      function isSymbolObject(value) {
+        return SymbolSupported && checkBoxedPrimitive(value, symbolValue);
+      }
+      exports2.isSymbolObject = isSymbolObject;
+      function isBoxedPrimitive(value) {
+        return isNumberObject(value) || isStringObject(value) || isBooleanObject(value) || isBigIntObject(value) || isSymbolObject(value);
+      }
+      exports2.isBoxedPrimitive = isBoxedPrimitive;
+      function isAnyArrayBuffer(value) {
+        return typeof Uint8Array !== "undefined" && (isArrayBuffer(value) || isSharedArrayBuffer(value));
+      }
+      exports2.isAnyArrayBuffer = isAnyArrayBuffer;
+      ["isProxy", "isExternal", "isModuleNamespaceObject"].forEach(function(method) {
+        Object.defineProperty(exports2, method, {
+          enumerable: false,
+          value: function() {
+            throw new Error(method + " is not supported in userland");
+          }
+        });
+      });
+    }
+  });
+
+  // node_modules/util/support/isBufferBrowser.js
+  var require_isBufferBrowser = __commonJS({
+    "node_modules/util/support/isBufferBrowser.js"(exports2, module2) {
+      module2.exports = function isBuffer(arg) {
+        return arg && typeof arg === "object" && typeof arg.copy === "function" && typeof arg.fill === "function" && typeof arg.readUInt8 === "function";
+      };
+    }
+  });
+
+  // node_modules/inherits/inherits_browser.js
+  var require_inherits_browser = __commonJS({
+    "node_modules/inherits/inherits_browser.js"(exports2, module2) {
+      if (typeof Object.create === "function") {
+        module2.exports = function inherits(ctor, superCtor) {
+          if (superCtor) {
+            ctor.super_ = superCtor;
+            ctor.prototype = Object.create(superCtor.prototype, {
+              constructor: {
+                value: ctor,
+                enumerable: false,
+                writable: true,
+                configurable: true
+              }
+            });
+          }
+        };
+      } else {
+        module2.exports = function inherits(ctor, superCtor) {
+          if (superCtor) {
+            ctor.super_ = superCtor;
+            var TempCtor = function() {
+            };
+            TempCtor.prototype = superCtor.prototype;
+            ctor.prototype = new TempCtor();
+            ctor.prototype.constructor = ctor;
+          }
+        };
+      }
+    }
+  });
+
+  // node_modules/util/util.js
+  var require_util = __commonJS({
+    "node_modules/util/util.js"(exports2) {
+      var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors || function getOwnPropertyDescriptors2(obj) {
+        var keys = Object.keys(obj);
+        var descriptors = {};
+        for (var i = 0; i < keys.length; i++) {
+          descriptors[keys[i]] = Object.getOwnPropertyDescriptor(obj, keys[i]);
+        }
+        return descriptors;
+      };
+      var formatRegExp = /%[sdj%]/g;
+      exports2.format = function(f) {
+        if (!isString(f)) {
+          var objects = [];
+          for (var i = 0; i < arguments.length; i++) {
+            objects.push(inspect(arguments[i]));
+          }
+          return objects.join(" ");
+        }
+        var i = 1;
+        var args = arguments;
+        var len = args.length;
+        var str = String(f).replace(formatRegExp, function(x2) {
+          if (x2 === "%%") return "%";
+          if (i >= len) return x2;
+          switch (x2) {
+            case "%s":
+              return String(args[i++]);
+            case "%d":
+              return Number(args[i++]);
+            case "%j":
+              try {
+                return JSON.stringify(args[i++]);
+              } catch (_) {
+                return "[Circular]";
+              }
+            default:
+              return x2;
+          }
+        });
+        for (var x = args[i]; i < len; x = args[++i]) {
+          if (isNull(x) || !isObject(x)) {
+            str += " " + x;
+          } else {
+            str += " " + inspect(x);
+          }
+        }
+        return str;
+      };
+      exports2.deprecate = function(fn, msg) {
+        if (typeof process !== "undefined" && process.noDeprecation === true) {
+          return fn;
+        }
+        if (typeof process === "undefined") {
+          return function() {
+            return exports2.deprecate(fn, msg).apply(this, arguments);
+          };
+        }
+        var warned = false;
+        function deprecated() {
+          if (!warned) {
+            if (process.throwDeprecation) {
+              throw new Error(msg);
+            } else if (process.traceDeprecation) {
+              console.trace(msg);
+            } else {
+              console.error(msg);
+            }
+            warned = true;
+          }
+          return fn.apply(this, arguments);
+        }
+        return deprecated;
+      };
+      var debugs = {};
+      var debugEnvRegex = /^$/;
+      if (process.env.NODE_DEBUG) {
+        debugEnv = process.env.NODE_DEBUG;
+        debugEnv = debugEnv.replace(/[|\\{}()[\]^$+?.]/g, "\\$&").replace(/\*/g, ".*").replace(/,/g, "$|^").toUpperCase();
+        debugEnvRegex = new RegExp("^" + debugEnv + "$", "i");
+      }
+      var debugEnv;
+      exports2.debuglog = function(set) {
+        set = set.toUpperCase();
+        if (!debugs[set]) {
+          if (debugEnvRegex.test(set)) {
+            var pid = process.pid;
+            debugs[set] = function() {
+              var msg = exports2.format.apply(exports2, arguments);
+              console.error("%s %d: %s", set, pid, msg);
+            };
+          } else {
+            debugs[set] = function() {
+            };
+          }
+        }
+        return debugs[set];
+      };
+      function inspect(obj, opts) {
+        var ctx = {
+          seen: [],
+          stylize: stylizeNoColor
+        };
+        if (arguments.length >= 3) ctx.depth = arguments[2];
+        if (arguments.length >= 4) ctx.colors = arguments[3];
+        if (isBoolean(opts)) {
+          ctx.showHidden = opts;
+        } else if (opts) {
+          exports2._extend(ctx, opts);
+        }
+        if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+        if (isUndefined(ctx.depth)) ctx.depth = 2;
+        if (isUndefined(ctx.colors)) ctx.colors = false;
+        if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+        if (ctx.colors) ctx.stylize = stylizeWithColor;
+        return formatValue(ctx, obj, ctx.depth);
+      }
+      exports2.inspect = inspect;
+      inspect.colors = {
+        "bold": [1, 22],
+        "italic": [3, 23],
+        "underline": [4, 24],
+        "inverse": [7, 27],
+        "white": [37, 39],
+        "grey": [90, 39],
+        "black": [30, 39],
+        "blue": [34, 39],
+        "cyan": [36, 39],
+        "green": [32, 39],
+        "magenta": [35, 39],
+        "red": [31, 39],
+        "yellow": [33, 39]
+      };
+      inspect.styles = {
+        "special": "cyan",
+        "number": "yellow",
+        "boolean": "yellow",
+        "undefined": "grey",
+        "null": "bold",
+        "string": "green",
+        "date": "magenta",
+        // "name": intentionally not styling
+        "regexp": "red"
+      };
+      function stylizeWithColor(str, styleType) {
+        var style = inspect.styles[styleType];
+        if (style) {
+          return "\x1B[" + inspect.colors[style][0] + "m" + str + "\x1B[" + inspect.colors[style][1] + "m";
+        } else {
+          return str;
+        }
+      }
+      function stylizeNoColor(str, styleType) {
+        return str;
+      }
+      function arrayToHash(array) {
+        var hash = {};
+        array.forEach(function(val, idx) {
+          hash[val] = true;
+        });
+        return hash;
+      }
+      function formatValue(ctx, value, recurseTimes) {
+        if (ctx.customInspect && value && isFunction(value.inspect) && // Filter out the util module, it's inspect function is special
+        value.inspect !== exports2.inspect && // Also filter out any prototype objects using the circular check.
+        !(value.constructor && value.constructor.prototype === value)) {
+          var ret = value.inspect(recurseTimes, ctx);
+          if (!isString(ret)) {
+            ret = formatValue(ctx, ret, recurseTimes);
+          }
+          return ret;
+        }
+        var primitive = formatPrimitive(ctx, value);
+        if (primitive) {
+          return primitive;
+        }
+        var keys = Object.keys(value);
+        var visibleKeys = arrayToHash(keys);
+        if (ctx.showHidden) {
+          keys = Object.getOwnPropertyNames(value);
+        }
+        if (isError(value) && (keys.indexOf("message") >= 0 || keys.indexOf("description") >= 0)) {
+          return formatError(value);
+        }
+        if (keys.length === 0) {
+          if (isFunction(value)) {
+            var name = value.name ? ": " + value.name : "";
+            return ctx.stylize("[Function" + name + "]", "special");
+          }
+          if (isRegExp(value)) {
+            return ctx.stylize(RegExp.prototype.toString.call(value), "regexp");
+          }
+          if (isDate(value)) {
+            return ctx.stylize(Date.prototype.toString.call(value), "date");
+          }
+          if (isError(value)) {
+            return formatError(value);
+          }
+        }
+        var base2 = "", array = false, braces = ["{", "}"];
+        if (isArray(value)) {
+          array = true;
+          braces = ["[", "]"];
+        }
+        if (isFunction(value)) {
+          var n = value.name ? ": " + value.name : "";
+          base2 = " [Function" + n + "]";
+        }
+        if (isRegExp(value)) {
+          base2 = " " + RegExp.prototype.toString.call(value);
+        }
+        if (isDate(value)) {
+          base2 = " " + Date.prototype.toUTCString.call(value);
+        }
+        if (isError(value)) {
+          base2 = " " + formatError(value);
+        }
+        if (keys.length === 0 && (!array || value.length == 0)) {
+          return braces[0] + base2 + braces[1];
+        }
+        if (recurseTimes < 0) {
+          if (isRegExp(value)) {
+            return ctx.stylize(RegExp.prototype.toString.call(value), "regexp");
+          } else {
+            return ctx.stylize("[Object]", "special");
+          }
+        }
+        ctx.seen.push(value);
+        var output;
+        if (array) {
+          output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+        } else {
+          output = keys.map(function(key) {
+            return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+          });
+        }
+        ctx.seen.pop();
+        return reduceToSingleString(output, base2, braces);
+      }
+      function formatPrimitive(ctx, value) {
+        if (isUndefined(value))
+          return ctx.stylize("undefined", "undefined");
+        if (isString(value)) {
+          var simple = "'" + JSON.stringify(value).replace(/^"|"$/g, "").replace(/'/g, "\\'").replace(/\\"/g, '"') + "'";
+          return ctx.stylize(simple, "string");
+        }
+        if (isNumber(value))
+          return ctx.stylize("" + value, "number");
+        if (isBoolean(value))
+          return ctx.stylize("" + value, "boolean");
+        if (isNull(value))
+          return ctx.stylize("null", "null");
+      }
+      function formatError(value) {
+        return "[" + Error.prototype.toString.call(value) + "]";
+      }
+      function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+        var output = [];
+        for (var i = 0, l = value.length; i < l; ++i) {
+          if (hasOwnProperty(value, String(i))) {
+            output.push(formatProperty(
+              ctx,
+              value,
+              recurseTimes,
+              visibleKeys,
+              String(i),
+              true
+            ));
+          } else {
+            output.push("");
+          }
+        }
+        keys.forEach(function(key) {
+          if (!key.match(/^\d+$/)) {
+            output.push(formatProperty(
+              ctx,
+              value,
+              recurseTimes,
+              visibleKeys,
+              key,
+              true
+            ));
+          }
+        });
+        return output;
+      }
+      function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+        var name, str, desc;
+        desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+        if (desc.get) {
+          if (desc.set) {
+            str = ctx.stylize("[Getter/Setter]", "special");
+          } else {
+            str = ctx.stylize("[Getter]", "special");
+          }
+        } else {
+          if (desc.set) {
+            str = ctx.stylize("[Setter]", "special");
+          }
+        }
+        if (!hasOwnProperty(visibleKeys, key)) {
+          name = "[" + key + "]";
+        }
+        if (!str) {
+          if (ctx.seen.indexOf(desc.value) < 0) {
+            if (isNull(recurseTimes)) {
+              str = formatValue(ctx, desc.value, null);
+            } else {
+              str = formatValue(ctx, desc.value, recurseTimes - 1);
+            }
+            if (str.indexOf("\n") > -1) {
+              if (array) {
+                str = str.split("\n").map(function(line) {
+                  return "  " + line;
+                }).join("\n").slice(2);
+              } else {
+                str = "\n" + str.split("\n").map(function(line) {
+                  return "   " + line;
+                }).join("\n");
+              }
+            }
+          } else {
+            str = ctx.stylize("[Circular]", "special");
+          }
+        }
+        if (isUndefined(name)) {
+          if (array && key.match(/^\d+$/)) {
+            return str;
+          }
+          name = JSON.stringify("" + key);
+          if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+            name = name.slice(1, -1);
+            name = ctx.stylize(name, "name");
+          } else {
+            name = name.replace(/'/g, "\\'").replace(/\\"/g, '"').replace(/(^"|"$)/g, "'");
+            name = ctx.stylize(name, "string");
+          }
+        }
+        return name + ": " + str;
+      }
+      function reduceToSingleString(output, base2, braces) {
+        var numLinesEst = 0;
+        var length = output.reduce(function(prev, cur) {
+          numLinesEst++;
+          if (cur.indexOf("\n") >= 0) numLinesEst++;
+          return prev + cur.replace(/\u001b\[\d\d?m/g, "").length + 1;
+        }, 0);
+        if (length > 60) {
+          return braces[0] + (base2 === "" ? "" : base2 + "\n ") + " " + output.join(",\n  ") + " " + braces[1];
+        }
+        return braces[0] + base2 + " " + output.join(", ") + " " + braces[1];
+      }
+      exports2.types = require_types();
+      function isArray(ar) {
+        return Array.isArray(ar);
+      }
+      exports2.isArray = isArray;
+      function isBoolean(arg) {
+        return typeof arg === "boolean";
+      }
+      exports2.isBoolean = isBoolean;
+      function isNull(arg) {
+        return arg === null;
+      }
+      exports2.isNull = isNull;
+      function isNullOrUndefined(arg) {
+        return arg == null;
+      }
+      exports2.isNullOrUndefined = isNullOrUndefined;
+      function isNumber(arg) {
+        return typeof arg === "number";
+      }
+      exports2.isNumber = isNumber;
+      function isString(arg) {
+        return typeof arg === "string";
+      }
+      exports2.isString = isString;
+      function isSymbol(arg) {
+        return typeof arg === "symbol";
+      }
+      exports2.isSymbol = isSymbol;
+      function isUndefined(arg) {
+        return arg === void 0;
+      }
+      exports2.isUndefined = isUndefined;
+      function isRegExp(re) {
+        return isObject(re) && objectToString(re) === "[object RegExp]";
+      }
+      exports2.isRegExp = isRegExp;
+      exports2.types.isRegExp = isRegExp;
+      function isObject(arg) {
+        return typeof arg === "object" && arg !== null;
+      }
+      exports2.isObject = isObject;
+      function isDate(d) {
+        return isObject(d) && objectToString(d) === "[object Date]";
+      }
+      exports2.isDate = isDate;
+      exports2.types.isDate = isDate;
+      function isError(e) {
+        return isObject(e) && (objectToString(e) === "[object Error]" || e instanceof Error);
+      }
+      exports2.isError = isError;
+      exports2.types.isNativeError = isError;
+      function isFunction(arg) {
+        return typeof arg === "function";
+      }
+      exports2.isFunction = isFunction;
+      function isPrimitive(arg) {
+        return arg === null || typeof arg === "boolean" || typeof arg === "number" || typeof arg === "string" || typeof arg === "symbol" || // ES6 symbol
+        typeof arg === "undefined";
+      }
+      exports2.isPrimitive = isPrimitive;
+      exports2.isBuffer = require_isBufferBrowser();
+      function objectToString(o) {
+        return Object.prototype.toString.call(o);
+      }
+      function pad(n) {
+        return n < 10 ? "0" + n.toString(10) : n.toString(10);
+      }
+      var months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      ];
+      function timestamp() {
+        var d = /* @__PURE__ */ new Date();
+        var time = [
+          pad(d.getHours()),
+          pad(d.getMinutes()),
+          pad(d.getSeconds())
+        ].join(":");
+        return [d.getDate(), months[d.getMonth()], time].join(" ");
+      }
+      exports2.log = function() {
+        console.log("%s - %s", timestamp(), exports2.format.apply(exports2, arguments));
+      };
+      exports2.inherits = require_inherits_browser();
+      exports2._extend = function(origin, add) {
+        if (!add || !isObject(add)) return origin;
+        var keys = Object.keys(add);
+        var i = keys.length;
+        while (i--) {
+          origin[keys[i]] = add[keys[i]];
+        }
+        return origin;
+      };
+      function hasOwnProperty(obj, prop) {
+        return Object.prototype.hasOwnProperty.call(obj, prop);
+      }
+      var kCustomPromisifiedSymbol = typeof Symbol !== "undefined" ? /* @__PURE__ */ Symbol("util.promisify.custom") : void 0;
+      exports2.promisify = function promisify(original) {
+        if (typeof original !== "function")
+          throw new TypeError('The "original" argument must be of type Function');
+        if (kCustomPromisifiedSymbol && original[kCustomPromisifiedSymbol]) {
+          var fn = original[kCustomPromisifiedSymbol];
+          if (typeof fn !== "function") {
+            throw new TypeError('The "util.promisify.custom" argument must be of type Function');
+          }
+          Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+            value: fn,
+            enumerable: false,
+            writable: false,
+            configurable: true
+          });
+          return fn;
+        }
+        function fn() {
+          var promiseResolve, promiseReject;
+          var promise = new Promise(function(resolve, reject) {
+            promiseResolve = resolve;
+            promiseReject = reject;
+          });
+          var args = [];
+          for (var i = 0; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+          args.push(function(err, value) {
+            if (err) {
+              promiseReject(err);
+            } else {
+              promiseResolve(value);
+            }
+          });
+          try {
+            original.apply(this, args);
+          } catch (err) {
+            promiseReject(err);
+          }
+          return promise;
+        }
+        Object.setPrototypeOf(fn, Object.getPrototypeOf(original));
+        if (kCustomPromisifiedSymbol) Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+          value: fn,
+          enumerable: false,
+          writable: false,
+          configurable: true
+        });
+        return Object.defineProperties(
+          fn,
+          getOwnPropertyDescriptors(original)
+        );
+      };
+      exports2.promisify.custom = kCustomPromisifiedSymbol;
+      function callbackifyOnRejected(reason, cb) {
+        if (!reason) {
+          var newReason = new Error("Promise was rejected with a falsy value");
+          newReason.reason = reason;
+          reason = newReason;
+        }
+        return cb(reason);
+      }
+      function callbackify(original) {
+        if (typeof original !== "function") {
+          throw new TypeError('The "original" argument must be of type Function');
+        }
+        function callbackified() {
+          var args = [];
+          for (var i = 0; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+          var maybeCb = args.pop();
+          if (typeof maybeCb !== "function") {
+            throw new TypeError("The last argument must be of type Function");
+          }
+          var self2 = this;
+          var cb = function() {
+            return maybeCb.apply(self2, arguments);
+          };
+          original.apply(this, args).then(
+            function(ret) {
+              process.nextTick(cb.bind(null, null, ret));
+            },
+            function(rej) {
+              process.nextTick(callbackifyOnRejected.bind(null, rej, cb));
+            }
+          );
+        }
+        Object.setPrototypeOf(callbackified, Object.getPrototypeOf(original));
+        Object.defineProperties(
+          callbackified,
+          getOwnPropertyDescriptors(original)
+        );
+        return callbackified;
+      }
+      exports2.callbackify = callbackify;
+    }
+  });
+
+  // node_modules/assert/build/internal/errors.js
+  var require_errors = __commonJS({
+    "node_modules/assert/build/internal/errors.js"(exports2, module2) {
+      "use strict";
+      function _typeof(o) {
+        "@babel/helpers - typeof";
+        return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+          return typeof o2;
+        } : function(o2) {
+          return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+        }, _typeof(o);
+      }
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
+        }
+      }
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        Object.defineProperty(Constructor, "prototype", { writable: false });
+        return Constructor;
+      }
+      function _toPropertyKey(arg) {
+        var key = _toPrimitive(arg, "string");
+        return _typeof(key) === "symbol" ? key : String(key);
+      }
+      function _toPrimitive(input, hint) {
+        if (_typeof(input) !== "object" || input === null) return input;
+        var prim = input[Symbol.toPrimitive];
+        if (prim !== void 0) {
+          var res = prim.call(input, hint || "default");
+          if (_typeof(res) !== "object") return res;
+          throw new TypeError("@@toPrimitive must return a primitive value.");
+        }
+        return (hint === "string" ? String : Number)(input);
+      }
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+      function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+          throw new TypeError("Super expression must either be null or a function");
+        }
+        subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } });
+        Object.defineProperty(subClass, "prototype", { writable: false });
+        if (superClass) _setPrototypeOf(subClass, superClass);
+      }
+      function _setPrototypeOf(o, p) {
+        _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
+          o2.__proto__ = p2;
+          return o2;
+        };
+        return _setPrototypeOf(o, p);
+      }
+      function _createSuper(Derived) {
+        var hasNativeReflectConstruct = _isNativeReflectConstruct();
+        return function _createSuperInternal() {
+          var Super = _getPrototypeOf(Derived), result;
+          if (hasNativeReflectConstruct) {
+            var NewTarget = _getPrototypeOf(this).constructor;
+            result = Reflect.construct(Super, arguments, NewTarget);
+          } else {
+            result = Super.apply(this, arguments);
+          }
+          return _possibleConstructorReturn(this, result);
+        };
+      }
+      function _possibleConstructorReturn(self2, call) {
+        if (call && (_typeof(call) === "object" || typeof call === "function")) {
+          return call;
+        } else if (call !== void 0) {
+          throw new TypeError("Derived constructors may only return object or undefined");
+        }
+        return _assertThisInitialized(self2);
+      }
+      function _assertThisInitialized(self2) {
+        if (self2 === void 0) {
+          throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+        return self2;
+      }
+      function _isNativeReflectConstruct() {
+        if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+        if (Reflect.construct.sham) return false;
+        if (typeof Proxy === "function") return true;
+        try {
+          Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+          }));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      function _getPrototypeOf(o) {
+        _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
+          return o2.__proto__ || Object.getPrototypeOf(o2);
+        };
+        return _getPrototypeOf(o);
+      }
+      var codes = {};
+      var assert;
+      var util;
+      function createErrorType(code, message, Base) {
+        if (!Base) {
+          Base = Error;
+        }
+        function getMessage(arg1, arg2, arg3) {
+          if (typeof message === "string") {
+            return message;
+          } else {
+            return message(arg1, arg2, arg3);
+          }
+        }
+        var NodeError = /* @__PURE__ */ (function(_Base) {
+          _inherits(NodeError2, _Base);
+          var _super = _createSuper(NodeError2);
+          function NodeError2(arg1, arg2, arg3) {
+            var _this;
+            _classCallCheck(this, NodeError2);
+            _this = _super.call(this, getMessage(arg1, arg2, arg3));
+            _this.code = code;
+            return _this;
+          }
+          return _createClass(NodeError2);
+        })(Base);
+        codes[code] = NodeError;
+      }
+      function oneOf(expected, thing) {
+        if (Array.isArray(expected)) {
+          var len = expected.length;
+          expected = expected.map(function(i) {
+            return String(i);
+          });
+          if (len > 2) {
+            return "one of ".concat(thing, " ").concat(expected.slice(0, len - 1).join(", "), ", or ") + expected[len - 1];
+          } else if (len === 2) {
+            return "one of ".concat(thing, " ").concat(expected[0], " or ").concat(expected[1]);
+          } else {
+            return "of ".concat(thing, " ").concat(expected[0]);
+          }
+        } else {
+          return "of ".concat(thing, " ").concat(String(expected));
+        }
+      }
+      function startsWith(str, search, pos) {
+        return str.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+      }
+      function endsWith(str, search, this_len) {
+        if (this_len === void 0 || this_len > str.length) {
+          this_len = str.length;
+        }
+        return str.substring(this_len - search.length, this_len) === search;
+      }
+      function includes(str, search, start) {
+        if (typeof start !== "number") {
+          start = 0;
+        }
+        if (start + search.length > str.length) {
+          return false;
+        } else {
+          return str.indexOf(search, start) !== -1;
+        }
+      }
+      createErrorType("ERR_AMBIGUOUS_ARGUMENT", 'The "%s" argument is ambiguous. %s', TypeError);
+      createErrorType("ERR_INVALID_ARG_TYPE", function(name, expected, actual) {
+        if (assert === void 0) assert = require_assert();
+        assert(typeof name === "string", "'name' must be a string");
+        var determiner;
+        if (typeof expected === "string" && startsWith(expected, "not ")) {
+          determiner = "must not be";
+          expected = expected.replace(/^not /, "");
+        } else {
+          determiner = "must be";
+        }
+        var msg;
+        if (endsWith(name, " argument")) {
+          msg = "The ".concat(name, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
+        } else {
+          var type = includes(name, ".") ? "property" : "argument";
+          msg = 'The "'.concat(name, '" ').concat(type, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
+        }
+        msg += ". Received type ".concat(_typeof(actual));
+        return msg;
+      }, TypeError);
+      createErrorType("ERR_INVALID_ARG_VALUE", function(name, value) {
+        var reason = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : "is invalid";
+        if (util === void 0) util = require_util();
+        var inspected = util.inspect(value);
+        if (inspected.length > 128) {
+          inspected = "".concat(inspected.slice(0, 128), "...");
+        }
+        return "The argument '".concat(name, "' ").concat(reason, ". Received ").concat(inspected);
+      }, TypeError, RangeError);
+      createErrorType("ERR_INVALID_RETURN_VALUE", function(input, name, value) {
+        var type;
+        if (value && value.constructor && value.constructor.name) {
+          type = "instance of ".concat(value.constructor.name);
+        } else {
+          type = "type ".concat(_typeof(value));
+        }
+        return "Expected ".concat(input, ' to be returned from the "').concat(name, '"') + " function but got ".concat(type, ".");
+      }, TypeError);
+      createErrorType("ERR_MISSING_ARGS", function() {
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+        if (assert === void 0) assert = require_assert();
+        assert(args.length > 0, "At least one arg needs to be specified");
+        var msg = "The ";
+        var len = args.length;
+        args = args.map(function(a) {
+          return '"'.concat(a, '"');
+        });
+        switch (len) {
+          case 1:
+            msg += "".concat(args[0], " argument");
+            break;
+          case 2:
+            msg += "".concat(args[0], " and ").concat(args[1], " arguments");
+            break;
+          default:
+            msg += args.slice(0, len - 1).join(", ");
+            msg += ", and ".concat(args[len - 1], " arguments");
+            break;
+        }
+        return "".concat(msg, " must be specified");
+      }, TypeError);
+      module2.exports.codes = codes;
+    }
+  });
+
+  // node_modules/assert/build/internal/assert/assertion_error.js
+  var require_assertion_error = __commonJS({
+    "node_modules/assert/build/internal/assert/assertion_error.js"(exports2, module2) {
+      "use strict";
+      function ownKeys(e, r) {
+        var t = Object.keys(e);
+        if (Object.getOwnPropertySymbols) {
+          var o = Object.getOwnPropertySymbols(e);
+          r && (o = o.filter(function(r2) {
+            return Object.getOwnPropertyDescriptor(e, r2).enumerable;
+          })), t.push.apply(t, o);
+        }
+        return t;
+      }
+      function _objectSpread(e) {
+        for (var r = 1; r < arguments.length; r++) {
+          var t = null != arguments[r] ? arguments[r] : {};
+          r % 2 ? ownKeys(Object(t), true).forEach(function(r2) {
+            _defineProperty(e, r2, t[r2]);
+          }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function(r2) {
+            Object.defineProperty(e, r2, Object.getOwnPropertyDescriptor(t, r2));
+          });
+        }
+        return e;
+      }
+      function _defineProperty(obj, key, value) {
+        key = _toPropertyKey(key);
+        if (key in obj) {
+          Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
+        } else {
+          obj[key] = value;
+        }
+        return obj;
+      }
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
+        }
+      }
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        Object.defineProperty(Constructor, "prototype", { writable: false });
+        return Constructor;
+      }
+      function _toPropertyKey(arg) {
+        var key = _toPrimitive(arg, "string");
+        return _typeof(key) === "symbol" ? key : String(key);
+      }
+      function _toPrimitive(input, hint) {
+        if (_typeof(input) !== "object" || input === null) return input;
+        var prim = input[Symbol.toPrimitive];
+        if (prim !== void 0) {
+          var res = prim.call(input, hint || "default");
+          if (_typeof(res) !== "object") return res;
+          throw new TypeError("@@toPrimitive must return a primitive value.");
+        }
+        return (hint === "string" ? String : Number)(input);
+      }
+      function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+          throw new TypeError("Super expression must either be null or a function");
+        }
+        subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } });
+        Object.defineProperty(subClass, "prototype", { writable: false });
+        if (superClass) _setPrototypeOf(subClass, superClass);
+      }
+      function _createSuper(Derived) {
+        var hasNativeReflectConstruct = _isNativeReflectConstruct();
+        return function _createSuperInternal() {
+          var Super = _getPrototypeOf(Derived), result;
+          if (hasNativeReflectConstruct) {
+            var NewTarget = _getPrototypeOf(this).constructor;
+            result = Reflect.construct(Super, arguments, NewTarget);
+          } else {
+            result = Super.apply(this, arguments);
+          }
+          return _possibleConstructorReturn(this, result);
+        };
+      }
+      function _possibleConstructorReturn(self2, call) {
+        if (call && (_typeof(call) === "object" || typeof call === "function")) {
+          return call;
+        } else if (call !== void 0) {
+          throw new TypeError("Derived constructors may only return object or undefined");
+        }
+        return _assertThisInitialized(self2);
+      }
+      function _assertThisInitialized(self2) {
+        if (self2 === void 0) {
+          throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+        return self2;
+      }
+      function _wrapNativeSuper(Class) {
+        var _cache = typeof Map === "function" ? /* @__PURE__ */ new Map() : void 0;
+        _wrapNativeSuper = function _wrapNativeSuper2(Class2) {
+          if (Class2 === null || !_isNativeFunction(Class2)) return Class2;
+          if (typeof Class2 !== "function") {
+            throw new TypeError("Super expression must either be null or a function");
+          }
+          if (typeof _cache !== "undefined") {
+            if (_cache.has(Class2)) return _cache.get(Class2);
+            _cache.set(Class2, Wrapper);
+          }
+          function Wrapper() {
+            return _construct(Class2, arguments, _getPrototypeOf(this).constructor);
+          }
+          Wrapper.prototype = Object.create(Class2.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } });
+          return _setPrototypeOf(Wrapper, Class2);
+        };
+        return _wrapNativeSuper(Class);
+      }
+      function _construct(Parent, args, Class) {
+        if (_isNativeReflectConstruct()) {
+          _construct = Reflect.construct.bind();
+        } else {
+          _construct = function _construct2(Parent2, args2, Class2) {
+            var a = [null];
+            a.push.apply(a, args2);
+            var Constructor = Function.bind.apply(Parent2, a);
+            var instance = new Constructor();
+            if (Class2) _setPrototypeOf(instance, Class2.prototype);
+            return instance;
+          };
+        }
+        return _construct.apply(null, arguments);
+      }
+      function _isNativeReflectConstruct() {
+        if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+        if (Reflect.construct.sham) return false;
+        if (typeof Proxy === "function") return true;
+        try {
+          Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+          }));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      function _isNativeFunction(fn) {
+        return Function.toString.call(fn).indexOf("[native code]") !== -1;
+      }
+      function _setPrototypeOf(o, p) {
+        _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
+          o2.__proto__ = p2;
+          return o2;
+        };
+        return _setPrototypeOf(o, p);
+      }
+      function _getPrototypeOf(o) {
+        _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
+          return o2.__proto__ || Object.getPrototypeOf(o2);
+        };
+        return _getPrototypeOf(o);
+      }
+      function _typeof(o) {
+        "@babel/helpers - typeof";
+        return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+          return typeof o2;
+        } : function(o2) {
+          return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+        }, _typeof(o);
+      }
+      var _require = require_util();
+      var inspect = _require.inspect;
+      var _require2 = require_errors();
+      var ERR_INVALID_ARG_TYPE = _require2.codes.ERR_INVALID_ARG_TYPE;
+      function endsWith(str, search, this_len) {
+        if (this_len === void 0 || this_len > str.length) {
+          this_len = str.length;
+        }
+        return str.substring(this_len - search.length, this_len) === search;
+      }
+      function repeat(str, count) {
+        count = Math.floor(count);
+        if (str.length == 0 || count == 0) return "";
+        var maxCount = str.length * count;
+        count = Math.floor(Math.log(count) / Math.log(2));
+        while (count) {
+          str += str;
+          count--;
+        }
+        str += str.substring(0, maxCount - str.length);
+        return str;
+      }
+      var blue = "";
+      var green = "";
+      var red = "";
+      var white = "";
+      var kReadableOperator = {
+        deepStrictEqual: "Expected values to be strictly deep-equal:",
+        strictEqual: "Expected values to be strictly equal:",
+        strictEqualObject: 'Expected "actual" to be reference-equal to "expected":',
+        deepEqual: "Expected values to be loosely deep-equal:",
+        equal: "Expected values to be loosely equal:",
+        notDeepStrictEqual: 'Expected "actual" not to be strictly deep-equal to:',
+        notStrictEqual: 'Expected "actual" to be strictly unequal to:',
+        notStrictEqualObject: 'Expected "actual" not to be reference-equal to "expected":',
+        notDeepEqual: 'Expected "actual" not to be loosely deep-equal to:',
+        notEqual: 'Expected "actual" to be loosely unequal to:',
+        notIdentical: "Values identical but not reference-equal:"
+      };
+      var kMaxShortLength = 10;
+      function copyError(source) {
+        var keys = Object.keys(source);
+        var target = Object.create(Object.getPrototypeOf(source));
+        keys.forEach(function(key) {
+          target[key] = source[key];
+        });
+        Object.defineProperty(target, "message", {
+          value: source.message
+        });
+        return target;
+      }
+      function inspectValue(val) {
+        return inspect(val, {
+          compact: false,
+          customInspect: false,
+          depth: 1e3,
+          maxArrayLength: Infinity,
+          // Assert compares only enumerable properties (with a few exceptions).
+          showHidden: false,
+          // Having a long line as error is better than wrapping the line for
+          // comparison for now.
+          // TODO(BridgeAR): `breakLength` should be limited as soon as soon as we
+          // have meta information about the inspected properties (i.e., know where
+          // in what line the property starts and ends).
+          breakLength: Infinity,
+          // Assert does not detect proxies currently.
+          showProxy: false,
+          sorted: true,
+          // Inspect getters as we also check them when comparing entries.
+          getters: true
+        });
+      }
+      function createErrDiff(actual, expected, operator) {
+        var other = "";
+        var res = "";
+        var lastPos = 0;
+        var end = "";
+        var skipped = false;
+        var actualInspected = inspectValue(actual);
+        var actualLines = actualInspected.split("\n");
+        var expectedLines = inspectValue(expected).split("\n");
+        var i = 0;
+        var indicator = "";
+        if (operator === "strictEqual" && _typeof(actual) === "object" && _typeof(expected) === "object" && actual !== null && expected !== null) {
+          operator = "strictEqualObject";
+        }
+        if (actualLines.length === 1 && expectedLines.length === 1 && actualLines[0] !== expectedLines[0]) {
+          var inputLength = actualLines[0].length + expectedLines[0].length;
+          if (inputLength <= kMaxShortLength) {
+            if ((_typeof(actual) !== "object" || actual === null) && (_typeof(expected) !== "object" || expected === null) && (actual !== 0 || expected !== 0)) {
+              return "".concat(kReadableOperator[operator], "\n\n") + "".concat(actualLines[0], " !== ").concat(expectedLines[0], "\n");
+            }
+          } else if (operator !== "strictEqualObject") {
+            var maxLength = process.stderr && process.stderr.isTTY ? process.stderr.columns : 80;
+            if (inputLength < maxLength) {
+              while (actualLines[0][i] === expectedLines[0][i]) {
+                i++;
+              }
+              if (i > 2) {
+                indicator = "\n  ".concat(repeat(" ", i), "^");
+                i = 0;
+              }
+            }
+          }
+        }
+        var a = actualLines[actualLines.length - 1];
+        var b = expectedLines[expectedLines.length - 1];
+        while (a === b) {
+          if (i++ < 2) {
+            end = "\n  ".concat(a).concat(end);
+          } else {
+            other = a;
+          }
+          actualLines.pop();
+          expectedLines.pop();
+          if (actualLines.length === 0 || expectedLines.length === 0) break;
+          a = actualLines[actualLines.length - 1];
+          b = expectedLines[expectedLines.length - 1];
+        }
+        var maxLines = Math.max(actualLines.length, expectedLines.length);
+        if (maxLines === 0) {
+          var _actualLines = actualInspected.split("\n");
+          if (_actualLines.length > 30) {
+            _actualLines[26] = "".concat(blue, "...").concat(white);
+            while (_actualLines.length > 27) {
+              _actualLines.pop();
+            }
+          }
+          return "".concat(kReadableOperator.notIdentical, "\n\n").concat(_actualLines.join("\n"), "\n");
+        }
+        if (i > 3) {
+          end = "\n".concat(blue, "...").concat(white).concat(end);
+          skipped = true;
+        }
+        if (other !== "") {
+          end = "\n  ".concat(other).concat(end);
+          other = "";
+        }
+        var printedLines = 0;
+        var msg = kReadableOperator[operator] + "\n".concat(green, "+ actual").concat(white, " ").concat(red, "- expected").concat(white);
+        var skippedMsg = " ".concat(blue, "...").concat(white, " Lines skipped");
+        for (i = 0; i < maxLines; i++) {
+          var cur = i - lastPos;
+          if (actualLines.length < i + 1) {
+            if (cur > 1 && i > 2) {
+              if (cur > 4) {
+                res += "\n".concat(blue, "...").concat(white);
+                skipped = true;
+              } else if (cur > 3) {
+                res += "\n  ".concat(expectedLines[i - 2]);
+                printedLines++;
+              }
+              res += "\n  ".concat(expectedLines[i - 1]);
+              printedLines++;
+            }
+            lastPos = i;
+            other += "\n".concat(red, "-").concat(white, " ").concat(expectedLines[i]);
+            printedLines++;
+          } else if (expectedLines.length < i + 1) {
+            if (cur > 1 && i > 2) {
+              if (cur > 4) {
+                res += "\n".concat(blue, "...").concat(white);
+                skipped = true;
+              } else if (cur > 3) {
+                res += "\n  ".concat(actualLines[i - 2]);
+                printedLines++;
+              }
+              res += "\n  ".concat(actualLines[i - 1]);
+              printedLines++;
+            }
+            lastPos = i;
+            res += "\n".concat(green, "+").concat(white, " ").concat(actualLines[i]);
+            printedLines++;
+          } else {
+            var expectedLine = expectedLines[i];
+            var actualLine = actualLines[i];
+            var divergingLines = actualLine !== expectedLine && (!endsWith(actualLine, ",") || actualLine.slice(0, -1) !== expectedLine);
+            if (divergingLines && endsWith(expectedLine, ",") && expectedLine.slice(0, -1) === actualLine) {
+              divergingLines = false;
+              actualLine += ",";
+            }
+            if (divergingLines) {
+              if (cur > 1 && i > 2) {
+                if (cur > 4) {
+                  res += "\n".concat(blue, "...").concat(white);
+                  skipped = true;
+                } else if (cur > 3) {
+                  res += "\n  ".concat(actualLines[i - 2]);
+                  printedLines++;
+                }
+                res += "\n  ".concat(actualLines[i - 1]);
+                printedLines++;
+              }
+              lastPos = i;
+              res += "\n".concat(green, "+").concat(white, " ").concat(actualLine);
+              other += "\n".concat(red, "-").concat(white, " ").concat(expectedLine);
+              printedLines += 2;
+            } else {
+              res += other;
+              other = "";
+              if (cur === 1 || i === 0) {
+                res += "\n  ".concat(actualLine);
+                printedLines++;
+              }
+            }
+          }
+          if (printedLines > 20 && i < maxLines - 2) {
+            return "".concat(msg).concat(skippedMsg, "\n").concat(res, "\n").concat(blue, "...").concat(white).concat(other, "\n") + "".concat(blue, "...").concat(white);
+          }
+        }
+        return "".concat(msg).concat(skipped ? skippedMsg : "", "\n").concat(res).concat(other).concat(end).concat(indicator);
+      }
+      var AssertionError = /* @__PURE__ */ (function(_Error, _inspect$custom) {
+        _inherits(AssertionError2, _Error);
+        var _super = _createSuper(AssertionError2);
+        function AssertionError2(options) {
+          var _this;
+          _classCallCheck(this, AssertionError2);
+          if (_typeof(options) !== "object" || options === null) {
+            throw new ERR_INVALID_ARG_TYPE("options", "Object", options);
+          }
+          var message = options.message, operator = options.operator, stackStartFn = options.stackStartFn;
+          var actual = options.actual, expected = options.expected;
+          var limit = Error.stackTraceLimit;
+          Error.stackTraceLimit = 0;
+          if (message != null) {
+            _this = _super.call(this, String(message));
+          } else {
+            if (process.stderr && process.stderr.isTTY) {
+              if (process.stderr && process.stderr.getColorDepth && process.stderr.getColorDepth() !== 1) {
+                blue = "\x1B[34m";
+                green = "\x1B[32m";
+                white = "\x1B[39m";
+                red = "\x1B[31m";
+              } else {
+                blue = "";
+                green = "";
+                white = "";
+                red = "";
+              }
+            }
+            if (_typeof(actual) === "object" && actual !== null && _typeof(expected) === "object" && expected !== null && "stack" in actual && actual instanceof Error && "stack" in expected && expected instanceof Error) {
+              actual = copyError(actual);
+              expected = copyError(expected);
+            }
+            if (operator === "deepStrictEqual" || operator === "strictEqual") {
+              _this = _super.call(this, createErrDiff(actual, expected, operator));
+            } else if (operator === "notDeepStrictEqual" || operator === "notStrictEqual") {
+              var base2 = kReadableOperator[operator];
+              var res = inspectValue(actual).split("\n");
+              if (operator === "notStrictEqual" && _typeof(actual) === "object" && actual !== null) {
+                base2 = kReadableOperator.notStrictEqualObject;
+              }
+              if (res.length > 30) {
+                res[26] = "".concat(blue, "...").concat(white);
+                while (res.length > 27) {
+                  res.pop();
+                }
+              }
+              if (res.length === 1) {
+                _this = _super.call(this, "".concat(base2, " ").concat(res[0]));
+              } else {
+                _this = _super.call(this, "".concat(base2, "\n\n").concat(res.join("\n"), "\n"));
+              }
+            } else {
+              var _res = inspectValue(actual);
+              var other = "";
+              var knownOperators = kReadableOperator[operator];
+              if (operator === "notDeepEqual" || operator === "notEqual") {
+                _res = "".concat(kReadableOperator[operator], "\n\n").concat(_res);
+                if (_res.length > 1024) {
+                  _res = "".concat(_res.slice(0, 1021), "...");
+                }
+              } else {
+                other = "".concat(inspectValue(expected));
+                if (_res.length > 512) {
+                  _res = "".concat(_res.slice(0, 509), "...");
+                }
+                if (other.length > 512) {
+                  other = "".concat(other.slice(0, 509), "...");
+                }
+                if (operator === "deepEqual" || operator === "equal") {
+                  _res = "".concat(knownOperators, "\n\n").concat(_res, "\n\nshould equal\n\n");
+                } else {
+                  other = " ".concat(operator, " ").concat(other);
+                }
+              }
+              _this = _super.call(this, "".concat(_res).concat(other));
+            }
+          }
+          Error.stackTraceLimit = limit;
+          _this.generatedMessage = !message;
+          Object.defineProperty(_assertThisInitialized(_this), "name", {
+            value: "AssertionError [ERR_ASSERTION]",
+            enumerable: false,
+            writable: true,
+            configurable: true
+          });
+          _this.code = "ERR_ASSERTION";
+          _this.actual = actual;
+          _this.expected = expected;
+          _this.operator = operator;
+          if (Error.captureStackTrace) {
+            Error.captureStackTrace(_assertThisInitialized(_this), stackStartFn);
+          }
+          _this.stack;
+          _this.name = "AssertionError";
+          return _possibleConstructorReturn(_this);
+        }
+        _createClass(AssertionError2, [{
+          key: "toString",
+          value: function toString() {
+            return "".concat(this.name, " [").concat(this.code, "]: ").concat(this.message);
+          }
+        }, {
+          key: _inspect$custom,
+          value: function value(recurseTimes, ctx) {
+            return inspect(this, _objectSpread(_objectSpread({}, ctx), {}, {
+              customInspect: false,
+              depth: 0
+            }));
+          }
+        }]);
+        return AssertionError2;
+      })(/* @__PURE__ */ _wrapNativeSuper(Error), inspect.custom);
+      module2.exports = AssertionError;
+    }
+  });
+
+  // node_modules/object-keys/isArguments.js
+  var require_isArguments = __commonJS({
+    "node_modules/object-keys/isArguments.js"(exports2, module2) {
+      "use strict";
+      var toStr = Object.prototype.toString;
+      module2.exports = function isArguments(value) {
+        var str = toStr.call(value);
+        var isArgs = str === "[object Arguments]";
+        if (!isArgs) {
+          isArgs = str !== "[object Array]" && value !== null && typeof value === "object" && typeof value.length === "number" && value.length >= 0 && toStr.call(value.callee) === "[object Function]";
+        }
+        return isArgs;
+      };
+    }
+  });
+
+  // node_modules/object-keys/implementation.js
+  var require_implementation2 = __commonJS({
+    "node_modules/object-keys/implementation.js"(exports2, module2) {
+      "use strict";
+      var keysShim;
+      if (!Object.keys) {
+        has = Object.prototype.hasOwnProperty;
+        toStr = Object.prototype.toString;
+        isArgs = require_isArguments();
+        isEnumerable = Object.prototype.propertyIsEnumerable;
+        hasDontEnumBug = !isEnumerable.call({ toString: null }, "toString");
+        hasProtoEnumBug = isEnumerable.call(function() {
+        }, "prototype");
+        dontEnums = [
+          "toString",
+          "toLocaleString",
+          "valueOf",
+          "hasOwnProperty",
+          "isPrototypeOf",
+          "propertyIsEnumerable",
+          "constructor"
+        ];
+        equalsConstructorPrototype = function(o) {
+          var ctor = o.constructor;
+          return ctor && ctor.prototype === o;
+        };
+        excludedKeys = {
+          $applicationCache: true,
+          $console: true,
+          $external: true,
+          $frame: true,
+          $frameElement: true,
+          $frames: true,
+          $innerHeight: true,
+          $innerWidth: true,
+          $onmozfullscreenchange: true,
+          $onmozfullscreenerror: true,
+          $outerHeight: true,
+          $outerWidth: true,
+          $pageXOffset: true,
+          $pageYOffset: true,
+          $parent: true,
+          $scrollLeft: true,
+          $scrollTop: true,
+          $scrollX: true,
+          $scrollY: true,
+          $self: true,
+          $webkitIndexedDB: true,
+          $webkitStorageInfo: true,
+          $window: true
+        };
+        hasAutomationEqualityBug = (function() {
+          if (typeof window === "undefined") {
+            return false;
+          }
+          for (var k in window) {
+            try {
+              if (!excludedKeys["$" + k] && has.call(window, k) && window[k] !== null && typeof window[k] === "object") {
+                try {
+                  equalsConstructorPrototype(window[k]);
+                } catch (e) {
+                  return true;
+                }
+              }
+            } catch (e) {
+              return true;
+            }
+          }
+          return false;
+        })();
+        equalsConstructorPrototypeIfNotBuggy = function(o) {
+          if (typeof window === "undefined" || !hasAutomationEqualityBug) {
+            return equalsConstructorPrototype(o);
+          }
+          try {
+            return equalsConstructorPrototype(o);
+          } catch (e) {
+            return false;
+          }
+        };
+        keysShim = function keys(object) {
+          var isObject = object !== null && typeof object === "object";
+          var isFunction = toStr.call(object) === "[object Function]";
+          var isArguments = isArgs(object);
+          var isString = isObject && toStr.call(object) === "[object String]";
+          var theKeys = [];
+          if (!isObject && !isFunction && !isArguments) {
+            throw new TypeError("Object.keys called on a non-object");
+          }
+          var skipProto = hasProtoEnumBug && isFunction;
+          if (isString && object.length > 0 && !has.call(object, 0)) {
+            for (var i = 0; i < object.length; ++i) {
+              theKeys.push(String(i));
+            }
+          }
+          if (isArguments && object.length > 0) {
+            for (var j = 0; j < object.length; ++j) {
+              theKeys.push(String(j));
+            }
+          } else {
+            for (var name in object) {
+              if (!(skipProto && name === "prototype") && has.call(object, name)) {
+                theKeys.push(String(name));
+              }
+            }
+          }
+          if (hasDontEnumBug) {
+            var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
+            for (var k = 0; k < dontEnums.length; ++k) {
+              if (!(skipConstructor && dontEnums[k] === "constructor") && has.call(object, dontEnums[k])) {
+                theKeys.push(dontEnums[k]);
+              }
+            }
+          }
+          return theKeys;
+        };
+      }
+      var has;
+      var toStr;
+      var isArgs;
+      var isEnumerable;
+      var hasDontEnumBug;
+      var hasProtoEnumBug;
+      var dontEnums;
+      var equalsConstructorPrototype;
+      var excludedKeys;
+      var hasAutomationEqualityBug;
+      var equalsConstructorPrototypeIfNotBuggy;
+      module2.exports = keysShim;
+    }
+  });
+
+  // node_modules/object-keys/index.js
+  var require_object_keys = __commonJS({
+    "node_modules/object-keys/index.js"(exports2, module2) {
+      "use strict";
+      var slice = Array.prototype.slice;
+      var isArgs = require_isArguments();
+      var origKeys = Object.keys;
+      var keysShim = origKeys ? function keys(o) {
+        return origKeys(o);
+      } : require_implementation2();
+      var originalKeys = Object.keys;
+      keysShim.shim = function shimObjectKeys() {
+        if (Object.keys) {
+          var keysWorksWithArguments = (function() {
+            var args = Object.keys(arguments);
+            return args && args.length === arguments.length;
+          })(1, 2);
+          if (!keysWorksWithArguments) {
+            Object.keys = function keys(object) {
+              if (isArgs(object)) {
+                return originalKeys(slice.call(object));
+              }
+              return originalKeys(object);
+            };
+          }
+        } else {
+          Object.keys = keysShim;
+        }
+        return Object.keys || keysShim;
+      };
+      module2.exports = keysShim;
+    }
+  });
+
+  // node_modules/object.assign/implementation.js
+  var require_implementation3 = __commonJS({
+    "node_modules/object.assign/implementation.js"(exports2, module2) {
+      "use strict";
+      var objectKeys = require_object_keys();
+      var hasSymbols = require_shams()();
+      var callBound = require_call_bound();
+      var $Object = require_es_object_atoms();
+      var $push = callBound("Array.prototype.push");
+      var $propIsEnumerable = callBound("Object.prototype.propertyIsEnumerable");
+      var originalGetSymbols = hasSymbols ? $Object.getOwnPropertySymbols : null;
+      module2.exports = function assign(target, source1) {
+        if (target == null) {
+          throw new TypeError("target must be an object");
+        }
+        var to = $Object(target);
+        if (arguments.length === 1) {
+          return to;
+        }
+        for (var s = 1; s < arguments.length; ++s) {
+          var from = $Object(arguments[s]);
+          var keys = objectKeys(from);
+          var getSymbols = hasSymbols && ($Object.getOwnPropertySymbols || originalGetSymbols);
+          if (getSymbols) {
+            var syms = getSymbols(from);
+            for (var j = 0; j < syms.length; ++j) {
+              var key = syms[j];
+              if ($propIsEnumerable(from, key)) {
+                $push(keys, key);
+              }
+            }
+          }
+          for (var i = 0; i < keys.length; ++i) {
+            var nextKey = keys[i];
+            if ($propIsEnumerable(from, nextKey)) {
+              var propValue = from[nextKey];
+              to[nextKey] = propValue;
+            }
+          }
+        }
+        return to;
+      };
+    }
+  });
+
+  // node_modules/object.assign/polyfill.js
+  var require_polyfill = __commonJS({
+    "node_modules/object.assign/polyfill.js"(exports2, module2) {
+      "use strict";
+      var implementation = require_implementation3();
+      var lacksProperEnumerationOrder = function() {
+        if (!Object.assign) {
+          return false;
+        }
+        var str = "abcdefghijklmnopqrst";
+        var letters = str.split("");
+        var map = {};
+        for (var i = 0; i < letters.length; ++i) {
+          map[letters[i]] = letters[i];
+        }
+        var obj = Object.assign({}, map);
+        var actual = "";
+        for (var k in obj) {
+          actual += k;
+        }
+        return str !== actual;
+      };
+      var assignHasPendingExceptions = function() {
+        if (!Object.assign || !Object.preventExtensions) {
+          return false;
+        }
+        var thrower = Object.preventExtensions({ 1: 2 });
+        try {
+          Object.assign(thrower, "xy");
+        } catch (e) {
+          return thrower[1] === "y";
+        }
+        return false;
+      };
+      module2.exports = function getPolyfill() {
+        if (!Object.assign) {
+          return implementation;
+        }
+        if (lacksProperEnumerationOrder()) {
+          return implementation;
+        }
+        if (assignHasPendingExceptions()) {
+          return implementation;
+        }
+        return Object.assign;
+      };
+    }
+  });
+
+  // node_modules/object-is/implementation.js
+  var require_implementation4 = __commonJS({
+    "node_modules/object-is/implementation.js"(exports2, module2) {
+      "use strict";
+      var numberIsNaN = function(value) {
+        return value !== value;
+      };
+      module2.exports = function is(a, b) {
+        if (a === 0 && b === 0) {
+          return 1 / a === 1 / b;
+        }
+        if (a === b) {
+          return true;
+        }
+        if (numberIsNaN(a) && numberIsNaN(b)) {
+          return true;
+        }
+        return false;
+      };
+    }
+  });
+
+  // node_modules/object-is/polyfill.js
+  var require_polyfill2 = __commonJS({
+    "node_modules/object-is/polyfill.js"(exports2, module2) {
+      "use strict";
+      var implementation = require_implementation4();
+      module2.exports = function getPolyfill() {
+        return typeof Object.is === "function" ? Object.is : implementation;
+      };
+    }
+  });
+
+  // node_modules/call-bind/callBound.js
+  var require_callBound = __commonJS({
+    "node_modules/call-bind/callBound.js"(exports2, module2) {
+      "use strict";
+      var GetIntrinsic = require_get_intrinsic();
+      var callBind = require_call_bind();
+      var $indexOf = callBind(GetIntrinsic("String.prototype.indexOf"));
+      module2.exports = function callBoundIntrinsic(name, allowMissing) {
+        var intrinsic = GetIntrinsic(name, !!allowMissing);
+        if (typeof intrinsic === "function" && $indexOf(name, ".prototype.") > -1) {
+          return callBind(intrinsic);
+        }
+        return intrinsic;
+      };
+    }
+  });
+
+  // node_modules/define-properties/index.js
+  var require_define_properties = __commonJS({
+    "node_modules/define-properties/index.js"(exports2, module2) {
+      "use strict";
+      var keys = require_object_keys();
+      var hasSymbols = typeof Symbol === "function" && typeof /* @__PURE__ */ Symbol("foo") === "symbol";
+      var toStr = Object.prototype.toString;
+      var concat = Array.prototype.concat;
+      var defineDataProperty = require_define_data_property();
+      var isFunction = function(fn) {
+        return typeof fn === "function" && toStr.call(fn) === "[object Function]";
+      };
+      var supportsDescriptors = require_has_property_descriptors()();
+      var defineProperty = function(object, name, value, predicate) {
+        if (name in object) {
+          if (predicate === true) {
+            if (object[name] === value) {
+              return;
+            }
+          } else if (!isFunction(predicate) || !predicate()) {
+            return;
+          }
+        }
+        if (supportsDescriptors) {
+          defineDataProperty(object, name, value, true);
+        } else {
+          defineDataProperty(object, name, value);
+        }
+      };
+      var defineProperties = function(object, map) {
+        var predicates = arguments.length > 2 ? arguments[2] : {};
+        var props = keys(map);
+        if (hasSymbols) {
+          props = concat.call(props, Object.getOwnPropertySymbols(map));
+        }
+        for (var i = 0; i < props.length; i += 1) {
+          defineProperty(object, props[i], map[props[i]], predicates[props[i]]);
+        }
+      };
+      defineProperties.supportsDescriptors = !!supportsDescriptors;
+      module2.exports = defineProperties;
+    }
+  });
+
+  // node_modules/object-is/shim.js
+  var require_shim = __commonJS({
+    "node_modules/object-is/shim.js"(exports2, module2) {
+      "use strict";
+      var getPolyfill = require_polyfill2();
+      var define2 = require_define_properties();
+      module2.exports = function shimObjectIs() {
+        var polyfill = getPolyfill();
+        define2(Object, { is: polyfill }, {
+          is: function testObjectIs() {
+            return Object.is !== polyfill;
+          }
+        });
+        return polyfill;
+      };
+    }
+  });
+
+  // node_modules/object-is/index.js
+  var require_object_is = __commonJS({
+    "node_modules/object-is/index.js"(exports2, module2) {
+      "use strict";
+      var define2 = require_define_properties();
+      var callBind = require_call_bind();
+      var implementation = require_implementation4();
+      var getPolyfill = require_polyfill2();
+      var shim = require_shim();
+      var polyfill = callBind(getPolyfill(), Object);
+      define2(polyfill, {
+        getPolyfill,
+        implementation,
+        shim
+      });
+      module2.exports = polyfill;
+    }
+  });
+
+  // node_modules/is-nan/implementation.js
+  var require_implementation5 = __commonJS({
+    "node_modules/is-nan/implementation.js"(exports2, module2) {
+      "use strict";
+      module2.exports = function isNaN2(value) {
+        return value !== value;
+      };
+    }
+  });
+
+  // node_modules/is-nan/polyfill.js
+  var require_polyfill3 = __commonJS({
+    "node_modules/is-nan/polyfill.js"(exports2, module2) {
+      "use strict";
+      var implementation = require_implementation5();
+      module2.exports = function getPolyfill() {
+        if (Number.isNaN && Number.isNaN(NaN) && !Number.isNaN("a")) {
+          return Number.isNaN;
+        }
+        return implementation;
+      };
+    }
+  });
+
+  // node_modules/is-nan/shim.js
+  var require_shim2 = __commonJS({
+    "node_modules/is-nan/shim.js"(exports2, module2) {
+      "use strict";
+      var define2 = require_define_properties();
+      var getPolyfill = require_polyfill3();
+      module2.exports = function shimNumberIsNaN() {
+        var polyfill = getPolyfill();
+        define2(Number, { isNaN: polyfill }, {
+          isNaN: function testIsNaN() {
+            return Number.isNaN !== polyfill;
+          }
+        });
+        return polyfill;
+      };
+    }
+  });
+
+  // node_modules/is-nan/index.js
+  var require_is_nan = __commonJS({
+    "node_modules/is-nan/index.js"(exports2, module2) {
+      "use strict";
+      var callBind = require_call_bind();
+      var define2 = require_define_properties();
+      var implementation = require_implementation5();
+      var getPolyfill = require_polyfill3();
+      var shim = require_shim2();
+      var polyfill = callBind(getPolyfill(), Number);
+      define2(polyfill, {
+        getPolyfill,
+        implementation,
+        shim
+      });
+      module2.exports = polyfill;
+    }
+  });
+
+  // node_modules/assert/build/internal/util/comparisons.js
+  var require_comparisons = __commonJS({
+    "node_modules/assert/build/internal/util/comparisons.js"(exports2, module2) {
+      "use strict";
+      function _slicedToArray(arr, i) {
+        return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+      }
+      function _nonIterableRest() {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+      }
+      function _unsupportedIterableToArray(o, minLen) {
+        if (!o) return;
+        if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+        var n = Object.prototype.toString.call(o).slice(8, -1);
+        if (n === "Object" && o.constructor) n = o.constructor.name;
+        if (n === "Map" || n === "Set") return Array.from(o);
+        if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+      }
+      function _arrayLikeToArray(arr, len) {
+        if (len == null || len > arr.length) len = arr.length;
+        for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+        return arr2;
+      }
+      function _iterableToArrayLimit(r, l) {
+        var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+        if (null != t) {
+          var e, n, i, u, a = [], f = true, o = false;
+          try {
+            if (i = (t = t.call(r)).next, 0 === l) {
+              if (Object(t) !== t) return;
+              f = false;
+            } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = true) ;
+          } catch (r2) {
+            o = true, n = r2;
+          } finally {
+            try {
+              if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
+            } finally {
+              if (o) throw n;
+            }
+          }
+          return a;
+        }
+      }
+      function _arrayWithHoles(arr) {
+        if (Array.isArray(arr)) return arr;
+      }
+      function _typeof(o) {
+        "@babel/helpers - typeof";
+        return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+          return typeof o2;
+        } : function(o2) {
+          return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+        }, _typeof(o);
+      }
+      var regexFlagsSupported = /a/g.flags !== void 0;
+      var arrayFromSet = function arrayFromSet2(set) {
+        var array = [];
+        set.forEach(function(value) {
+          return array.push(value);
+        });
+        return array;
+      };
+      var arrayFromMap = function arrayFromMap2(map) {
+        var array = [];
+        map.forEach(function(value, key) {
+          return array.push([key, value]);
+        });
+        return array;
+      };
+      var objectIs = Object.is ? Object.is : require_object_is();
+      var objectGetOwnPropertySymbols = Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols : function() {
+        return [];
+      };
+      var numberIsNaN = Number.isNaN ? Number.isNaN : require_is_nan();
+      function uncurryThis(f) {
+        return f.call.bind(f);
+      }
+      var hasOwnProperty = uncurryThis(Object.prototype.hasOwnProperty);
+      var propertyIsEnumerable = uncurryThis(Object.prototype.propertyIsEnumerable);
+      var objectToString = uncurryThis(Object.prototype.toString);
+      var _require$types = require_util().types;
+      var isAnyArrayBuffer = _require$types.isAnyArrayBuffer;
+      var isArrayBufferView = _require$types.isArrayBufferView;
+      var isDate = _require$types.isDate;
+      var isMap = _require$types.isMap;
+      var isRegExp = _require$types.isRegExp;
+      var isSet = _require$types.isSet;
+      var isNativeError = _require$types.isNativeError;
+      var isBoxedPrimitive = _require$types.isBoxedPrimitive;
+      var isNumberObject = _require$types.isNumberObject;
+      var isStringObject = _require$types.isStringObject;
+      var isBooleanObject = _require$types.isBooleanObject;
+      var isBigIntObject = _require$types.isBigIntObject;
+      var isSymbolObject = _require$types.isSymbolObject;
+      var isFloat32Array = _require$types.isFloat32Array;
+      var isFloat64Array = _require$types.isFloat64Array;
+      function isNonIndex(key) {
+        if (key.length === 0 || key.length > 10) return true;
+        for (var i = 0; i < key.length; i++) {
+          var code = key.charCodeAt(i);
+          if (code < 48 || code > 57) return true;
+        }
+        return key.length === 10 && key >= Math.pow(2, 32);
+      }
+      function getOwnNonIndexProperties(value) {
+        return Object.keys(value).filter(isNonIndex).concat(objectGetOwnPropertySymbols(value).filter(Object.prototype.propertyIsEnumerable.bind(value)));
+      }
+      /*!
+       * The buffer module from node.js, for the browser.
+       *
+       * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+       * @license  MIT
+       */
+      function compare(a, b) {
+        if (a === b) {
+          return 0;
+        }
+        var x = a.length;
+        var y = b.length;
+        for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+          if (a[i] !== b[i]) {
+            x = a[i];
+            y = b[i];
+            break;
+          }
+        }
+        if (x < y) {
+          return -1;
+        }
+        if (y < x) {
+          return 1;
+        }
+        return 0;
+      }
+      var ONLY_ENUMERABLE = void 0;
+      var kStrict = true;
+      var kLoose = false;
+      var kNoIterator = 0;
+      var kIsArray = 1;
+      var kIsSet = 2;
+      var kIsMap = 3;
+      function areSimilarRegExps(a, b) {
+        return regexFlagsSupported ? a.source === b.source && a.flags === b.flags : RegExp.prototype.toString.call(a) === RegExp.prototype.toString.call(b);
+      }
+      function areSimilarFloatArrays(a, b) {
+        if (a.byteLength !== b.byteLength) {
+          return false;
+        }
+        for (var offset = 0; offset < a.byteLength; offset++) {
+          if (a[offset] !== b[offset]) {
+            return false;
+          }
         }
         return true;
       }
-      function fail(msg) {
-        var e = new Error(msg);
-        e.name = "AssertionError";
-        throw e;
+      function areSimilarTypedArrays(a, b) {
+        if (a.byteLength !== b.byteLength) {
+          return false;
+        }
+        return compare(new Uint8Array(a.buffer, a.byteOffset, a.byteLength), new Uint8Array(b.buffer, b.byteOffset, b.byteLength)) === 0;
       }
-      function deepStrictEqual(actual, expected, message) {
-        if (!deepEqual(actual, expected)) fail(message || "Expected values to be strictly deep-equal");
+      function areEqualArrayBuffers(buf1, buf2) {
+        return buf1.byteLength === buf2.byteLength && compare(new Uint8Array(buf1), new Uint8Array(buf2)) === 0;
       }
-      function strictEqual(actual, expected, message) {
-        if (actual !== expected) fail(message || "Expected values to be strictly equal");
+      function isEqualBoxedPrimitive(val1, val2) {
+        if (isNumberObject(val1)) {
+          return isNumberObject(val2) && objectIs(Number.prototype.valueOf.call(val1), Number.prototype.valueOf.call(val2));
+        }
+        if (isStringObject(val1)) {
+          return isStringObject(val2) && String.prototype.valueOf.call(val1) === String.prototype.valueOf.call(val2);
+        }
+        if (isBooleanObject(val1)) {
+          return isBooleanObject(val2) && Boolean.prototype.valueOf.call(val1) === Boolean.prototype.valueOf.call(val2);
+        }
+        if (isBigIntObject(val1)) {
+          return isBigIntObject(val2) && BigInt.prototype.valueOf.call(val1) === BigInt.prototype.valueOf.call(val2);
+        }
+        return isSymbolObject(val2) && Symbol.prototype.valueOf.call(val1) === Symbol.prototype.valueOf.call(val2);
       }
-      function ok(value, message) {
-        if (!value) fail(message || "The expression evaluated to a falsy value");
+      function innerDeepEqual(val1, val2, strict, memos) {
+        if (val1 === val2) {
+          if (val1 !== 0) return true;
+          return strict ? objectIs(val1, val2) : true;
+        }
+        if (strict) {
+          if (_typeof(val1) !== "object") {
+            return typeof val1 === "number" && numberIsNaN(val1) && numberIsNaN(val2);
+          }
+          if (_typeof(val2) !== "object" || val1 === null || val2 === null) {
+            return false;
+          }
+          if (Object.getPrototypeOf(val1) !== Object.getPrototypeOf(val2)) {
+            return false;
+          }
+        } else {
+          if (val1 === null || _typeof(val1) !== "object") {
+            if (val2 === null || _typeof(val2) !== "object") {
+              return val1 == val2;
+            }
+            return false;
+          }
+          if (val2 === null || _typeof(val2) !== "object") {
+            return false;
+          }
+        }
+        var val1Tag = objectToString(val1);
+        var val2Tag = objectToString(val2);
+        if (val1Tag !== val2Tag) {
+          return false;
+        }
+        if (Array.isArray(val1)) {
+          if (val1.length !== val2.length) {
+            return false;
+          }
+          var keys1 = getOwnNonIndexProperties(val1, ONLY_ENUMERABLE);
+          var keys2 = getOwnNonIndexProperties(val2, ONLY_ENUMERABLE);
+          if (keys1.length !== keys2.length) {
+            return false;
+          }
+          return keyCheck(val1, val2, strict, memos, kIsArray, keys1);
+        }
+        if (val1Tag === "[object Object]") {
+          if (!isMap(val1) && isMap(val2) || !isSet(val1) && isSet(val2)) {
+            return false;
+          }
+        }
+        if (isDate(val1)) {
+          if (!isDate(val2) || Date.prototype.getTime.call(val1) !== Date.prototype.getTime.call(val2)) {
+            return false;
+          }
+        } else if (isRegExp(val1)) {
+          if (!isRegExp(val2) || !areSimilarRegExps(val1, val2)) {
+            return false;
+          }
+        } else if (isNativeError(val1) || val1 instanceof Error) {
+          if (val1.message !== val2.message || val1.name !== val2.name) {
+            return false;
+          }
+        } else if (isArrayBufferView(val1)) {
+          if (!strict && (isFloat32Array(val1) || isFloat64Array(val1))) {
+            if (!areSimilarFloatArrays(val1, val2)) {
+              return false;
+            }
+          } else if (!areSimilarTypedArrays(val1, val2)) {
+            return false;
+          }
+          var _keys = getOwnNonIndexProperties(val1, ONLY_ENUMERABLE);
+          var _keys2 = getOwnNonIndexProperties(val2, ONLY_ENUMERABLE);
+          if (_keys.length !== _keys2.length) {
+            return false;
+          }
+          return keyCheck(val1, val2, strict, memos, kNoIterator, _keys);
+        } else if (isSet(val1)) {
+          if (!isSet(val2) || val1.size !== val2.size) {
+            return false;
+          }
+          return keyCheck(val1, val2, strict, memos, kIsSet);
+        } else if (isMap(val1)) {
+          if (!isMap(val2) || val1.size !== val2.size) {
+            return false;
+          }
+          return keyCheck(val1, val2, strict, memos, kIsMap);
+        } else if (isAnyArrayBuffer(val1)) {
+          if (!areEqualArrayBuffers(val1, val2)) {
+            return false;
+          }
+        } else if (isBoxedPrimitive(val1) && !isEqualBoxedPrimitive(val1, val2)) {
+          return false;
+        }
+        return keyCheck(val1, val2, strict, memos, kNoIterator);
       }
-      var assert = ok;
+      function getEnumerables(val, keys) {
+        return keys.filter(function(k) {
+          return propertyIsEnumerable(val, k);
+        });
+      }
+      function keyCheck(val1, val2, strict, memos, iterationType, aKeys) {
+        if (arguments.length === 5) {
+          aKeys = Object.keys(val1);
+          var bKeys = Object.keys(val2);
+          if (aKeys.length !== bKeys.length) {
+            return false;
+          }
+        }
+        var i = 0;
+        for (; i < aKeys.length; i++) {
+          if (!hasOwnProperty(val2, aKeys[i])) {
+            return false;
+          }
+        }
+        if (strict && arguments.length === 5) {
+          var symbolKeysA = objectGetOwnPropertySymbols(val1);
+          if (symbolKeysA.length !== 0) {
+            var count = 0;
+            for (i = 0; i < symbolKeysA.length; i++) {
+              var key = symbolKeysA[i];
+              if (propertyIsEnumerable(val1, key)) {
+                if (!propertyIsEnumerable(val2, key)) {
+                  return false;
+                }
+                aKeys.push(key);
+                count++;
+              } else if (propertyIsEnumerable(val2, key)) {
+                return false;
+              }
+            }
+            var symbolKeysB = objectGetOwnPropertySymbols(val2);
+            if (symbolKeysA.length !== symbolKeysB.length && getEnumerables(val2, symbolKeysB).length !== count) {
+              return false;
+            }
+          } else {
+            var _symbolKeysB = objectGetOwnPropertySymbols(val2);
+            if (_symbolKeysB.length !== 0 && getEnumerables(val2, _symbolKeysB).length !== 0) {
+              return false;
+            }
+          }
+        }
+        if (aKeys.length === 0 && (iterationType === kNoIterator || iterationType === kIsArray && val1.length === 0 || val1.size === 0)) {
+          return true;
+        }
+        if (memos === void 0) {
+          memos = {
+            val1: /* @__PURE__ */ new Map(),
+            val2: /* @__PURE__ */ new Map(),
+            position: 0
+          };
+        } else {
+          var val2MemoA = memos.val1.get(val1);
+          if (val2MemoA !== void 0) {
+            var val2MemoB = memos.val2.get(val2);
+            if (val2MemoB !== void 0) {
+              return val2MemoA === val2MemoB;
+            }
+          }
+          memos.position++;
+        }
+        memos.val1.set(val1, memos.position);
+        memos.val2.set(val2, memos.position);
+        var areEq = objEquiv(val1, val2, strict, aKeys, memos, iterationType);
+        memos.val1.delete(val1);
+        memos.val2.delete(val2);
+        return areEq;
+      }
+      function setHasEqualElement(set, val1, strict, memo) {
+        var setValues = arrayFromSet(set);
+        for (var i = 0; i < setValues.length; i++) {
+          var val2 = setValues[i];
+          if (innerDeepEqual(val1, val2, strict, memo)) {
+            set.delete(val2);
+            return true;
+          }
+        }
+        return false;
+      }
+      function findLooseMatchingPrimitives(prim) {
+        switch (_typeof(prim)) {
+          case "undefined":
+            return null;
+          case "object":
+            return void 0;
+          case "symbol":
+            return false;
+          case "string":
+            prim = +prim;
+          // Loose equal entries exist only if the string is possible to convert to
+          // a regular number and not NaN.
+          // Fall through
+          case "number":
+            if (numberIsNaN(prim)) {
+              return false;
+            }
+        }
+        return true;
+      }
+      function setMightHaveLoosePrim(a, b, prim) {
+        var altValue = findLooseMatchingPrimitives(prim);
+        if (altValue != null) return altValue;
+        return b.has(altValue) && !a.has(altValue);
+      }
+      function mapMightHaveLoosePrim(a, b, prim, item, memo) {
+        var altValue = findLooseMatchingPrimitives(prim);
+        if (altValue != null) {
+          return altValue;
+        }
+        var curB = b.get(altValue);
+        if (curB === void 0 && !b.has(altValue) || !innerDeepEqual(item, curB, false, memo)) {
+          return false;
+        }
+        return !a.has(altValue) && innerDeepEqual(item, curB, false, memo);
+      }
+      function setEquiv(a, b, strict, memo) {
+        var set = null;
+        var aValues = arrayFromSet(a);
+        for (var i = 0; i < aValues.length; i++) {
+          var val = aValues[i];
+          if (_typeof(val) === "object" && val !== null) {
+            if (set === null) {
+              set = /* @__PURE__ */ new Set();
+            }
+            set.add(val);
+          } else if (!b.has(val)) {
+            if (strict) return false;
+            if (!setMightHaveLoosePrim(a, b, val)) {
+              return false;
+            }
+            if (set === null) {
+              set = /* @__PURE__ */ new Set();
+            }
+            set.add(val);
+          }
+        }
+        if (set !== null) {
+          var bValues = arrayFromSet(b);
+          for (var _i = 0; _i < bValues.length; _i++) {
+            var _val = bValues[_i];
+            if (_typeof(_val) === "object" && _val !== null) {
+              if (!setHasEqualElement(set, _val, strict, memo)) return false;
+            } else if (!strict && !a.has(_val) && !setHasEqualElement(set, _val, strict, memo)) {
+              return false;
+            }
+          }
+          return set.size === 0;
+        }
+        return true;
+      }
+      function mapHasEqualEntry(set, map, key1, item1, strict, memo) {
+        var setValues = arrayFromSet(set);
+        for (var i = 0; i < setValues.length; i++) {
+          var key2 = setValues[i];
+          if (innerDeepEqual(key1, key2, strict, memo) && innerDeepEqual(item1, map.get(key2), strict, memo)) {
+            set.delete(key2);
+            return true;
+          }
+        }
+        return false;
+      }
+      function mapEquiv(a, b, strict, memo) {
+        var set = null;
+        var aEntries = arrayFromMap(a);
+        for (var i = 0; i < aEntries.length; i++) {
+          var _aEntries$i = _slicedToArray(aEntries[i], 2), key = _aEntries$i[0], item1 = _aEntries$i[1];
+          if (_typeof(key) === "object" && key !== null) {
+            if (set === null) {
+              set = /* @__PURE__ */ new Set();
+            }
+            set.add(key);
+          } else {
+            var item2 = b.get(key);
+            if (item2 === void 0 && !b.has(key) || !innerDeepEqual(item1, item2, strict, memo)) {
+              if (strict) return false;
+              if (!mapMightHaveLoosePrim(a, b, key, item1, memo)) return false;
+              if (set === null) {
+                set = /* @__PURE__ */ new Set();
+              }
+              set.add(key);
+            }
+          }
+        }
+        if (set !== null) {
+          var bEntries = arrayFromMap(b);
+          for (var _i2 = 0; _i2 < bEntries.length; _i2++) {
+            var _bEntries$_i = _slicedToArray(bEntries[_i2], 2), _key = _bEntries$_i[0], item = _bEntries$_i[1];
+            if (_typeof(_key) === "object" && _key !== null) {
+              if (!mapHasEqualEntry(set, a, _key, item, strict, memo)) return false;
+            } else if (!strict && (!a.has(_key) || !innerDeepEqual(a.get(_key), item, false, memo)) && !mapHasEqualEntry(set, a, _key, item, false, memo)) {
+              return false;
+            }
+          }
+          return set.size === 0;
+        }
+        return true;
+      }
+      function objEquiv(a, b, strict, keys, memos, iterationType) {
+        var i = 0;
+        if (iterationType === kIsSet) {
+          if (!setEquiv(a, b, strict, memos)) {
+            return false;
+          }
+        } else if (iterationType === kIsMap) {
+          if (!mapEquiv(a, b, strict, memos)) {
+            return false;
+          }
+        } else if (iterationType === kIsArray) {
+          for (; i < a.length; i++) {
+            if (hasOwnProperty(a, i)) {
+              if (!hasOwnProperty(b, i) || !innerDeepEqual(a[i], b[i], strict, memos)) {
+                return false;
+              }
+            } else if (hasOwnProperty(b, i)) {
+              return false;
+            } else {
+              var keysA = Object.keys(a);
+              for (; i < keysA.length; i++) {
+                var key = keysA[i];
+                if (!hasOwnProperty(b, key) || !innerDeepEqual(a[key], b[key], strict, memos)) {
+                  return false;
+                }
+              }
+              if (keysA.length !== Object.keys(b).length) {
+                return false;
+              }
+              return true;
+            }
+          }
+        }
+        for (i = 0; i < keys.length; i++) {
+          var _key2 = keys[i];
+          if (!innerDeepEqual(a[_key2], b[_key2], strict, memos)) {
+            return false;
+          }
+        }
+        return true;
+      }
+      function isDeepEqual(val1, val2) {
+        return innerDeepEqual(val1, val2, kLoose);
+      }
+      function isDeepStrictEqual(val1, val2) {
+        return innerDeepEqual(val1, val2, kStrict);
+      }
+      module2.exports = {
+        isDeepEqual,
+        isDeepStrictEqual
+      };
+    }
+  });
+
+  // node_modules/assert/build/assert.js
+  var require_assert = __commonJS({
+    "node_modules/assert/build/assert.js"(exports2, module2) {
+      "use strict";
+      function _typeof(o) {
+        "@babel/helpers - typeof";
+        return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o2) {
+          return typeof o2;
+        } : function(o2) {
+          return o2 && "function" == typeof Symbol && o2.constructor === Symbol && o2 !== Symbol.prototype ? "symbol" : typeof o2;
+        }, _typeof(o);
+      }
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
+        }
+      }
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        Object.defineProperty(Constructor, "prototype", { writable: false });
+        return Constructor;
+      }
+      function _toPropertyKey(arg) {
+        var key = _toPrimitive(arg, "string");
+        return _typeof(key) === "symbol" ? key : String(key);
+      }
+      function _toPrimitive(input, hint) {
+        if (_typeof(input) !== "object" || input === null) return input;
+        var prim = input[Symbol.toPrimitive];
+        if (prim !== void 0) {
+          var res = prim.call(input, hint || "default");
+          if (_typeof(res) !== "object") return res;
+          throw new TypeError("@@toPrimitive must return a primitive value.");
+        }
+        return (hint === "string" ? String : Number)(input);
+      }
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+      var _require = require_errors();
+      var _require$codes = _require.codes;
+      var ERR_AMBIGUOUS_ARGUMENT = _require$codes.ERR_AMBIGUOUS_ARGUMENT;
+      var ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE;
+      var ERR_INVALID_ARG_VALUE = _require$codes.ERR_INVALID_ARG_VALUE;
+      var ERR_INVALID_RETURN_VALUE = _require$codes.ERR_INVALID_RETURN_VALUE;
+      var ERR_MISSING_ARGS = _require$codes.ERR_MISSING_ARGS;
+      var AssertionError = require_assertion_error();
+      var _require2 = require_util();
+      var inspect = _require2.inspect;
+      var _require$types = require_util().types;
+      var isPromise = _require$types.isPromise;
+      var isRegExp = _require$types.isRegExp;
+      var objectAssign = require_polyfill()();
+      var objectIs = require_polyfill2()();
+      var RegExpPrototypeTest = require_callBound()("RegExp.prototype.test");
+      var isDeepEqual;
+      var isDeepStrictEqual;
+      function lazyLoadComparison() {
+        var comparison = require_comparisons();
+        isDeepEqual = comparison.isDeepEqual;
+        isDeepStrictEqual = comparison.isDeepStrictEqual;
+      }
+      var warned = false;
+      var assert = module2.exports = ok;
+      var NO_EXCEPTION_SENTINEL = {};
+      function innerFail(obj) {
+        if (obj.message instanceof Error) throw obj.message;
+        throw new AssertionError(obj);
+      }
+      function fail(actual, expected, message, operator, stackStartFn) {
+        var argsLen = arguments.length;
+        var internalMessage;
+        if (argsLen === 0) {
+          internalMessage = "Failed";
+        } else if (argsLen === 1) {
+          message = actual;
+          actual = void 0;
+        } else {
+          if (warned === false) {
+            warned = true;
+            var warn = process.emitWarning ? process.emitWarning : console.warn.bind(console);
+            warn("assert.fail() with more than one argument is deprecated. Please use assert.strictEqual() instead or only pass a message.", "DeprecationWarning", "DEP0094");
+          }
+          if (argsLen === 2) operator = "!=";
+        }
+        if (message instanceof Error) throw message;
+        var errArgs = {
+          actual,
+          expected,
+          operator: operator === void 0 ? "fail" : operator,
+          stackStartFn: stackStartFn || fail
+        };
+        if (message !== void 0) {
+          errArgs.message = message;
+        }
+        var err = new AssertionError(errArgs);
+        if (internalMessage) {
+          err.message = internalMessage;
+          err.generatedMessage = true;
+        }
+        throw err;
+      }
+      assert.fail = fail;
+      assert.AssertionError = AssertionError;
+      function innerOk(fn, argLen, value, message) {
+        if (!value) {
+          var generatedMessage = false;
+          if (argLen === 0) {
+            generatedMessage = true;
+            message = "No value argument passed to `assert.ok()`";
+          } else if (message instanceof Error) {
+            throw message;
+          }
+          var err = new AssertionError({
+            actual: value,
+            expected: true,
+            message,
+            operator: "==",
+            stackStartFn: fn
+          });
+          err.generatedMessage = generatedMessage;
+          throw err;
+        }
+      }
+      function ok() {
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+        innerOk.apply(void 0, [ok, args.length].concat(args));
+      }
       assert.ok = ok;
-      assert.equal = strictEqual;
-      assert.strictEqual = strictEqual;
-      assert.deepEqual = deepStrictEqual;
-      assert.deepStrictEqual = deepStrictEqual;
-      assert.notDeepStrictEqual = function(a, b, m) {
-        if (deepEqual(a, b)) fail(m || "Expected values not to be strictly deep-equal");
+      assert.equal = function equal(actual, expected, message) {
+        if (arguments.length < 2) {
+          throw new ERR_MISSING_ARGS("actual", "expected");
+        }
+        if (actual != expected) {
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: "==",
+            stackStartFn: equal
+          });
+        }
       };
-      assert.fail = function(m) {
-        fail(m || "Failed");
+      assert.notEqual = function notEqual(actual, expected, message) {
+        if (arguments.length < 2) {
+          throw new ERR_MISSING_ARGS("actual", "expected");
+        }
+        if (actual == expected) {
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: "!=",
+            stackStartFn: notEqual
+          });
+        }
       };
-      module2.exports = assert;
-      module2.exports.default = assert;
+      assert.deepEqual = function deepEqual(actual, expected, message) {
+        if (arguments.length < 2) {
+          throw new ERR_MISSING_ARGS("actual", "expected");
+        }
+        if (isDeepEqual === void 0) lazyLoadComparison();
+        if (!isDeepEqual(actual, expected)) {
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: "deepEqual",
+            stackStartFn: deepEqual
+          });
+        }
+      };
+      assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
+        if (arguments.length < 2) {
+          throw new ERR_MISSING_ARGS("actual", "expected");
+        }
+        if (isDeepEqual === void 0) lazyLoadComparison();
+        if (isDeepEqual(actual, expected)) {
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: "notDeepEqual",
+            stackStartFn: notDeepEqual
+          });
+        }
+      };
+      assert.deepStrictEqual = function deepStrictEqual(actual, expected, message) {
+        if (arguments.length < 2) {
+          throw new ERR_MISSING_ARGS("actual", "expected");
+        }
+        if (isDeepEqual === void 0) lazyLoadComparison();
+        if (!isDeepStrictEqual(actual, expected)) {
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: "deepStrictEqual",
+            stackStartFn: deepStrictEqual
+          });
+        }
+      };
+      assert.notDeepStrictEqual = notDeepStrictEqual;
+      function notDeepStrictEqual(actual, expected, message) {
+        if (arguments.length < 2) {
+          throw new ERR_MISSING_ARGS("actual", "expected");
+        }
+        if (isDeepEqual === void 0) lazyLoadComparison();
+        if (isDeepStrictEqual(actual, expected)) {
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: "notDeepStrictEqual",
+            stackStartFn: notDeepStrictEqual
+          });
+        }
+      }
+      assert.strictEqual = function strictEqual(actual, expected, message) {
+        if (arguments.length < 2) {
+          throw new ERR_MISSING_ARGS("actual", "expected");
+        }
+        if (!objectIs(actual, expected)) {
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: "strictEqual",
+            stackStartFn: strictEqual
+          });
+        }
+      };
+      assert.notStrictEqual = function notStrictEqual(actual, expected, message) {
+        if (arguments.length < 2) {
+          throw new ERR_MISSING_ARGS("actual", "expected");
+        }
+        if (objectIs(actual, expected)) {
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: "notStrictEqual",
+            stackStartFn: notStrictEqual
+          });
+        }
+      };
+      var Comparison = /* @__PURE__ */ _createClass(function Comparison2(obj, keys, actual) {
+        var _this = this;
+        _classCallCheck(this, Comparison2);
+        keys.forEach(function(key) {
+          if (key in obj) {
+            if (actual !== void 0 && typeof actual[key] === "string" && isRegExp(obj[key]) && RegExpPrototypeTest(obj[key], actual[key])) {
+              _this[key] = actual[key];
+            } else {
+              _this[key] = obj[key];
+            }
+          }
+        });
+      });
+      function compareExceptionKey(actual, expected, key, message, keys, fn) {
+        if (!(key in actual) || !isDeepStrictEqual(actual[key], expected[key])) {
+          if (!message) {
+            var a = new Comparison(actual, keys);
+            var b = new Comparison(expected, keys, actual);
+            var err = new AssertionError({
+              actual: a,
+              expected: b,
+              operator: "deepStrictEqual",
+              stackStartFn: fn
+            });
+            err.actual = actual;
+            err.expected = expected;
+            err.operator = fn.name;
+            throw err;
+          }
+          innerFail({
+            actual,
+            expected,
+            message,
+            operator: fn.name,
+            stackStartFn: fn
+          });
+        }
+      }
+      function expectedException(actual, expected, msg, fn) {
+        if (typeof expected !== "function") {
+          if (isRegExp(expected)) return RegExpPrototypeTest(expected, actual);
+          if (arguments.length === 2) {
+            throw new ERR_INVALID_ARG_TYPE("expected", ["Function", "RegExp"], expected);
+          }
+          if (_typeof(actual) !== "object" || actual === null) {
+            var err = new AssertionError({
+              actual,
+              expected,
+              message: msg,
+              operator: "deepStrictEqual",
+              stackStartFn: fn
+            });
+            err.operator = fn.name;
+            throw err;
+          }
+          var keys = Object.keys(expected);
+          if (expected instanceof Error) {
+            keys.push("name", "message");
+          } else if (keys.length === 0) {
+            throw new ERR_INVALID_ARG_VALUE("error", expected, "may not be an empty object");
+          }
+          if (isDeepEqual === void 0) lazyLoadComparison();
+          keys.forEach(function(key) {
+            if (typeof actual[key] === "string" && isRegExp(expected[key]) && RegExpPrototypeTest(expected[key], actual[key])) {
+              return;
+            }
+            compareExceptionKey(actual, expected, key, msg, keys, fn);
+          });
+          return true;
+        }
+        if (expected.prototype !== void 0 && actual instanceof expected) {
+          return true;
+        }
+        if (Error.isPrototypeOf(expected)) {
+          return false;
+        }
+        return expected.call({}, actual) === true;
+      }
+      function getActual(fn) {
+        if (typeof fn !== "function") {
+          throw new ERR_INVALID_ARG_TYPE("fn", "Function", fn);
+        }
+        try {
+          fn();
+        } catch (e) {
+          return e;
+        }
+        return NO_EXCEPTION_SENTINEL;
+      }
+      function checkIsPromise(obj) {
+        return isPromise(obj) || obj !== null && _typeof(obj) === "object" && typeof obj.then === "function" && typeof obj.catch === "function";
+      }
+      function waitForActual(promiseFn) {
+        return Promise.resolve().then(function() {
+          var resultPromise;
+          if (typeof promiseFn === "function") {
+            resultPromise = promiseFn();
+            if (!checkIsPromise(resultPromise)) {
+              throw new ERR_INVALID_RETURN_VALUE("instance of Promise", "promiseFn", resultPromise);
+            }
+          } else if (checkIsPromise(promiseFn)) {
+            resultPromise = promiseFn;
+          } else {
+            throw new ERR_INVALID_ARG_TYPE("promiseFn", ["Function", "Promise"], promiseFn);
+          }
+          return Promise.resolve().then(function() {
+            return resultPromise;
+          }).then(function() {
+            return NO_EXCEPTION_SENTINEL;
+          }).catch(function(e) {
+            return e;
+          });
+        });
+      }
+      function expectsError(stackStartFn, actual, error, message) {
+        if (typeof error === "string") {
+          if (arguments.length === 4) {
+            throw new ERR_INVALID_ARG_TYPE("error", ["Object", "Error", "Function", "RegExp"], error);
+          }
+          if (_typeof(actual) === "object" && actual !== null) {
+            if (actual.message === error) {
+              throw new ERR_AMBIGUOUS_ARGUMENT("error/message", 'The error message "'.concat(actual.message, '" is identical to the message.'));
+            }
+          } else if (actual === error) {
+            throw new ERR_AMBIGUOUS_ARGUMENT("error/message", 'The error "'.concat(actual, '" is identical to the message.'));
+          }
+          message = error;
+          error = void 0;
+        } else if (error != null && _typeof(error) !== "object" && typeof error !== "function") {
+          throw new ERR_INVALID_ARG_TYPE("error", ["Object", "Error", "Function", "RegExp"], error);
+        }
+        if (actual === NO_EXCEPTION_SENTINEL) {
+          var details = "";
+          if (error && error.name) {
+            details += " (".concat(error.name, ")");
+          }
+          details += message ? ": ".concat(message) : ".";
+          var fnType = stackStartFn.name === "rejects" ? "rejection" : "exception";
+          innerFail({
+            actual: void 0,
+            expected: error,
+            operator: stackStartFn.name,
+            message: "Missing expected ".concat(fnType).concat(details),
+            stackStartFn
+          });
+        }
+        if (error && !expectedException(actual, error, message, stackStartFn)) {
+          throw actual;
+        }
+      }
+      function expectsNoError(stackStartFn, actual, error, message) {
+        if (actual === NO_EXCEPTION_SENTINEL) return;
+        if (typeof error === "string") {
+          message = error;
+          error = void 0;
+        }
+        if (!error || expectedException(actual, error)) {
+          var details = message ? ": ".concat(message) : ".";
+          var fnType = stackStartFn.name === "doesNotReject" ? "rejection" : "exception";
+          innerFail({
+            actual,
+            expected: error,
+            operator: stackStartFn.name,
+            message: "Got unwanted ".concat(fnType).concat(details, "\n") + 'Actual message: "'.concat(actual && actual.message, '"'),
+            stackStartFn
+          });
+        }
+        throw actual;
+      }
+      assert.throws = function throws(promiseFn) {
+        for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+          args[_key2 - 1] = arguments[_key2];
+        }
+        expectsError.apply(void 0, [throws, getActual(promiseFn)].concat(args));
+      };
+      assert.rejects = function rejects(promiseFn) {
+        for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+          args[_key3 - 1] = arguments[_key3];
+        }
+        return waitForActual(promiseFn).then(function(result) {
+          return expectsError.apply(void 0, [rejects, result].concat(args));
+        });
+      };
+      assert.doesNotThrow = function doesNotThrow(fn) {
+        for (var _len4 = arguments.length, args = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
+          args[_key4 - 1] = arguments[_key4];
+        }
+        expectsNoError.apply(void 0, [doesNotThrow, getActual(fn)].concat(args));
+      };
+      assert.doesNotReject = function doesNotReject(fn) {
+        for (var _len5 = arguments.length, args = new Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
+          args[_key5 - 1] = arguments[_key5];
+        }
+        return waitForActual(fn).then(function(result) {
+          return expectsNoError.apply(void 0, [doesNotReject, result].concat(args));
+        });
+      };
+      assert.ifError = function ifError(err) {
+        if (err !== null && err !== void 0) {
+          var message = "ifError got unwanted exception: ";
+          if (_typeof(err) === "object" && typeof err.message === "string") {
+            if (err.message.length === 0 && err.constructor) {
+              message += err.constructor.name;
+            } else {
+              message += err.message;
+            }
+          } else {
+            message += inspect(err);
+          }
+          var newErr = new AssertionError({
+            actual: err,
+            expected: null,
+            operator: "ifError",
+            message,
+            stackStartFn: ifError
+          });
+          var origStack = err.stack;
+          if (typeof origStack === "string") {
+            var tmp2 = origStack.split("\n");
+            tmp2.shift();
+            var tmp1 = newErr.stack.split("\n");
+            for (var i = 0; i < tmp2.length; i++) {
+              var pos = tmp1.indexOf(tmp2[i]);
+              if (pos !== -1) {
+                tmp1 = tmp1.slice(0, pos);
+                break;
+              }
+            }
+            newErr.stack = "".concat(tmp1.join("\n"), "\n").concat(tmp2.join("\n"));
+          }
+          throw newErr;
+        }
+      };
+      function internalMatch(string, regexp, message, fn, fnName) {
+        if (!isRegExp(regexp)) {
+          throw new ERR_INVALID_ARG_TYPE("regexp", "RegExp", regexp);
+        }
+        var match = fnName === "match";
+        if (typeof string !== "string" || RegExpPrototypeTest(regexp, string) !== match) {
+          if (message instanceof Error) {
+            throw message;
+          }
+          var generatedMessage = !message;
+          message = message || (typeof string !== "string" ? 'The "string" argument must be of type string. Received type ' + "".concat(_typeof(string), " (").concat(inspect(string), ")") : (match ? "The input did not match the regular expression " : "The input was expected to not match the regular expression ") + "".concat(inspect(regexp), ". Input:\n\n").concat(inspect(string), "\n"));
+          var err = new AssertionError({
+            actual: string,
+            expected: regexp,
+            message,
+            operator: fnName,
+            stackStartFn: fn
+          });
+          err.generatedMessage = generatedMessage;
+          throw err;
+        }
+      }
+      assert.match = function match(string, regexp, message) {
+        internalMatch(string, regexp, message, match, "match");
+      };
+      assert.doesNotMatch = function doesNotMatch(string, regexp, message) {
+        internalMatch(string, regexp, message, doesNotMatch, "doesNotMatch");
+      };
+      function strict() {
+        for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+          args[_key6] = arguments[_key6];
+        }
+        innerOk.apply(void 0, [strict, args.length].concat(args));
+      }
+      assert.strict = objectAssign(strict, assert, {
+        equal: assert.strictEqual,
+        deepEqual: assert.deepStrictEqual,
+        notEqual: assert.notStrictEqual,
+        notDeepEqual: assert.notDeepStrictEqual
+      });
+      assert.strict.strict = assert.strict;
     }
   });
 
@@ -2011,6 +6546,25 @@
             value: true
           });
           _exports.default = void 0;
+          /**
+           * @license
+           * Copyright 2009 The Closure Library Authors
+           * Copyright 2020 Daniel Wirtz / The long.js Authors.
+           *
+           * Licensed under the Apache License, Version 2.0 (the "License");
+           * you may not use this file except in compliance with the License.
+           * You may obtain a copy of the License at
+           *
+           *     http://www.apache.org/licenses/LICENSE-2.0
+           *
+           * Unless required by applicable law or agreed to in writing, software
+           * distributed under the License is distributed on an "AS IS" BASIS,
+           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           * See the License for the specific language governing permissions and
+           * limitations under the License.
+           *
+           * SPDX-License-Identifier: Apache-2.0
+           */
           var wasm = null;
           try {
             wasm = new WebAssembly.Instance(
@@ -2334,7 +6888,7 @@
               ),
               {}
             ).exports;
-          } catch (e) {
+          } catch {
           }
           function Long(low, high, unsigned) {
             this.low = low | 0;
@@ -3687,7 +8241,25 @@
       Reader.prototype.raw = function read_raw(start, end) {
         return this.buf.subarray(start, end);
       };
+      function readVarint32NearEnd(reader) {
+        var value = 0;
+        for (var i = 0; i < 4; ++i) {
+          if (reader.pos >= reader.len)
+            throw indexOutOfRange(reader);
+          var b = reader.buf[reader.pos++];
+          value = (value | (b & 127) << i * 7) >>> 0;
+          if (b < 128)
+            return value;
+        }
+        throw indexOutOfRange(reader);
+      }
       Reader.prototype.uint32 = function read_uint32() {
+        if (this.len - this.pos < 5) {
+          if (this.pos >= this.len)
+            throw indexOutOfRange(this);
+          if (this.buf[this.pos] >= 128)
+            return readVarint32NearEnd(this);
+        }
         var buf = this.buf, pos = this.pos, value = (buf[pos] & 127) >>> 0;
         if (buf[pos++] < 128) {
           this.pos = pos;
@@ -3727,6 +8299,12 @@
         throw Error("invalid varint encoding");
       };
       Reader.prototype.tag = function read_tag() {
+        if (this.len - this.pos < 5) {
+          if (this.pos >= this.len)
+            throw indexOutOfRange(this);
+          if (this.buf[this.pos] >= 128)
+            return readVarint32NearEnd(this);
+        }
         var buf = this.buf, pos = this.pos, value = (buf[pos] & 127) >>> 0;
         if (buf[pos++] < 128) {
           this.pos = pos;
@@ -3850,7 +8428,9 @@
       };
       Reader.prototype.uint32s = function read_uint32s(array) {
         if (array === void 0) array = [];
-        var end = this.uint32() + this.pos, buf = this.buf, pos = this.pos, value;
+        var end = this.uint32() + this.pos, len = this.len, buf = this.buf, pos = this.pos, value;
+        if (end > len) throw indexOutOfRange(this, end - this.pos);
+        this.len = end;
         while (pos < end) {
           value = buf[pos++];
           if (value < 128)
@@ -3862,11 +8442,15 @@
           }
         }
         this.pos = pos;
+        if (pos !== end) throw RangeError("index out of range");
+        this.len = len;
         return array;
       };
       Reader.prototype.int32s = function read_int32s(array) {
         if (array === void 0) array = [];
-        var end = this.uint32() + this.pos, buf = this.buf, pos = this.pos, value;
+        var end = this.uint32() + this.pos, len = this.len, buf = this.buf, pos = this.pos, value;
+        if (end > len) throw indexOutOfRange(this, end - this.pos);
+        this.len = end;
         while (pos < end) {
           value = buf[pos++];
           if (value < 128)
@@ -3878,18 +8462,26 @@
           }
         }
         this.pos = pos;
+        if (pos !== end) throw RangeError("index out of range");
+        this.len = len;
         return array;
       };
       Reader.prototype.sint32s = function read_sint32s(array) {
         if (array === void 0) array = [];
-        var end = this.uint32() + this.pos;
+        var end = this.uint32() + this.pos, len = this.len;
+        if (end > len) throw indexOutOfRange(this, end - this.pos);
+        this.len = end;
         while (this.pos < end)
           array.push(this.sint32());
+        if (this.pos !== end) throw RangeError("index out of range");
+        this.len = len;
         return array;
       };
       Reader.prototype.bools = function read_bools(array) {
         if (array === void 0) array = [];
-        var end = this.uint32() + this.pos, buf = this.buf, pos = this.pos, value;
+        var end = this.uint32() + this.pos, len = this.len, buf = this.buf, pos = this.pos, value;
+        if (end > len) throw indexOutOfRange(this, end - this.pos);
+        this.len = end;
         while (pos < end) {
           value = buf[pos++];
           if (value < 128)
@@ -3901,6 +8493,8 @@
           }
         }
         this.pos = pos;
+        if (pos !== end) throw RangeError("index out of range");
+        this.len = len;
         return array;
       };
       var VIEW_THRESHOLD_FLOAT = 8;
@@ -3982,23 +8576,35 @@
       };
       Reader.prototype.uint64s = function read_uint64s(array) {
         if (array === void 0) array = [];
-        var end = this.uint32() + this.pos;
+        var end = this.uint32() + this.pos, len = this.len;
+        if (end > len) throw indexOutOfRange(this, end - this.pos);
+        this.len = end;
         while (this.pos < end)
           array.push(this.uint64());
+        if (this.pos !== end) throw RangeError("index out of range");
+        this.len = len;
         return array;
       };
       Reader.prototype.int64s = function read_int64s(array) {
         if (array === void 0) array = [];
-        var end = this.uint32() + this.pos;
+        var end = this.uint32() + this.pos, len = this.len;
+        if (end > len) throw indexOutOfRange(this, end - this.pos);
+        this.len = end;
         while (this.pos < end)
           array.push(this.int64());
+        if (this.pos !== end) throw RangeError("index out of range");
+        this.len = len;
         return array;
       };
       Reader.prototype.sint64s = function read_sint64s(array) {
         if (array === void 0) array = [];
-        var end = this.uint32() + this.pos;
+        var end = this.uint32() + this.pos, len = this.len;
+        if (end > len) throw indexOutOfRange(this, end - this.pos);
+        this.len = end;
         while (this.pos < end)
           array.push(this.sint64());
+        if (this.pos !== end) throw RangeError("index out of range");
+        this.len = len;
         return array;
       };
       Reader.prototype.fixed64s = function read_fixed64s(array) {
@@ -4548,7 +9154,7 @@
       });
       Namespace.className = "Namespace";
       var Field = require_field();
-      var util = require_util();
+      var util = require_util2();
       var OneOf = require_oneof();
       var Type;
       var Service;
@@ -4842,8 +9448,8 @@
         }
       });
       MapField.className = "MapField";
-      var types = require_types();
-      var util = require_util();
+      var types = require_types2();
+      var util = require_util2();
       function MapField(name, id, keyType, type, options, comment) {
         Field.call(this, name, id, type, void 0, void 0, options, comment);
         if (!util.isString(keyType))
@@ -4917,7 +9523,7 @@
         }
       });
       Method.className = "Method";
-      var util = require_util();
+      var util = require_util2();
       function Method(name, type, requestType, responseType, requestStream, responseStream, options, comment, parsedOptions) {
         if (util.isObject(requestStream)) {
           options = requestStream;
@@ -5002,7 +9608,7 @@
       });
       Service.className = "Service";
       var Method = require_method();
-      var util = require_util();
+      var util = require_util2();
       var rpc = require_rpc();
       function Service(name, options) {
         Namespace.call(this, name, options);
@@ -5159,8 +9765,8 @@
       "use strict";
       module2.exports = decoder;
       var Enum = require_enum();
-      var types = require_types();
-      var util = require_util();
+      var types = require_types2();
+      var util = require_util2();
       function missing(field) {
         return "missing required '" + field.name + "'";
       }
@@ -5179,7 +9785,7 @@
           if (pfield.resolvedType instanceof Enum || !pfield.repeated && !pfield.map && !pfield.hasPresence)
             needsValueVar = true;
         }
-        var gen = util.codegen(["r", "l", "z", "q", "g"])("if(!(r instanceof Reader))")("r=Reader.create(r)")("if(q===undefined)q=0")("if(q>Reader.recursionLimit)")('throw Error("max depth exceeded")')("var c=l===undefined?r.len:r.pos+l,m=g||new C" + (hasMapField ? ",k,v" : needsValueVar ? ",v" : ""))("while(r.pos<c){")("var s=r.pos")("var t=r.tag()")("if(t===z){")("z=undefined")("break")("}");
+        var gen = util.codegen(["r", "l", "z", "q", "g"])("if(!(r instanceof Reader))")("r=Reader.create(r)")("if(q===undefined)q=0")("if(q>Reader.recursionLimit)")('throw Error("max depth exceeded")')("var c,m" + (hasMapField ? ",k,v" : needsValueVar ? ",v" : ""))("if(l===undefined)")("c=r.len")("else{")("c=r.pos+l")("if(c>r.len)")('throw RangeError("index out of range")')("l=r.len")("r.len=c")("}")("m=g||new C")("while(r.pos<c){")("var s=r.pos")("var t=r.tag()")("if(t===z){")("z=undefined")("break")("}");
         if (mtype.fieldsArray.length) gen("var u=t&7")("switch(t>>>=3){");
         for (i = 0; i < /* initializes */
         mtype.fieldsArray.length; ++i) {
@@ -5187,7 +9793,7 @@
           if (field.map) {
             gen("case %i:{", field.id)("if(u!==2)")("break");
             if (!closed) gen("if(%s===util.emptyObject)", ref)("%s={}", ref);
-            gen("var c2=r.uint32()+r.pos");
+            gen("var c2=r.uint32()+r.pos")("if(c2>r.len)")('throw RangeError("index out of range")')("r.len=c2");
             if (types.defaults[field.keyType] !== void 0) gen("k=%j", types.defaults[field.keyType]);
             else gen("k=null");
             if (types.long[type] !== void 0) gen("v=util.Long?util.Long.fromNumber(0,%j):0", type === "uint64" || type === "fixed64");
@@ -5197,6 +9803,7 @@
             if (types.basic[type] === void 0) gen("v=types[%i].decode(r,r.uint32(),undefined,q+1,v)", i);
             else gen("v=r.%s()", type === "string" ? stringMethod(field) : type);
             gen("continue")("}")("r.skipType(u,q,t2)")("}");
+            gen("if(r.pos!==c2)")('throw RangeError("index out of range")')("r.len=c");
             if (closed) {
               gen("if(types[%i].valuesById[v]===undefined){", i);
               genPreserveUnknown(gen, "r.raw(s,r.pos)")("continue")("}")("if(%s===util.emptyObject)", ref)("%s={}", ref);
@@ -5212,8 +9819,9 @@
             if (types.packed[type] !== void 0) {
               gen("if(u===2){");
               if (closed) {
-                gen("var c2=r.uint32()+r.pos")("while(r.pos<c2){")("s=r.pos")("v=r.%s()", type)("if(types[%i].valuesById[v]!==undefined){", i)("if(!(%s&&%s.length))", ref, ref)("%s=[]", ref)("%s.push(v)", ref)("}else");
+                gen("var c2=r.uint32()+r.pos")("if(c2>r.len)")('throw RangeError("index out of range")')("r.len=c2")("while(r.pos<c2){")("s=r.pos")("v=r.%s()", type)("if(types[%i].valuesById[v]!==undefined){", i)("if(!(%s&&%s.length))", ref, ref)("%s=[]", ref)("%s.push(v)", ref)("}else");
                 genPreserveUnknown(gen, "util.rawField(" + field.id + ",0,r.raw(s,r.pos))")("}");
+                gen("if(r.pos!==c2)")('throw RangeError("index out of range")')("r.len=c");
               } else gen("if(!(%s&&%s.length))", ref, ref)("%s=[]", ref)("r.%ss(%s)", type, ref);
               gen("continue")("}");
             }
@@ -5258,7 +9866,7 @@
         }
         if (i) gen("}");
         gen("r.skipType(%s,q,t)", i ? "u" : "t&7");
-        genPreserveUnknown(gen, "r.raw(s,r.pos)")("}")("if(z!==undefined)")('throw Error("missing end group")');
+        genPreserveUnknown(gen, "r.raw(s,r.pos)")("}")("if(l!==undefined){")("if(r.pos!==c)")('throw RangeError("index out of range")')("r.len=l")("}")("if(z!==undefined)")('throw Error("missing end group")');
         for (i = 0; i < mtype._fieldsArray.length; ++i) {
           var rfield = mtype._fieldsArray[i];
           if (rfield.required) gen("if(!Object.hasOwnProperty.call(m,%j))", rfield.name)("throw util.ProtocolError(%j,{instance:m})", missing(rfield));
@@ -5274,7 +9882,7 @@
       "use strict";
       module2.exports = verifier;
       var Enum = require_enum();
-      var util = require_util();
+      var util = require_util2();
       function invalid(field, expected) {
         return field.name + ": " + expected + (field.repeated && expected !== "array" ? "[]" : field.map && expected !== "object" ? "{k:" + field.keyType + "}" : "") + " expected";
       }
@@ -5382,8 +9990,8 @@
       "use strict";
       var converter = exports2;
       var Enum = require_enum();
-      var types = require_types();
-      var util = require_util();
+      var types = require_types2();
+      var util = require_util2();
       function genValuePartial_fromObject(gen, field, fieldIndex, prop, dstProp) {
         if (field.resolvedType) {
           if (field.resolvedType instanceof Enum) {
@@ -5612,6 +10220,10 @@
       var util = require_minimal();
       wrappers[".google.protobuf.Any"] = {
         fromObject: function(object, depth) {
+          if (depth === void 0)
+            depth = 0;
+          if (depth > util.recursionLimit)
+            throw Error("max depth exceeded");
           if (object && object["@type"]) {
             var name = object["@type"].substring(object["@type"].lastIndexOf("/") + 1);
             var type = this.lookup(name, [this.constructor]);
@@ -5622,7 +10234,7 @@
               }
               return this.create({
                 type_url,
-                value: type.encode(type.fromObject(object, depth === void 0 ? 1 : depth + 1)).finish()
+                value: type.encode(type.fromObject(object, depth + 1)).finish()
               });
             }
           }
@@ -5660,7 +10272,7 @@
   });
 
   // node_modules/protobufjs/src/type.js
-  var require_type = __commonJS({
+  var require_type2 = __commonJS({
     "node_modules/protobufjs/src/type.js"(exports2, module2) {
       "use strict";
       module2.exports = Type;
@@ -5682,7 +10294,7 @@
       var Message = require_message();
       var Reader = require_reader();
       var Writer = require_writer();
-      var util = require_util();
+      var util = require_util2();
       var encoder = require_encoder();
       var decoder = require_decoder();
       var verifier = require_verifier();
@@ -5696,6 +10308,7 @@
         this.extensions = void 0;
         this.reserved = void 0;
         this.group = void 0;
+        this.visibility = void 0;
         this._fieldsById = null;
         this._fieldsArray = null;
         this._oneofsArray = null;
@@ -5835,6 +10448,8 @@
           type.reserved = json.reserved;
         if (json.group)
           type.group = true;
+        if (json.visibility)
+          type.visibility = json.visibility;
         if (json.comment)
           type.comment = json.comment;
         if (json.edition)
@@ -5862,6 +10477,8 @@
           this.reserved && this.reserved.length ? this.reserved : void 0,
           "group",
           this.group || void 0,
+          "visibility",
+          this.visibility,
           "nested",
           inherited && inherited.nested || void 0,
           "comment",
@@ -6063,7 +10680,7 @@
       var Field = require_field();
       var Enum = require_enum();
       var OneOf = require_oneof();
-      var util = require_util();
+      var util = require_util2();
       var Type;
       var parse2;
       var common;
@@ -6122,7 +10739,7 @@
           if (Object.prototype.hasOwnProperty.call(common, filename2)) return filename2;
           return null;
         }
-        function process(filename2, source, depth) {
+        function process2(filename2, source, depth) {
           if (depth === void 0)
             depth = 0;
           try {
@@ -6163,12 +10780,12 @@
           self2.files.push(filename2);
           if (Object.prototype.hasOwnProperty.call(common, filename2)) {
             if (sync) {
-              process(filename2, common[filename2], depth);
+              process2(filename2, common[filename2], depth);
             } else {
               ++queued;
               setTimeout(function() {
                 --queued;
-                process(filename2, common[filename2], depth);
+                process2(filename2, common[filename2], depth);
               });
             }
             return;
@@ -6182,7 +10799,7 @@
                 finish(err);
               return;
             }
-            process(filename2, source, depth);
+            process2(filename2, source, depth);
           } else {
             ++queued;
             self2.fetch(filename2, function(err, source2) {
@@ -6197,7 +10814,7 @@
                   finish(null, self2);
                 return;
               }
-              process(filename2, source2, depth);
+              process2(filename2, source2, depth);
             });
           }
         }
@@ -6314,7 +10931,7 @@
   });
 
   // node_modules/protobufjs/src/util.js
-  var require_util = __commonJS({
+  var require_util2 = __commonJS({
     "node_modules/protobufjs/src/util.js"(exports2, module2) {
       "use strict";
       var util = module2.exports = require_minimal();
@@ -6403,7 +11020,7 @@
           return ctor.$type;
         }
         if (!Type)
-          Type = require_type();
+          Type = require_type2();
         var type = new Type(typeName || ctor.name);
         util.decorateRoot.add(type);
         type.ctor = ctor;
@@ -6457,11 +11074,11 @@
   });
 
   // node_modules/protobufjs/src/types.js
-  var require_types = __commonJS({
+  var require_types2 = __commonJS({
     "node_modules/protobufjs/src/types.js"(exports2) {
       "use strict";
       var types = exports2;
-      var util = require_util();
+      var util = require_util2();
       var s = [
         "double",
         // 0
@@ -6651,8 +11268,8 @@
       });
       Field.className = "Field";
       var Enum = require_enum();
-      var types = require_types();
-      var util = require_util();
+      var types = require_types2();
+      var util = require_util2();
       var Type;
       var ruleRe = /^(?:required|optional|repeated)$/;
       Field.fromJSON = function fromJSON(name, json) {
@@ -6872,7 +11489,7 @@
       });
       OneOf.className = "OneOf";
       var Field = require_field();
-      var util = require_util();
+      var util = require_util2();
       function OneOf(name, fieldNames, options, comment) {
         if (!Array.isArray(fieldNames)) {
           options = fieldNames;
@@ -6979,12 +11596,13 @@
       module2.exports = ReflectionObject;
       ReflectionObject.className = "ReflectionObject";
       var OneOf = require_oneof();
-      var util = require_util();
+      var util = require_util2();
       var Root;
-      var editions2024Defaults = { enum_type: "OPEN", field_presence: "EXPLICIT", json_format: "ALLOW", message_encoding: "LENGTH_PREFIXED", repeated_field_encoding: "PACKED", utf8_validation: "VERIFY", enforce_naming_style: "STYLE2024", default_symbol_visibility: "EXPORT_TOP_LEVEL" };
-      var editions2023Defaults = { enum_type: "OPEN", field_presence: "EXPLICIT", json_format: "ALLOW", message_encoding: "LENGTH_PREFIXED", repeated_field_encoding: "PACKED", utf8_validation: "VERIFY", enforce_naming_style: "STYLE_LEGACY", default_symbol_visibility: "EXPORT_ALL" };
       var proto2Defaults = { enum_type: "CLOSED", field_presence: "EXPLICIT", json_format: "LEGACY_BEST_EFFORT", message_encoding: "LENGTH_PREFIXED", repeated_field_encoding: "EXPANDED", utf8_validation: "NONE", enforce_naming_style: "STYLE_LEGACY", default_symbol_visibility: "EXPORT_ALL" };
       var proto3Defaults = { enum_type: "OPEN", field_presence: "IMPLICIT", json_format: "ALLOW", message_encoding: "LENGTH_PREFIXED", repeated_field_encoding: "PACKED", utf8_validation: "VERIFY", enforce_naming_style: "STYLE_LEGACY", default_symbol_visibility: "EXPORT_ALL" };
+      var editions2023Defaults = { enum_type: "OPEN", field_presence: "EXPLICIT", json_format: "ALLOW", message_encoding: "LENGTH_PREFIXED", repeated_field_encoding: "PACKED", utf8_validation: "VERIFY", enforce_naming_style: "STYLE_LEGACY", default_symbol_visibility: "EXPORT_ALL" };
+      var editions2024Defaults = { enum_type: "OPEN", field_presence: "EXPLICIT", json_format: "ALLOW", message_encoding: "LENGTH_PREFIXED", repeated_field_encoding: "PACKED", utf8_validation: "VERIFY", enforce_naming_style: "STYLE2024", default_symbol_visibility: "EXPORT_TOP_LEVEL" };
+      var editions2026Defaults = { enum_type: "OPEN", field_presence: "EXPLICIT", json_format: "ALLOW", message_encoding: "LENGTH_PREFIXED", repeated_field_encoding: "PACKED", utf8_validation: "VERIFY", enforce_naming_style: "STYLE2026", default_symbol_visibility: "STRICT", enforce_proto_limits: "PROTO_LIMITS2026" };
       function ReflectionObject(name, options) {
         if (!util.isString(name))
           throw TypeError("name must be a string");
@@ -7086,6 +11704,8 @@
             defaults = Object.assign({}, editions2023Defaults);
           } else if (edition === "2024") {
             defaults = Object.assign({}, editions2024Defaults);
+          } else if (edition === "2026") {
+            defaults = Object.assign({}, editions2026Defaults);
           } else {
             throw new Error("Unknown edition: " + edition);
           }
@@ -7202,7 +11822,7 @@
       });
       Enum.className = "Enum";
       var Namespace = require_namespace();
-      var util = require_util();
+      var util = require_util2();
       function Enum(name, values, options, comment, comments, valuesOptions) {
         ReflectionObject.call(this, name, options);
         if (values && typeof values !== "object")
@@ -7214,6 +11834,7 @@
         this.valuesOptions = valuesOptions;
         this._valuesFeatures = {};
         this.reserved = void 0;
+        this.visibility = void 0;
         if (values) {
           for (var keys = Object.keys(values), i = 0; i < keys.length; ++i)
             if (keys[i] !== "__proto__" && typeof values[keys[i]] === "number") {
@@ -7235,6 +11856,8 @@
       Enum.fromJSON = function fromJSON(name, json) {
         var enm = new Enum(name, json.values, json.options, json.comment, json.comments, json.valuesOptions);
         enm.reserved = json.reserved;
+        if (json.visibility)
+          enm.visibility = json.visibility;
         if (json.edition)
           enm._edition = json.edition;
         enm._defaultEdition = "proto3";
@@ -7253,6 +11876,8 @@
           this.values,
           "reserved",
           this.reserved && this.reserved.length ? this.reserved : void 0,
+          "visibility",
+          this.visibility,
           "comment",
           keepComments ? this.comment : void 0,
           "comments",
@@ -7314,8 +11939,8 @@
       "use strict";
       module2.exports = encoder;
       var Enum = require_enum();
-      var types = require_types();
-      var util = require_util();
+      var types = require_types2();
+      var util = require_util2();
       function genTypePartial(gen, field, fieldIndex, ref) {
         return field.delimited ? gen("types[%i].encode(%s,w.uint32(%i),q+1).uint32(%i)", fieldIndex, ref, (field.id << 3 | 3) >>> 0, (field.id << 3 | 4) >>> 0) : gen("types[%i].encode(%s,w.uint32(%i).fork(),q+1).ldelim()", fieldIndex, ref, (field.id << 3 | 2) >>> 0);
       }
@@ -7397,7 +12022,7 @@
       exports2.Namespace = require_namespace();
       exports2.Root = require_root();
       exports2.Enum = require_enum();
-      exports2.Type = require_type();
+      exports2.Type = require_type2();
       exports2.Field = require_field();
       exports2.OneOf = require_oneof();
       exports2.MapField = require_mapfield();
@@ -7405,8 +12030,8 @@
       exports2.Method = require_method();
       exports2.Message = require_message();
       exports2.wrappers = require_wrappers();
-      exports2.types = require_types();
-      exports2.util = require_util();
+      exports2.types = require_types2();
+      exports2.util = require_util2();
       exports2.ReflectionObject._configure(exports2.Root);
       exports2.Namespace._configure(exports2.Type, exports2.Service, exports2.Enum);
       exports2.Root._configure(exports2.Type, void 0, {});
@@ -7422,7 +12047,7 @@
     }
   });
 
-  // tiles.mjs
+  // mockjs/tiles.mjs
   var SUIT_CHAR = { 1: "m", 2: "p", 3: "s", 4: "z" };
   function tileId(suit, rank, copy) {
     return suit * 100 + rank * 10 + copy;
@@ -7491,10 +12116,7 @@
     return rank + HAN_ZI[suit];
   }
 
-  // ai.mjs
-  var import_riichi = __toESM(require_riichi(), 1);
-
-  // shanten.mjs
+  // mockjs/shanten.mjs
   function tileIndex(id) {
     const { suit, rank } = decodeId(id);
     if (suit >= 1 && suit <= 3) return (suit - 1) * 9 + (rank - 1);
@@ -7704,7 +12326,8 @@
     return { shanten: bestSh, options };
   }
 
-  // ai.mjs
+  // mockjs/ai.mjs
+  var import_riichi = __toESM(require_riichi(), 1);
   var SUIT_CHAR2 = { 1: "m", 2: "p", 3: "s", 4: "z" };
   var kindOf = (id) => {
     const d = decodeId(id);
@@ -7724,7 +12347,8 @@
   }
   function furoGroupStr(meld, akaSet) {
     const suit = decodeId(meld.tiles[0]).suit;
-    return meld.tiles.map((id) => tileDigit(id, akaSet)).join("") + SUIT_CHAR2[suit];
+    const tiles = meld.type === "ankan" ? [...meld.tiles].sort((a, b) => Number(akaSet?.has(b) || false) - Number(akaSet?.has(a) || false)).slice(0, 2) : meld.tiles;
+    return tiles.map((id) => tileDigit(id, akaSet)).join("") + SUIT_CHAR2[suit];
   }
   function furoStr(melds, akaSet) {
     return realMelds(melds).map((m) => furoGroupStr(m, akaSet)).join("+");
@@ -7735,10 +12359,11 @@
     const fs = furoStr(melds, akaSet);
     if (fs) s += "+" + fs;
     let ex = "";
-    if (opts.riichi) ex += "r";
+    if (opts.doubleRiichi) ex += "w";
+    else if (opts.riichi) ex += "r";
     if (opts.ippatsu) ex += "i";
     if (opts.rinshan || opts.chankan) ex += "k";
-    if (opts.haidi) ex += "h";
+    if (opts.haidi && !opts.rinshan && !opts.chankan) ex += "h";
     if (opts.tenho) ex += "t";
     ex += "" + (opts.roundWind || 1) + (opts.seatWind || 1);
     s += "+" + ex;
@@ -7755,7 +12380,19 @@
     const str = handStr(concealedIds, melds, akaSet, opts);
     let res;
     try {
-      res = new import_riichi.default(str.toLowerCase()).calc();
+      const calculator = new import_riichi.default(str.toLowerCase());
+      if (opts.rinshan && opts.ronTile == null) {
+        const calcYaku = calculator.calcYaku;
+        calculator.calcYaku = function() {
+          calcYaku.call(this);
+          const result = this.tmpResult;
+          if (!result.yakuman && !result.yaku["\u5DBA\u4E0A\u958B\u82B1"]) {
+            result.yaku["\u5DBA\u4E0A\u958B\u82B1"] = "1\u98DC";
+            result.han += 1;
+          }
+        };
+      }
+      res = calculator.calc();
     } catch (e) {
       return { isAgari: false, hasYaku: false, han: 0, fu: 0, ten: 0, yakuman: 0, yaku: {}, name: "", oya: [0], ko: [0], error: true };
     }
@@ -7794,12 +12431,17 @@
       doraKinds = null,
       akaSet = null,
       dangerKinds = null,
+      dangerWeight = 1,
       forced = null,
-      remainOf = null
+      forbiddenKinds = null,
+      remainOf = null,
+      maxShantenLoss = 0,
+      shantenLossPenalty = 240,
+      ukeireWeight = 12
     } = opts;
     const meldCount = realMelds(melds).length;
     const counts = countsOf(concealedIds);
-    if (forced != null && concealedIds.includes(forced)) {
+    if (forced != null && concealedIds.includes(forced) && !forbiddenKinds?.has(kindOf(forced))) {
       const c2 = counts.slice();
       c2[tileIndex(forced)]--;
       const w = waitsOfCounts(c2, meldCount, remainOf);
@@ -7811,24 +12453,50 @@
         score: 0
       };
     }
-    const { shanten: sh, options } = discardOptionsOfCounts(counts, meldCount, remainOf);
+    const legalOptions = [];
+    for (let idx = 0; idx < counts.length; idx++) {
+      if (counts[idx] === 0) continue;
+      const id = pickIdFromHand(concealedIds, idx, akaSet);
+      if (id == null || forbiddenKinds?.has(kindOf(id))) continue;
+      counts[idx]--;
+      const shanten = shantenOfCounts(counts, meldCount);
+      counts[idx]++;
+      legalOptions.push({ idx, shanten });
+    }
+    if (!legalOptions.length) throw new Error("\u6CA1\u6709\u5408\u6CD5\u7684\u53EF\u6253\u724C");
+    const bestShanten = Math.min(...legalOptions.map((option) => option.shanten));
+    const options = legalOptions.filter((option) => option.shanten <= bestShanten + maxShantenLoss);
     let best = null;
-    for (const o of options) {
-      const id = pickIdFromHand(concealedIds, o.idx, akaSet);
-      if (id == null) continue;
-      const score = discardSecondaryScore(id, concealedIds, { drawnTile, doraKinds, akaSet, dangerKinds });
-      const cand = {
+    for (const option of options) {
+      const id = pickIdFromHand(concealedIds, option.idx, akaSet);
+      if (id == null || forbiddenKinds?.has(kindOf(id))) continue;
+      counts[option.idx]--;
+      const waits = waitsOfCounts(counts, meldCount, remainOf);
+      counts[option.idx]++;
+      option.waits = waits.waits;
+      option.ukeire = waits.ukeire;
+      const secondary = discardSecondaryScore(id, concealedIds, {
+        drawnTile,
+        doraKinds,
+        akaSet,
+        dangerKinds,
+        dangerWeight
+      });
+      const totalScore = option.ukeire * ukeireWeight - (option.shanten - bestShanten) * shantenLossPenalty + secondary;
+      const candidate = {
         discardId: id,
-        shanten: sh,
-        ukeire: o.ukeire,
-        score,
-        waits: o.waits.map((i) => indexToTileId(i))
+        shanten: option.shanten,
+        ukeire: option.ukeire,
+        score: totalScore,
+        waits: option.waits.map((i) => indexToTileId(i))
       };
-      if (!best || cand.ukeire > best.ukeire || cand.ukeire === best.ukeire && cand.score > best.score) best = cand;
+      if (!best || candidate.score > best.score || candidate.score === best.score && candidate.discardId < best.discardId) best = candidate;
     }
     if (!best) {
-      const id = drawnTile != null && concealedIds.includes(drawnTile) ? drawnTile : concealedIds[concealedIds.length - 1];
-      return { discardId: id, shanten: sh, ukeire: 0, score: 0, waits: [] };
+      const allowed = concealedIds.filter((id2) => !forbiddenKinds?.has(kindOf(id2)));
+      const id = drawnTile != null && allowed.includes(drawnTile) ? drawnTile : allowed[allowed.length - 1];
+      if (id == null) throw new Error("\u6CA1\u6709\u5408\u6CD5\u7684\u53EF\u6253\u724C");
+      return { discardId: id, shanten: bestShanten, ukeire: 0, score: 0, waits: [] };
     }
     return best;
   }
@@ -7844,7 +12512,7 @@
     }
     return plain != null ? plain : any;
   }
-  function discardSecondaryScore(tile, handIds, { drawnTile, doraKinds, akaSet, dangerKinds }) {
+  function discardSecondaryScore(tile, handIds, { drawnTile, doraKinds, akaSet, dangerKinds, dangerWeight = 1 }) {
     let s = 0;
     const { suit, rank } = decodeId(tile);
     const kind = suit * 10 + rank;
@@ -7856,13 +12524,30 @@
     if (suit !== 4 && (rank === 2 || rank === 8) && cnt === 1) s += 5;
     if (drawnTile != null && tile === drawnTile) s += 10;
     if (dangerKinds) {
-      if (dangerKinds.safe && dangerKinds.safe.has(kind)) s += 60;
-      if (dangerKinds.risky && dangerKinds.risky.has(kind)) s -= 80;
+      const risk = dangerKinds.riskByKind?.get(kind);
+      if (Number.isFinite(risk)) s -= risk * dangerWeight;
+      else {
+        if (dangerKinds.safe?.has(kind)) s += 60;
+        if (dangerKinds.risky?.has(kind)) s -= 80;
+      }
     }
     return s;
   }
 
-  // proto_enum.mjs
+  // mockjs/proto_enum.mjs
+  var Result = {
+    Succ: 0,
+    Fail_InternalError: 1,
+    Fail_InvalidParam: 2,
+    Fail_InvalidSequence: 3,
+    Fail_ActionNotInCanPlayActions: 101,
+    Fail_CardInCantPlays: 102,
+    Fail_RiichiPlayCardWrong: 103,
+    Fail_CardNotInHand: 104,
+    Fail_CardNotMatchAction: 105,
+    Fail_ActionNotInCanQiangActions: 201,
+    Fail_InvalidOtherCards: 202
+  };
   var RiichiMsg = {
     ENone: 0,
     EReqPrepare: 1,
@@ -7970,7 +12655,7 @@
     SiJiaLiZhi: 4
   };
 
-  // yaku_map.mjs
+  // mockjs/yaku_map.mjs
   var DIRECT = {
     "\u7ACB\u76F4": YiType.LiZhi,
     "\u30C0\u30D6\u30EB\u7ACB\u76F4": YiType.ShuangLiZi,
@@ -8065,12 +12750,11 @@
     if (han >= 8) return ManType.BeiMan;
     if (han >= 6) return ManType.TiaoMan;
     if (han >= 5) return ManType.ManGuan;
-    // 低番高符满贯：4 番 40 符以上 / 3 番 70 符以上即满贯档（荣和 8000）
-    if ((han === 4 && fu >= 40) || (han === 3 && fu >= 70)) return ManType.ManGuan;
+    if (han === 4 && fu >= 40 || han === 3 && fu >= 70) return ManType.ManGuan;
     return ManType.NoMan;
   }
 
-  // engine.mjs
+  // mockjs/engine.mjs
   var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   var kindOf2 = (id) => {
     const d = decodeId(id);
@@ -8093,18 +12777,29 @@
       });
       this.autoHuman = !!opts.autoHuman;
       this.speed = opts.speed != null ? opts.speed : 1;
-      this.rng = seed != null ? mulberry32(seed) : Math.random;
+      this.baseTime = opts.baseTime != null ? opts.baseTime : 5;
+      this.extraTime = opts.extraTime != null ? opts.extraTime : 20;
+      this.internalState = { 0: true, 1: false, 2: false, 3: false, 4: false, 5: false };
+      this.setInternalState(opts.internalState || {});
+      this.seed = seed != null ? Number(seed) >>> 0 : null;
+      this.rng = this.seed != null ? mulberry32(this.seed) : Math.random;
       this.handIndex = 0;
       this.juNum = 0;
-      this.maxHands = opts.maxHands != null ? opts.maxHands : 16;
+      this.matchLength = opts.matchLength === "hanchan" ? "hanchan" : "east";
+      this.regularWinds = this.matchLength === "hanchan" ? 2 : 1;
+      this.maxHands = opts.maxHands != null ? opts.maxHands : this.matchLength === "hanchan" ? 64 : 32;
       this.roundWind = 1;
       this.honba = 0;
+      this.renchanCount = 0;
       this.riichiSticks = 0;
       this.dealerSeat = 0;
       this.scores = null;
       this.xunNum = 0;
       this._pending = null;
-      this._processing = false; // 动作执行中标记（防重复包重放）
+      this._processing = false;
+      this._expectedDraw = null;
+      this._expectedClaim = null;
+      this._nextCantPlays = null;
       this._bufferedDraw = null;
       this._bufferedClaim = null;
       this._prepareWaiter = null;
@@ -8112,6 +12807,9 @@
       this.matchOver = false;
       this.finished = false;
       this.onFinish = opts.onFinish || null;
+      this.onFinalResult = opts.onFinalResult || null;
+      this._finalResult = null;
+      this.matchStats = { hands: 0, wins: 0, dealIns: 0, riichi: 0, calls: 0, tsumo: 0, ron: 0, winPoints: 0, winTurns: 0, maxRenchan: 0 };
       this.uids = opts.uids && opts.uids.length >= players ? opts.uids.slice(0, players) : Array.from({ length: players }, (_, s) => 1e4 + s);
     }
     uidOf(seat) {
@@ -8170,6 +12868,9 @@
     // ================= 一局 =================
     async runHand() {
       this.handEnded = false;
+      this._expectedDraw = null;
+      this._expectedClaim = null;
+      this._nextCantPlays = null;
       this.xunNum = 0;
       this.kanCount = 0;
       this.firstGoAround = true;
@@ -8177,17 +12878,16 @@
       const { tiles, akaSet } = buildWall({ sanma: this.sanma, akaCount: this.akaCount });
       this.akaSet = akaSet;
       const wall = shuffle(tiles, this.rng);
-      // 王牌总数：四麻14张、三麻18张（三麻拔北规则需8张岭上牌，故王牌扩为18张，宝牌指示牌仍为5张）
       const deadLen = this.sanma ? 18 : 14;
       const dead = wall.splice(wall.length - deadLen, deadLen);
       this.deadWall = dead;
       const rinLen = this.sanma ? 8 : 4;
       this.replacements = dead.slice(0, rinLen);
-      // 初始宝牌指示牌位置：四麻 dead[4]；三麻前8张是岭上，故 dead[8]（两者均为5张宝牌指示牌，布局一致）
       const baoBase = this.sanma ? 8 : 4;
       this.doraIndicators = [dead[baoBase]];
       this.uraIndicators = [dead[baoBase + 1]];
       this._pendingBaoPreCard = 0;
+      this._deferredKanDora = 0;
       this.wall = wall;
       this.remain = wall.length;
       const players = [];
@@ -8198,15 +12898,22 @@
           isHuman: s === 0,
           score,
           scoreAtStart: score,
+          timeBank: s === 0 ? this.extraTime : 0,
           hand: wall.splice(0, 13).sort((a, b) => a - b),
           melds: [],
           discards: [],
+          discardClaimed: false,
           discardKinds: /* @__PURE__ */ new Set(),
           riichi: false,
+          doubleRiichi: false,
           riichiTurn: -1,
+          riichiPending: false,
           ippatsu: false,
           menzen: true,
           waits: [],
+          tempFuriten: false,
+          riichiFuriten: false,
+          pao: {},
           drawnTile: null,
           rinshan: false
         });
@@ -8232,6 +12939,7 @@
       dealer.rinshan = false;
       this.xunNum = 1;
       const dealerActions = this.turnActions(this.dealerSeat, true);
+      this.expectDraw(this.dealerSeat, true, dealerActions, []);
       this.emit(RiichiMsg.ENtfGameStart, {
         changWind: this.roundWind - 1,
         juNum: this.juNum + 1,
@@ -8253,10 +12961,10 @@
             xunNum: isDealer ? 1 : 0
           };
         }),
-        leftTimer: 20,
-        defaultMinTimeout: 8,
+        leftTimer: this.extraTime,
+        defaultMinTimeout: this.baseTime,
         riichiBangNum: this.riichiSticks,
-        isAllLast: this.juNum >= this.playersN - 1 || this.roundWind >= 2,
+        isAllLast: this.isAllLast(),
         gameID: "mock-" + Date.now() + "-" + this.handIndex,
         duiCardsStrEncode: "",
         duiCardsStrSaltEncode: "",
@@ -8272,6 +12980,9 @@
     seatWindOf(seat) {
       return ((seat - this.dealerSeat) % this.playersN + this.playersN) % this.playersN + 1;
     }
+    isAllLast() {
+      return this.roundWind > this.regularWinds || this.roundWind === this.regularWinds && this.juNum === this.playersN - 1;
+    }
     // ================= 摸牌 =================
     async turnDraw(seat) {
       if (this.handEnded) return;
@@ -8280,6 +12991,7 @@
         return;
       }
       const p = this.players[seat];
+      p.tempFuriten = false;
       const tile = this.wall.shift();
       this.remain = this.wall.length;
       p.hand.push(tile);
@@ -8291,6 +13003,7 @@
     // 岭上摸牌（杠后）
     async drawReplacement(seat) {
       const p = this.players[seat];
+      p.tempFuriten = false;
       if (!this.replacements.length || this.remain <= 0) {
         await this.exhaustiveDraw();
         return false;
@@ -8306,26 +13019,106 @@
     }
     async doBaBei(seat, tile) {
       const p = this.players[seat];
-      const i = p.hand.lastIndexOf(tile);
-      if (i >= 0) p.hand.splice(i, 1);
-      p.melds.push({ type: "babei", tiles: [tile] });
-      for (const q of this.players) q.ippatsu = false;
-      this.firstGoAround = false;
-      this.emit(RiichiMsg.ENtfPlayCard, this.buildPlayCard(seat, tile, PlayAction.BaBei, false, this.emptyClaims()));
+      const canQiang = this.players.map((player) => {
+        if (player.seat === seat || !this.canRon(player, tile)) return [];
+        return [PlayAction.Hu, PlayAction.Guo];
+      });
+      this.expectClaim(0, seat, tile, canQiang[0] || []);
+      this.emit(RiichiMsg.ENtfPlayCard, this.buildPlayCard(seat, tile, PlayAction.BaBei, false, canQiang));
       await this._d(this.T.claim);
+      if (await this.resolveKanRob(seat, tile, canQiang, {})) return;
+      p.hand.splice(p.hand.indexOf(tile), 1);
+      p.melds.push({ type: "babei", tiles: [tile] });
+      for (const player of this.players) player.ippatsu = false;
+      this.firstGoAround = false;
       if (!await this.drawReplacement(seat)) return;
       await this.awaitTurn(seat, true);
+    }
+    expectDraw(seat, drew, actions, cantPlays = []) {
+      if (this.autoHuman || !this.players[seat]?.isHuman) {
+        this._expectedDraw = null;
+        return;
+      }
+      this._processing = false;
+      this._expectedDraw = { seat, drew, actions: actions.slice(), cantPlays: cantPlays.slice() };
+    }
+    validateTurnPayload(payload, expected = this._expectedDraw) {
+      if (!expected || !this.players?.[expected.seat]) return Result.Fail_InvalidSequence;
+      const p = this.players[expected.seat];
+      const action = Number(payload?.action);
+      const card = Number(payload?.card);
+      if (!Number.isInteger(action)) return Result.Fail_InvalidParam;
+      if (!expected.actions.includes(action)) return Result.Fail_ActionNotInCanPlayActions;
+      if (action === PlayAction.Hu || action === PlayAction.JiuZhongJiuLiuJu) return Result.Succ;
+      if (!Number.isInteger(card) || !p.hand.includes(card)) return Result.Fail_CardNotInHand;
+      if (expected.cantPlays.includes(kindOf2(card) * 10)) return Result.Fail_CardInCantPlays;
+      if (action === PlayAction.Riichi) {
+        const hand = p.hand.slice();
+        hand.splice(hand.indexOf(card), 1);
+        if (!this.isFormalTenpaiHand(hand, p.melds)) return Result.Fail_RiichiPlayCardWrong;
+      }
+      if (action === PlayAction.AnGang) {
+        const allowed = this.concealedQuadTiles(p).some((tile) => kindOf2(tile) === kindOf2(card));
+        if (!allowed) return Result.Fail_CardNotMatchAction;
+      }
+      if (action === PlayAction.PengGang) {
+        const matchesPon = p.melds.some((meld) => meld.type === "pon" && kindOf2(meld.tiles[0]) === kindOf2(card));
+        if (!matchesPon) return Result.Fail_CardNotMatchAction;
+      }
+      if (action === PlayAction.BaBei) {
+        const { suit, rank } = decodeId(card);
+        if (suit !== 4 || rank !== 4 || p.riichi && card !== p.drawnTile) return Result.Fail_CardNotMatchAction;
+      }
+      if (action === PlayAction.Normal && p.riichi && p.riichiTurn !== this.xunNum && card !== p.drawnTile) {
+        return Result.Fail_CardNotMatchAction;
+      }
+      return Result.Succ;
+    }
+    expectClaim(seat, discarderSeat, card, actions) {
+      if (this.autoHuman || !this.players[seat]?.isHuman || !actions?.length) {
+        this._expectedClaim = null;
+        return;
+      }
+      this._processing = false;
+      this._expectedClaim = { seat, discarderSeat, card, actions: actions.slice() };
+    }
+    validateClaimPayload(payload, expected = this._expectedClaim) {
+      if (!expected || !this.players?.[expected.seat]) return Result.Fail_InvalidSequence;
+      const action = Number(payload?.action);
+      if (!Number.isInteger(action)) return Result.Fail_InvalidParam;
+      if (!expected.actions.includes(action)) return Result.Fail_ActionNotInCanQiangActions;
+      if (action === PlayAction.Guo || action === PlayAction.Hu) return Result.Succ;
+      const p = this.players[expected.seat];
+      const otherCards = Array.isArray(payload?.otherCards) ? payload.otherCards.map(Number) : [];
+      const needed = action === PlayAction.MingGang ? 3 : 2;
+      if (otherCards.length !== needed || new Set(otherCards).size !== otherCards.length || otherCards.some((tile) => !p.hand.includes(tile))) {
+        return Result.Fail_InvalidOtherCards;
+      }
+      const claimedKind = kindOf2(expected.card);
+      if (action === PlayAction.Peng || action === PlayAction.MingGang) {
+        return otherCards.every((tile) => kindOf2(tile) === claimedKind) ? Result.Succ : Result.Fail_InvalidOtherCards;
+      }
+      if (action === PlayAction.Chi) {
+        if (this.sanma || expected.seat !== this.nextSeat(expected.discarderSeat)) return Result.Fail_InvalidOtherCards;
+        const all = [...otherCards, expected.card].map(decodeId);
+        if (all.some((tile) => tile.suit === 4 || tile.suit !== all[0].suit)) return Result.Fail_InvalidOtherCards;
+        const ranks = all.map((tile) => tile.rank).sort((a, b) => a - b);
+        return ranks[0] + 1 === ranks[1] && ranks[1] + 1 === ranks[2] ? Result.Succ : Result.Fail_InvalidOtherCards;
+      }
+      return Result.Fail_ActionNotInCanQiangActions;
     }
     // ================= 轮到某家行动（手上 14 张） =================
     async awaitTurn(seat, drew, skipNotify) {
       if (this.handEnded) return;
       const p = this.players[seat];
-      const aiControlled = this.isAiSeat(p);
-      if (drew && aiControlled && this.canJiuZhongJiuPai(p)) {
+      if (drew && this.isAiSeat(p) && this.canJiuZhongJiuPai(p)) {
         await this.abortiveDraw(LiuJuType.JiuZhongJiuPai, seat);
         return;
       }
       const can = this.turnActions(seat, drew);
+      const cantPlays = this._nextCantPlays?.seat === seat ? this._nextCantPlays.values : [];
+      this._nextCantPlays = null;
+      if (!this._expectedDraw && this._bufferedDraw == null) this.expectDraw(seat, drew, can, cantPlays);
       if (drew && !skipNotify) {
         const newBao = this._pendingBaoPreCard || 0;
         this._pendingBaoPreCard = 0;
@@ -8337,47 +13130,56 @@
             card: q.seat === seat && (q.isHuman || this.autoHuman) ? p.drawnTile : 0,
             tingInfos: q.seat === seat ? this.buildTingInfos(p) : [],
             canPlayActions: q.seat === seat ? can : [],
-            leftTimer: q.isHuman ? 20 : 0,
-            // 真实抓包：人类(seat0)始终 20，AI 为 0
+            leftTimer: q.isHuman ? Math.ceil(q.timeBank) : 0,
             isZhenTing: this.isFuriten(q),
             xunNum: this.xunNum,
-            zhenTingTypes: []
+            zhenTingTypes: this.furitenTypes(q)
           }))
         });
         await this._d(this.T.think);
       }
       let action, card;
-      if (!aiControlled) {
-        this._processing = false; // 即将等待人类输入，允许缓存合法早到响应
+      const useHumanInput = !this.isAiSeat(p) || this._bufferedDraw != null;
+      if (useHumanInput) {
+        if (!this._expectedDraw && this._bufferedDraw == null) this.expectDraw(seat, drew, can, cantPlays);
+        this._processing = false;
         const payload = await this.waitHuman("draw");
         action = payload.action != null ? payload.action : PlayAction.Normal;
         card = payload.card != null ? payload.card : p.drawnTile;
       } else {
-        const d = this.aiTurn(seat, drew, can);
+        this._expectedDraw = null;
+        const d = this.aiTurn(seat, drew, can, cantPlays);
         action = d.action;
         card = d.card;
         await this._d(this.T.think);
       }
-      await this.processTurnAction(seat, action, card, drew);
+      const result = await this.processTurnAction(seat, action, card, drew, cantPlays);
+      if (result !== Result.Succ) throw new Error(`\u975E\u6CD5\u5185\u90E8\u52A8\u4F5C seat=${seat} action=${action} result=${result}`);
     }
     // 手牌 14 张时的可选动作
     turnActions(seat, drew) {
       const p = this.players[seat];
       const acts = [PlayAction.Normal];
       if (drew && this.canTsumo(p)) acts.push(PlayAction.Hu);
-      if (!p.riichi && p.menzen && this.canRiichi(p)) acts.push(PlayAction.Riichi);
+      if (drew && !p.riichi && p.menzen && this.canRiichi(p)) acts.push(PlayAction.Riichi);
       if (drew && this.kanCount < 4 && this.remain > 1) {
         if (this.concealedQuadTile(p) != null) acts.push(PlayAction.AnGang);
         if (!p.riichi && this.addedKanTile(p) != null) acts.push(PlayAction.PengGang);
       }
       if (drew && !this.isAiSeat(p) && this.canJiuZhongJiuPai(p)) acts.push(PlayAction.JiuZhongJiuLiuJu);
-      if (this.sanma && this.northInHand(p) != null && this.replacements.length && this.remain > 1) {
+      if (drew && this.sanma && this.northInHand(p) != null && this.replacements.length && this.remain > 1) {
         acts.push(PlayAction.BaBei);
       }
       return acts;
     }
     // 手里的北（三麻拔北用），没有则返回 null
     northInHand(p) {
+      if (p.riichi) {
+        const tile = p.drawnTile;
+        if (tile == null || !p.hand.includes(tile)) return null;
+        const drawn = decodeId(tile);
+        return drawn.suit === 4 && drawn.rank === 4 ? tile : null;
+      }
       for (const t of p.hand) {
         const d = decodeId(t);
         if (d.suit === 4 && d.rank === 4) return t;
@@ -8405,22 +13207,52 @@
       if (!p.menzen || p.riichi) return false;
       if (p.score < 1e3) return false;
       if (this.remain < this.playersN) return false;
-      return this.bestDiscard(p).shanten === 0;
+      return this.formalTenpaiDiscards(p).length > 0;
     }
     canTsumo(p) {
       const w = calcWin(p.hand, p.melds, this.akaSet, this.winOpts(p, false));
       return w.isAgari && w.hasYaku;
     }
+    concealedQuadTiles(p) {
+      const counts = /* @__PURE__ */ new Map();
+      for (const tile of p.hand) counts.set(kindOf2(tile), (counts.get(kindOf2(tile)) || 0) + 1);
+      const quads = [...counts.entries()].filter(([, count]) => count === 4).map(([kind]) => p.hand.find((tile) => kindOf2(tile) === kind));
+      if (!p.riichi) return quads;
+      if (p.drawnTile == null) return [];
+      const drawnKind = kindOf2(p.drawnTile);
+      return quads.filter((tile) => kindOf2(tile) === drawnKind && this.riichiAnkanKeepsWaits(p, drawnKind));
+    }
     concealedQuadTile(p) {
-      const cnt = {};
-      for (const t of p.hand) cnt[kindOf2(t)] = (cnt[kindOf2(t)] || 0) + 1;
-      for (const [k, c] of Object.entries(cnt)) {
-        if (c >= 4) {
-          if (p.riichi) return null;
-          return p.hand.find((t) => kindOf2(t) === Number(k));
-        }
+      return this.concealedQuadTiles(p)[0] ?? null;
+    }
+    sameWaitKinds(left, right) {
+      return left.length === right.length && left.every((kind, index) => kind === right[index]);
+    }
+    riichiAnkanKeepsWaits(p, quadKind) {
+      const before = p.hand.slice();
+      const drawnIndex = before.indexOf(p.drawnTile);
+      if (drawnIndex < 0) return false;
+      before.splice(drawnIndex, 1);
+      const beforeWaits = handWaits(before, p.melds).waitKinds.slice().sort((a, b) => a - b);
+      const after = p.hand.filter((tile) => kindOf2(tile) !== quadKind);
+      const placeholder = p.hand.find((tile) => kindOf2(tile) === quadKind);
+      const afterWaits = handWaits(after, p.melds.concat([{ type: "ankan", tiles: [placeholder, placeholder, placeholder, placeholder] }])).waitKinds.slice().sort((a, b) => a - b);
+      return this.sameWaitKinds(beforeWaits, afterWaits);
+    }
+    riichiFutureAnkanKinds(p) {
+      if (!p.riichi || p.hand.length % 3 !== 1) return [];
+      const beforeWaits = handWaits(p.hand, p.melds).waitKinds.slice().sort((a, b) => a - b);
+      const counts = /* @__PURE__ */ new Map();
+      for (const tile of p.hand) counts.set(kindOf2(tile), (counts.get(kindOf2(tile)) || 0) + 1);
+      const result = [];
+      for (const [kind, count] of counts) {
+        if (count !== 3) continue;
+        const after = p.hand.filter((tile) => kindOf2(tile) !== kind);
+        const placeholder = p.hand.find((tile) => kindOf2(tile) === kind);
+        const afterWaits = handWaits(after, p.melds.concat([{ type: "ankan", tiles: [placeholder, placeholder, placeholder, placeholder] }])).waitKinds.slice().sort((a, b) => a - b);
+        if (this.sameWaitKinds(beforeWaits, afterWaits)) result.push(kind * 10);
       }
-      return null;
+      return result;
     }
     // 加杠：手上有与已碰的刻子同种的牌
     addedKanTile(p) {
@@ -8456,17 +13288,18 @@
     remainOfFor(p) {
       const vis = this.visibleCounts();
       const own = countsOf(p.hand);
-      const total = (idx) => this.sanma && idx === 30 ? 0 : 4;
+      const total = (idx) => this.sanma && idx >= 1 && idx <= 7 ? 0 : 4;
       return (idx) => total(idx) - vis[idx] - own[idx];
     }
     // 统一的弃牌评估入口
     bestDiscard(p, extra = {}) {
-      return chooseDiscard(p.hand, p.melds, __spreadValues({
+      return chooseDiscard(p.hand, p.melds, {
         drawnTile: p.drawnTile,
         doraKinds: this.doraKinds(),
         akaSet: this.akaSet,
-        remainOf: this.remainOfFor(p)
-      }, extra));
+        remainOf: this.remainOfFor(p),
+        ...extra
+      });
     }
     doraTilesFor(p) {
       const out = this.doraIndicators.map((i) => doraFromIndicator(i, this.sanma));
@@ -8477,9 +13310,11 @@
       return {
         ronTile: isRon ? ronTile : null,
         riichi: p.riichi,
+        doubleRiichi: p.doubleRiichi,
         ippatsu: p.riichi && p.ippatsu,
+        tenho: !isRon && this.firstGoAround && p.discards.length === 0,
         rinshan: !isRon && p.rinshan,
-        haidi: this.remain <= 0,
+        haidi: this.remain <= 0 && (isRon || !p.rinshan),
         doraTiles: this.doraTilesFor(p),
         roundWind: this.roundWind,
         seatWind: this.seatWindOf(p.seat)
@@ -8493,13 +13328,60 @@
       p.waits = info.shanten === 0 ? info.waitKinds : [];
       p.waitTiles = info.shanten === 0 ? info.waits : [];
     }
+    isFormalTenpaiHand(hand, melds) {
+      const info = handWaits(hand, melds);
+      if (info.shanten !== 0 || !info.waitKinds.length) return false;
+      if (info.waitKinds.length !== 1) return true;
+      const waitKind = info.waitKinds[0];
+      return hand.filter((tile) => kindOf2(tile) === waitKind).length < 4;
+    }
+    formalTenpaiDiscards(p) {
+      if (p.hand.length % 3 !== 2) return [];
+      const result = [];
+      const seen = /* @__PURE__ */ new Set();
+      for (const tile of p.hand) {
+        const kind = kindOf2(tile);
+        if (seen.has(kind)) continue;
+        seen.add(kind);
+        const hand = p.hand.slice();
+        hand.splice(hand.indexOf(tile), 1);
+        if (this.isFormalTenpaiHand(hand, p.melds)) result.push(kind);
+      }
+      return result;
+    }
     isTenpai(p) {
-      if (p.hand.length % 3 === 1) return handShanten(p.hand, p.melds) === 0;
-      return this.bestDiscard(p).shanten === 0;
+      if (p.hand.length % 3 === 1) return this.isFormalTenpaiHand(p.hand, p.melds);
+      return this.formalTenpaiDiscards(p).length > 0;
+    }
+    selfFuriten(p) {
+      return !!p.waits?.length && p.waits.some((kind) => p.discardKinds.has(kind));
     }
     isFuriten(p) {
-      if (!p.waits || !p.waits.length) return false;
-      return p.waits.some((k) => p.discardKinds.has(k));
+      return this.selfFuriten(p) || !!p.tempFuriten || !!p.riichiFuriten;
+    }
+    furitenTypes(p) {
+      const types = [];
+      if (p.riichiFuriten) types.push(0);
+      if (p.tempFuriten) types.push(1);
+      if (this.selfFuriten(p)) types.push(2);
+      return types;
+    }
+    markPassedRon(p) {
+      if (p.riichi) p.riichiFuriten = true;
+      else p.tempFuriten = true;
+    }
+    confirmRiichiDeclaration(p) {
+      if (p?.riichiPending) p.riichiPending = false;
+    }
+    rollbackRiichiDeclaration(p) {
+      if (!p?.riichiPending) return;
+      p.riichi = false;
+      p.doubleRiichi = false;
+      p.riichiPending = false;
+      p.riichiTurn = -1;
+      p.ippatsu = false;
+      p.score += 1e3;
+      this.riichiSticks = Math.max(0, this.riichiSticks - 1);
     }
     // 14 张形的听牌提示：打哪张 -> 听哪些
     //
@@ -8523,6 +13405,7 @@
         const play = indexToTileId(o.idx, 0);
         const hand13 = p.hand.slice();
         hand13.splice(hand13.indexOf(playTile), 1);
+        if (!this.isFormalTenpaiHand(hand13, p.melds)) continue;
         for (const wIdx of o.waits) {
           const tingTile = indexToTileId(wIdx, 0);
           const hand14 = hand13.concat([tingTile]);
@@ -8542,50 +13425,47 @@
       return out.slice(0, 60);
     }
     // ================= 处理行动 =================
-    async processTurnAction(seat, action, card, drew) {
+    async processTurnAction(seat, action, card, drew, cantPlays = []) {
       const p = this.players[seat];
-      this._processing = true; // 动作执行中：此期间到达的包视为重复包丢弃
-      this._bufferedDraw = null; this._bufferedClaim = null; // 清空上一动作的残留缓冲（防重复包重放）
+      const result = this.validateTurnPayload(
+        { action, card },
+        { seat, drew, actions: this.turnActions(seat, drew), cantPlays }
+      );
+      if (result !== Result.Succ) return result;
+      this._processing = true;
+      this._bufferedDraw = null;
+      this._bufferedClaim = null;
       if (action === PlayAction.Hu) {
         await this.winTsumo(seat);
-        return;
+        return Result.Succ;
       }
       if (action === PlayAction.JiuZhongJiuLiuJu) {
         await this.abortiveDraw(LiuJuType.JiuZhongJiuPai, seat);
-        return;
+        return Result.Succ;
       }
       if (action === PlayAction.AnGang) {
-        // 校验动作合法性，拒绝重复包/非法动作（不进 doKan，落到下方弃牌兜底）
-        if (this.turnActions(seat, drew).includes(PlayAction.AnGang)) {
-          await this.doKan(seat, card, "ankan");
-        }
-        return;
+        await this.doKan(seat, card, "ankan");
+        return Result.Succ;
       }
       if (action === PlayAction.PengGang) {
-        if (this.turnActions(seat, drew).includes(PlayAction.PengGang)) {
-          await this.doKan(seat, card, "kakan");
-        }
-        return;
+        await this.doKan(seat, card, "kakan");
+        return Result.Succ;
       }
       if (action === PlayAction.BaBei) {
-        const d = card != null ? decodeId(card) : null;
-        const north = d && d.suit === 4 && d.rank === 4 && p.hand.includes(card) ? card : this.northInHand(p);
-        if (north != null && this.turnActions(seat, drew).includes(PlayAction.BaBei)) {
-          await this.doBaBei(seat, north);
-          return;
-        }
+        await this.doBaBei(seat, card);
+        return Result.Succ;
       }
       if (action === PlayAction.Riichi) {
         p.riichi = true;
+        p.doubleRiichi = this.firstGoAround && p.discards.length === 0;
         p.riichiTurn = this.xunNum;
+        p.riichiPending = true;
         p.ippatsu = true;
         p.score -= 1e3;
         this.riichiSticks += 1;
       }
-      if (p.riichi && p.riichiTurn !== this.xunNum && p.drawnTile != null) card = p.drawnTile;
-      if (card == null || !p.hand.includes(card)) card = this.bestDiscard(p).discardId;
       const idx = p.hand.lastIndexOf(card);
-      if (idx >= 0) p.hand.splice(idx, 1);
+      p.hand.splice(idx, 1);
       p.hand.sort((a, b) => a - b);
       p.discards.push(card);
       p.discardKinds.add(kindOf2(card));
@@ -8593,6 +13473,7 @@
       this.lastDiscard = { seat, card };
       if (p.ippatsu && p.riichiTurn !== this.xunNum) p.ippatsu = false;
       await this.discard(seat, card, action);
+      return Result.Succ;
     }
     emptyClaims() {
       return this.players.map(() => []);
@@ -8602,17 +13483,11 @@
       const isMoQie = p.drawnTile === card;
       p.drawnTile = null;
       p.rinshan = false;
+      this.flushDeferredKanDora();
       const canQiang = this.players.map((q) => q.seat === seat ? [] : this.claimActions(q.seat, seat, card));
+      this.expectClaim(0, seat, card, canQiang[0] || []);
       this.emit(RiichiMsg.ENtfPlayCard, this.buildPlayCard(seat, card, action, isMoQie, canQiang));
       await this._d(this.T.claim);
-      if (this.playersN === 4 && this.players.every((q) => q.riichi)) {
-        await this.abortiveDraw(LiuJuType.SiJiaLiZhi, seat);
-        return;
-      }
-      if (this.checkSiFengLianDa()) {
-        await this.abortiveDraw(LiuJuType.SiFengLianDa, seat);
-        return;
-      }
       await this.resolveClaims(seat, card, canQiang);
     }
     checkSiFengLianDa() {
@@ -8635,9 +13510,9 @@
           seat: q.seat,
           canQiangActions: canQiang[q.seat] || [],
           isZhenTing: this.isFuriten(q),
-          leftTimer: q.isHuman ? 20 : 0,
-          canAnGangNoNumCardsAfterRiichi: [],
-          zhenTingTypes: []
+          leftTimer: q.isHuman ? Math.ceil(q.timeBank) : 0,
+          canAnGangNoNumCardsAfterRiichi: this.riichiFutureAnkanKinds(q),
+          zhenTingTypes: this.furitenTypes(q)
         }))
       };
     }
@@ -8657,187 +13532,242 @@
       if (acts.length) acts.push(PlayAction.Guo);
       return acts;
     }
-    canRon(p, card) {
+    canRon(p, card, extra = {}) {
       if (!p.waits || !p.waits.includes(kindOf2(card))) return false;
       if (this.isFuriten(p)) return false;
-      if (p.tempFuriten) return false;
-      const w = calcWin(p.hand, p.melds, this.akaSet, this.winOpts(p, true, card));
+      const w = calcWin(p.hand, p.melds, this.akaSet, { ...this.winOpts(p, true, card), ...extra });
       return w.isAgari && w.hasYaku;
     }
-    chiTiles(p, card) {
+    chiOptions(p, card) {
       const { suit, rank } = decodeId(card);
-      if (suit === 4) return null;
-      const pick = (r, exclude) => {
-        for (const t of p.hand) {
-          const d = decodeId(t);
-          if (d.suit === suit && d.rank === r && t !== exclude) return t;
-        }
-        return null;
-      };
+      if (suit === 4) return [];
+      const options = [];
       const combos = [[rank - 2, rank - 1], [rank - 1, rank + 1], [rank + 1, rank + 2]];
-      for (const [a, b] of combos) {
-        if (a < 1 || a > 9 || b < 1 || b > 9) continue;
-        const ta = pick(a, null);
-        if (ta == null) continue;
-        const tb = pick(b, ta);
-        if (tb == null) continue;
-        return [ta, tb];
+      for (const [leftRank, rightRank] of combos) {
+        if (leftRank < 1 || leftRank > 9 || rightRank < 1 || rightRank > 9) continue;
+        const left = p.hand.find((tile) => {
+          const decoded = decodeId(tile);
+          return decoded.suit === suit && decoded.rank === leftRank;
+        });
+        if (left == null) continue;
+        const right = p.hand.find((tile) => {
+          const decoded = decodeId(tile);
+          return tile !== left && decoded.suit === suit && decoded.rank === rightRank;
+        });
+        if (right != null) options.push([left, right]);
       }
-      return null;
+      return options;
+    }
+    chiTiles(p, card) {
+      return this.chiOptions(p, card)[0] || null;
     }
     async resolveClaims(discarderSeat, card, canQiang) {
       const all = [];
-      if (!this.autoHuman && this.players[0].isHuman && canQiang[0] && canQiang[0].length) {
-        this._processing = false; // 即将等待人类鸣牌输入，允许缓存合法早到响应
+      let humanHandled = false;
+      const humanCanClaim = this.players[0].isHuman && canQiang[0]?.length;
+      if (humanCanClaim && (!this.isAiSeat(this.players[0]) || this._bufferedClaim != null)) {
+        if (!this._expectedClaim && this._bufferedClaim == null) this.expectClaim(0, discarderSeat, card, canQiang[0]);
         const payload = await this.waitHuman("claim");
-        if (payload && payload.action != null && payload.action !== PlayAction.Guo) {
+        humanHandled = true;
+        if (payload?.action != null && payload.action !== PlayAction.Guo) {
           all.push({ seat: 0, action: payload.action, otherCards: payload.otherCards || [] });
         } else if (canQiang[0].includes(PlayAction.Hu)) {
-          this.players[0].tempFuriten = true;
+          this.markPassedRon(this.players[0]);
         }
+      } else {
+        this._expectedClaim = null;
       }
-      for (let s = 0; s < this.playersN; s++) {
-        if (s === 0 && !this.autoHuman) continue;
-        if (!canQiang[s] || !canQiang[s].length) continue;
-        const c = this.aiClaim(s, discarderSeat, card, canQiang[s]);
-        if (c) all.push(__spreadValues({ seat: s }, c));
-        else if (canQiang[s].includes(PlayAction.Hu)) this.players[s].tempFuriten = true;
+      for (let seat = 0; seat < this.playersN; seat++) {
+        if (seat === 0 && (humanHandled || !this.isAiSeat(this.players[0]))) continue;
+        if (!canQiang[seat]?.length) continue;
+        const claim2 = this.aiClaim(seat, discarderSeat, card, canQiang[seat]);
+        if (claim2) all.push({ seat, ...claim2 });
+        else if (canQiang[seat].includes(PlayAction.Hu)) this.markPassedRon(this.players[seat]);
       }
       if (!all.length) {
-        for (const q of this.players) {
-          q.tempFuriten = false;
+        this.confirmRiichiDeclaration(this.players[discarderSeat]);
+        if (this.playersN === 4 && this.players.every((player) => player.riichi)) {
+          await this.abortiveDraw(LiuJuType.SiJiaLiZhi, discarderSeat);
+          return;
+        }
+        if (this.checkSiFengLianDa()) {
+          await this.abortiveDraw(LiuJuType.SiFengLianDa, discarderSeat);
+          return;
         }
         const next = this.nextSeat(discarderSeat);
         if (next === this.dealerSeat) this.firstGoAround = false;
         await this.turnDraw(next);
         return;
       }
-      const prio = (a) => a.action === PlayAction.Hu ? 4 : a.action === PlayAction.MingGang ? 3 : a.action === PlayAction.Peng ? 2 : 1;
-      all.sort((x, y) => prio(y) - prio(x));
-      const win = all[0];
-      await this.executeClaim(win.seat, win.action, card, discarderSeat, win.otherCards || []);
+      const priority = (claim2) => claim2.action === PlayAction.Hu ? 4 : claim2.action === PlayAction.MingGang ? 3 : claim2.action === PlayAction.Peng ? 2 : 1;
+      const distance = (seat) => (seat - discarderSeat + this.playersN) % this.playersN;
+      all.sort((left, right) => priority(right) - priority(left) || distance(left.seat) - distance(right.seat));
+      const ronClaims = all.filter((claim2) => claim2.action === PlayAction.Hu);
+      if (ronClaims.length) {
+        await this.winRons(ronClaims.map((claim2) => claim2.seat), discarderSeat, card);
+        return;
+      }
+      this.confirmRiichiDeclaration(this.players[discarderSeat]);
+      const claim = all[0];
+      await this.executeClaim(claim.seat, claim.action, card, discarderSeat, claim.otherCards || []);
+    }
+    recordPao(player, discarderSeat) {
+      player.pao || (player.pao = {});
+      const tripletKinds = new Set(player.melds.filter((meld) => meld.type === "pon" || meld.type === "kan").map((meld) => kindOf2(meld.tiles[0])));
+      if (player.pao.daisangen == null && [45, 46, 47].every((kind) => tripletKinds.has(kind))) {
+        player.pao.daisangen = discarderSeat;
+      }
+      if (player.pao.daisuushi == null && [41, 42, 43, 44].every((kind) => tripletKinds.has(kind))) {
+        player.pao.daisuushi = discarderSeat;
+      }
+    }
+    paoYakumanUnits(player, win) {
+      const yaku = win.yaku || {};
+      let units = 0;
+      if (player.pao?.daisangen != null && Object.keys(yaku).some((name) => name.includes("\u5927\u4E09\u5143"))) units += 1;
+      if (player.pao?.daisuushi != null && Object.keys(yaku).some((name) => name.includes("\u5927\u56DB\u559C"))) units += 2;
+      return Math.min(units, win.yakuman || units);
+    }
+    paoSeatFor(player, win) {
+      const names = Object.keys(win.yaku || {});
+      if (player.pao?.daisangen != null && names.some((name) => name.includes("\u5927\u4E09\u5143"))) return player.pao.daisangen;
+      if (player.pao?.daisuushi != null && names.some((name) => name.includes("\u5927\u56DB\u559C"))) return player.pao.daisuushi;
+      return null;
     }
     async executeClaim(seat, action, card, discarderSeat, otherCards) {
       const p = this.players[seat];
-      this._processing = true; // 鸣牌执行中：此期间到达的包视为重复包丢弃
-      this._bufferedDraw = null; this._bufferedClaim = null; // 清空上一动作的残留缓冲（防重复包重放）
+      const validation = this.validateClaimPayload(
+        { action, otherCards },
+        { seat, discarderSeat, card, actions: this.claimActions(seat, discarderSeat, card) }
+      );
+      if (validation !== Result.Succ) return validation;
+      this._processing = true;
+      this._bufferedDraw = null;
+      this._bufferedClaim = null;
       const donor = this.players[discarderSeat];
       if (action === PlayAction.Hu) {
         await this.winRon(seat, discarderSeat, card);
-        return;
+        return Result.Succ;
       }
       donor.discards.pop();
+      donor.discardClaimed = true;
       for (const q of this.players) q.ippatsu = false;
       this.firstGoAround = false;
-      for (const q of this.players) q.tempFuriten = false;
       if (action === PlayAction.MingGang) {
-        // 校验合法性，拒绝重复包/非法动作（不进 doKan）
-        if (!this.claimActions(seat, discarderSeat, card).includes(PlayAction.MingGang)) return;
         const used2 = this.takeTiles(p, card, 3);
         p.melds.push({ type: "kan", tiles: [...used2, card], from: discarderSeat });
         p.menzen = false;
         this.kanCount++;
+        this.recordPao(p, discarderSeat);
         this.emit(RiichiMsg.ENtfQiangCard, this.buildQiang(seat, action, used2));
         await this._d(this.T.claim);
-        this.revealKanDora();
-        if (!await this.drawReplacement(seat)) return;
+        this._deferredKanDora++;
+        if (this.kanCount >= 4 && !this.players.some((player) => player.melds.filter((meld) => meld.type === "kan" || meld.type === "ankan").length >= 4)) {
+          await this.abortiveDraw(LiuJuType.SiGang, seat);
+          return Result.Succ;
+        }
+        if (!await this.drawReplacement(seat)) return Result.Succ;
         this.emit(RiichiMsg.ENtfQiangCardEnd, this.buildQiangEnd(seat, action, used2, [...used2, card]));
         await this._d(this.T.claim);
         await this.awaitTurn(seat, true);
-        return;
+        return Result.Succ;
       }
       const isChi = action === PlayAction.Chi;
-      let used;
-      if (isChi) {
-        const valid = otherCards && otherCards.length === 2 && otherCards.every((t) => p.hand.includes(t));
-        used = valid ? otherCards : this.chiTiles(p, card);
-        for (const t of used) {
-          const i = p.hand.indexOf(t);
-          if (i >= 0) p.hand.splice(i, 1);
-        }
-      } else {
-        used = this.takeTiles(p, card, 2);
+      const used = otherCards.slice();
+      for (const tile of used) {
+        p.hand.splice(p.hand.indexOf(tile), 1);
       }
       const meldTiles = [...used, card].sort((a, b) => a - b);
       p.melds.push({ type: isChi ? "chi" : "pon", tiles: meldTiles, from: discarderSeat });
+      if (!isChi) this.recordPao(p, discarderSeat);
       p.menzen = false;
       p.drawnTile = null;
       p.rinshan = false;
+      const cantPlays = this.cantPlays(p, action, meldTiles);
+      this._nextCantPlays = { seat, values: cantPlays };
       this.emit(RiichiMsg.ENtfQiangCard, this.buildQiang(seat, action, used));
       await this._d(this.T.claim);
+      this.expectDraw(seat, false, this.turnActions(seat, false), cantPlays);
       this.emit(RiichiMsg.ENtfQiangCardEnd, this.buildQiangEnd(seat, action, used, meldTiles));
       await this._d(this.T.claim);
       await this.awaitTurn(seat, false);
+      return Result.Succ;
+    }
+    canRobKan(p, tile, kind) {
+      if (!p.waits?.includes(kindOf2(tile)) || this.isFuriten(p)) return false;
+      const win = calcWin(p.hand, p.melds, this.akaSet, { ...this.winOpts(p, true, tile), chankan: true });
+      if (!win.isAgari || !win.hasYaku) return false;
+      if (kind !== "ankan") return true;
+      return Object.keys(win.yaku || {}).some((name) => name.includes("\u56FD\u58EB\u7121\u53CC"));
+    }
+    kanRobActions(kanSeat, tile, kind) {
+      return this.players.map((player) => {
+        if (player.seat === kanSeat || !this.canRobKan(player, tile, kind)) return [];
+        return [PlayAction.Hu, PlayAction.Guo];
+      });
+    }
+    async resolveKanRob(kanSeat, tile, canQiang, winExtra = { chankan: true }) {
+      const claims = [];
+      let humanHandled = false;
+      const humanCanClaim = this.players[0].isHuman && canQiang[0]?.length;
+      if (humanCanClaim && (!this.isAiSeat(this.players[0]) || this._bufferedClaim != null)) {
+        if (!this._expectedClaim && this._bufferedClaim == null) this.expectClaim(0, kanSeat, tile, canQiang[0]);
+        const payload = await this.waitHuman("claim");
+        humanHandled = true;
+        if (payload?.action === PlayAction.Hu) claims.push({ seat: 0 });
+        else this.markPassedRon(this.players[0]);
+      } else {
+        this._expectedClaim = null;
+      }
+      for (let seat = 0; seat < this.playersN; seat++) {
+        if (seat === 0 && (humanHandled || !this.isAiSeat(this.players[0]))) continue;
+        if (canQiang[seat]?.includes(PlayAction.Hu)) claims.push({ seat });
+      }
+      if (!claims.length) return false;
+      const distance = (seat) => (seat - kanSeat + this.playersN) % this.playersN;
+      claims.sort((left, right) => distance(left.seat) - distance(right.seat));
+      await this.winRons(claims.map((claim) => claim.seat), kanSeat, tile, winExtra);
+      return true;
     }
     async doKan(seat, card, kind) {
+      this.flushDeferredKanDora();
       const p = this.players[seat];
-      let tiles;
-      let kanCard = card;
-      if (kind === "ankan") {
-        tiles = this.takeTilesByKind(p, kindOf2(card), 4);
-        p.melds.push({ type: "ankan", tiles });
-        this.kanCount++;
-      } else {
-        const m = p.melds.find((x) => x.type === "pon" && kindOf2(x.tiles[0]) === kindOf2(card));
-        const i = p.hand.findIndex((t2) => kindOf2(t2) === kindOf2(card));
-        const t = p.hand.splice(i, 1)[0];
-        m.type = "kan";
-        m.tiles = [...m.tiles, t];
-        tiles = m.tiles;
-        this.kanCount++;
-        kanCard = t;
-        const robbed = this.checkChanKan(seat, t);
-        if (robbed != null) {
-          this.emit(RiichiMsg.ENtfPlayCard, this.buildPlayCard(
-            seat,
-            t,
-            PlayAction.PengGang,
-            false,
-            this.players.map((q) => q.seat === robbed ? [PlayAction.Hu] : [])
-          ));
-          await this._d(this.T.claim);
-          await this.winRon(robbed, seat, t, { chankan: true });
-          return;
-        }
-      }
-      for (const q of this.players) q.ippatsu = false;
-      this.firstGoAround = false;
-      this.emit(RiichiMsg.ENtfPlayCard, this.buildPlayCard(
-        seat,
-        kanCard,
-        kind === "ankan" ? PlayAction.AnGang : PlayAction.PengGang,
-        false,
-        this.emptyClaims()
-      ));
+      const action = kind === "ankan" ? PlayAction.AnGang : PlayAction.PengGang;
+      const canQiang = this.kanRobActions(seat, card, kind);
+      this.expectClaim(0, seat, card, canQiang[0] || []);
+      this.emit(RiichiMsg.ENtfPlayCard, this.buildPlayCard(seat, card, action, false, canQiang));
       await this._d(this.T.claim);
-      this.revealKanDora();
-      if (this.kanCount >= 4 && !this.players.some((q) => q.melds.filter((m) => m.type === "kan" || m.type === "ankan").length >= 4)) {
+      if (await this.resolveKanRob(seat, card, canQiang)) return;
+      if (kind === "ankan") {
+        const tiles = this.takeTilesByKind(p, kindOf2(card), 4);
+        p.melds.push({ type: "ankan", tiles });
+      } else {
+        const meld = p.melds.find((item) => item.type === "pon" && kindOf2(item.tiles[0]) === kindOf2(card));
+        p.hand.splice(p.hand.indexOf(card), 1);
+        meld.type = "kan";
+        meld.tiles = [...meld.tiles, card];
+      }
+      this.kanCount++;
+      for (const player of this.players) player.ippatsu = false;
+      this.firstGoAround = false;
+      if (kind === "ankan") this.revealKanDora();
+      else this._deferredKanDora++;
+      if (this.kanCount >= 4 && !this.players.some((player) => player.melds.filter((meld) => meld.type === "kan" || meld.type === "ankan").length >= 4)) {
         await this.abortiveDraw(LiuJuType.SiGang, seat);
         return;
       }
       if (!await this.drawReplacement(seat)) return;
       await this.awaitTurn(seat, true);
     }
-    checkChanKan(kanSeat, tile) {
-      for (let i = 1; i < this.playersN; i++) {
-        const s = (kanSeat + i) % this.playersN;
-        const q = this.players[s];
-        if (!q.waits || !q.waits.includes(kindOf2(tile))) continue;
-        if (this.isFuriten(q)) continue;
-        const w = calcWin(
-          q.hand,
-          q.melds,
-          this.akaSet,
-          __spreadProps(__spreadValues({}, this.winOpts(q, true, tile)), { chankan: true })
-        );
-        if (w.isAgari && w.hasYaku) return s;
+    flushDeferredKanDora() {
+      while (this._deferredKanDora > 0) {
+        this._deferredKanDora--;
+        this.revealKanDora();
       }
-      return null;
     }
     revealKanDora() {
-      const i = this.kanCount;
+      const i = this.doraIndicators.length;
       const baoBase = this.sanma ? 8 : 4;
-      // 三麻/四麻宝牌指示牌均5张（initial + 4 kan dora），布局一致，仅起始偏移不同（三麻8/四麻4）
       const maxI = 4;
       if (i >= 1 && i <= maxI && this.deadWall[baoBase + 2 * i] != null) {
         const ind = this.deadWall[baoBase + 2 * i];
@@ -8885,27 +13815,29 @@
           canPlayActions: q.seat === seat ? [PlayAction.Normal] : [],
           isZhenTing: this.isFuriten(q),
           cantPlays: q.seat === seat ? this.cantPlays(p, action, meldTiles || otherCards || []) : [],
-          leftTimer: q.isHuman ? 20 : 0,
+          leftTimer: q.isHuman ? Math.ceil(q.timeBank) : 0,
           xunNum: this.xunNum,
-          zhenTingTypes: []
+          zhenTingTypes: this.furitenTypes(q)
         }))
       };
     }
     // 吃碰后的食替禁止牌（同样是牌种编码 copy=0，实机样本 [440,310,280,380,320]）
     cantPlays(p, action, meldTiles) {
       if (action !== PlayAction.Chi && action !== PlayAction.Peng) return [];
-      const out = /* @__PURE__ */ new Set();
       const claimed = this.lastDiscard ? this.lastDiscard.card : null;
-      if (claimed != null) out.add(kindOf2(claimed));
-      if (action === PlayAction.Chi && meldTiles.length === 3) {
-        const ranks = meldTiles.map((t) => decodeId(t).rank).sort((a, b) => a - b);
-        const suit = decodeId(meldTiles[0]).suit;
-        if (ranks[2] - ranks[0] === 2) {
-          if (ranks[0] > 1) out.add(suit * 10 + (ranks[0] - 1));
-          if (ranks[2] < 9) out.add(suit * 10 + (ranks[2] + 1));
-        }
-      }
-      return [...out].filter((k) => p.hand.some((t) => kindOf2(t) === k)).map((k) => k * 10);
+      return [...this.kuikaeKinds(action, meldTiles, claimed)].filter((kind) => p.hand.some((tile) => kindOf2(tile) === kind)).map((kind) => kind * 10);
+    }
+    kuikaeKinds(action, meldTiles, claimed) {
+      const out = /* @__PURE__ */ new Set();
+      if (claimed == null || action !== PlayAction.Chi && action !== PlayAction.Peng) return out;
+      out.add(kindOf2(claimed));
+      if (action !== PlayAction.Chi || meldTiles.length !== 3) return out;
+      const claimedTile = decodeId(claimed);
+      const ranks = meldTiles.map((tile) => decodeId(tile).rank).sort((left, right) => left - right);
+      if (ranks[2] - ranks[0] !== 2) return out;
+      if (claimedTile.rank === ranks[0] && ranks[2] < 9) out.add(claimedTile.suit * 10 + ranks[2] + 1);
+      if (claimedTile.rank === ranks[2] && ranks[0] > 1) out.add(claimedTile.suit * 10 + ranks[0] - 1);
+      return out;
     }
     // ================= 和牌 / 流局 =================
     async winTsumo(seat) {
@@ -8914,18 +13846,31 @@
       await this.endHand({ type: "tsumo", winner: seat, loser: null, card: p.drawnTile, win: w });
     }
     async winRon(seat, loser, card, extra = {}) {
-      const p = this.players[seat];
-      const w = calcWin(
-        p.hand,
-        p.melds,
-        this.akaSet,
-        __spreadValues(__spreadValues({}, this.winOpts(p, true, card)), extra)
-      );
-      await this.endHand({ type: "ron", winner: seat, loser, card, win: w });
+      await this.winRons([seat], loser, card, extra);
+    }
+    async winRons(seats, loser, card, extra = {}) {
+      this.rollbackRiichiDeclaration(this.players[loser]);
+      const wins = /* @__PURE__ */ new Map();
+      for (const seat of seats) {
+        const p = this.players[seat];
+        const win = calcWin(
+          p.hand,
+          p.melds,
+          this.akaSet,
+          { ...this.winOpts(p, true, card), ...extra }
+        );
+        if (!win.isAgari || !win.hasYaku) throw new Error(`\u975E\u6CD5\u8363\u548C seat=${seat}`);
+        wins.set(seat, win);
+      }
+      await this.endHand({ type: "ron", winners: seats.slice(), loser, card, wins });
     }
     async exhaustiveDraw() {
-      const tenpai = this.players.map((p) => this.isTenpai(p));
-      await this.endHand({ type: "draw", liuJuType: LiuJuType.HuangPai, tenpai });
+      const nagashiWinners = this.players.filter((player) => player.discards.length > 0 && !player.discardClaimed && player.discards.every((tile) => {
+        const { suit, rank } = decodeId(tile);
+        return suit === 4 || rank === 1 || rank === 9;
+      })).map((player) => player.seat);
+      const tenpai = this.players.map((player) => this.isTenpai(player));
+      await this.endHand({ type: "draw", liuJuType: LiuJuType.HuangPai, tenpai, nagashiWinners });
     }
     async abortiveDraw(liuJuType, seat) {
       await this.endHand({
@@ -8945,18 +13890,37 @@
       let dealerContinues = false;
       let ui = [];
       if (res.type === "draw") {
-        if (!res.noPenalty) {
-          const tenpaiSeats = res.tenpai.map((t, i) => t ? i : -1).filter((i) => i >= 0);
-          const notenSeats = res.tenpai.map((t, i) => t ? -1 : i).filter((i) => i >= 0);
+        const nagashiWinners = res.nagashiWinners || [];
+        if (nagashiWinners.length) {
+          for (const winner of nagashiWinners) {
+            const dealerWin = winner === this.dealerSeat;
+            for (let seat = 0; seat < n; seat++) {
+              if (seat === winner) continue;
+              const payment = dealerWin || seat === this.dealerSeat ? 4e3 : 2e3;
+              scores[seat] -= payment;
+              scores[winner] += payment;
+            }
+          }
+        } else if (!res.noPenalty) {
+          const tenpaiSeats = res.tenpai.map((tenpai, seat) => tenpai ? seat : -1).filter((seat) => seat >= 0);
+          const notenSeats = res.tenpai.map((tenpai, seat) => tenpai ? -1 : seat).filter((seat) => seat >= 0);
           if (tenpaiSeats.length && notenSeats.length) {
-            const per = Math.floor(3e3 / tenpaiSeats.length);
-            const pay2 = Math.floor(3e3 / notenSeats.length);
-            for (const s of tenpaiSeats) scores[s] += per;
-            for (const s of notenSeats) scores[s] -= pay2;
+            const receive = Math.floor(3e3 / tenpaiSeats.length);
+            const payment = Math.floor(3e3 / notenSeats.length);
+            for (const seat of tenpaiSeats) scores[seat] += receive;
+            for (const seat of notenSeats) scores[seat] -= payment;
           }
         }
         dealerContinues = res.noPenalty ? true : !!res.tenpai[this.dealerSeat];
-        const gameOver2 = this.decideGameOver(dealerContinues, scores);
+        const gameOver2 = this.decideGameOver(dealerContinues, scores, { drawNoPenalty: !!res.noPenalty });
+        this.renchanCount = dealerContinues ? this.renchanCount + 1 : 0;
+        if (gameOver2 && this.riichiSticks > 0) {
+          const topSeat = this.players.map((_, seat) => seat).sort((left, right) => scores[right] - scores[left] || left - right)[0];
+          scores[topSeat] += this.riichiSticks * 1e3;
+          this.riichiSticks = 0;
+        }
+        this.recordHumanHandStats(res, null, dealerContinues);
+        this.prepareFinalResult(scores, gameOver2);
         ui = this.buildStopUserInfos(scores, null, null, res.tenpai, gameOver2);
         this.emit(RiichiMsg.ENtfGameStop, {
           huSeats: [],
@@ -8966,7 +13930,7 @@
           isFinal: gameOver2,
           userInfos: ui,
           baoPreCards: this.doraIndicators.slice(),
-          liuJuManGuanSeats: [],
+          liuJuManGuanSeats: nagashiWinners,
           liuJuType: res.liuJuType,
           liuJuSeat: res.liuJuSeat != null ? res.liuJuSeat : -1,
           duiCards: [],
@@ -8975,71 +13939,97 @@
           stopType: 0,
           winningStreak: 0
         });
-        await this.finishHand(gameOver2, dealerContinues, scores);
+        await this.finishHand(gameOver2, dealerContinues, scores, { draw: true });
         return;
       }
-      const winner = res.winner;
-      const winP = this.players[winner];
-      const isDealerWin = winner === this.dealerSeat;
-      const doraBreak = this.countDora(winP, res.type === "ron" ? res.card : null);
-      let extraFan = doraBreak.babei + doraBreak.babeiAsDora;
-      // 拔北后摸岭上牌和牌：riichi 库(yaku.js 嶺上開花)要求副露中存在杠才给，
-      // 而拔北副露只有 1 张北、hasKantsu=false -> 库漏算岭上开花。此处补记 1 番
-      const hasKan = winP.melds.some((m) => m.type === "ankan" || m.type === "kan");
-      if (res.type === "tsumo" && winP.rinshan && !hasKan) {
-        extraFan += 1;
-        (res.win.yaku || (res.win.yaku = {}))["\u5DBA\u4E0A\u958B\u82B1"] = "1\u98DC";
-      }
-      const w = this.applyExtraFan(res.win, extraFan, isDealerWin);
-      const pay = new Array(n).fill(0);
-      const purePay = new Array(n).fill(0);
-      let gain = 0, pureGain = 0;
-      if (res.type === "tsumo") {
-        for (let s = 0; s < n; s++) {
-          if (s === winner) continue;
-          const base = isDealerWin ? w.oya[0] || 0 : s === this.dealerSeat ? w.ko[0] || 0 : w.ko[1] || 0;
-          pay[s] = base + this.honba * 100;
-          purePay[s] = base;
-          gain += pay[s];
-          pureGain += base;
+      const winners = res.type === "tsumo" ? [res.winner] : res.winners.slice();
+      const details = /* @__PURE__ */ new Map();
+      const huDelta = new Array(n).fill(0);
+      for (let winnerIndex = 0; winnerIndex < winners.length; winnerIndex++) {
+        const winner = winners[winnerIndex];
+        const winP = this.players[winner];
+        const isDealerWin = winner === this.dealerSeat;
+        const doraBreak = this.countDora(winP, res.type === "ron" ? res.card : null);
+        const extraFan = doraBreak.babei + doraBreak.babeiAsDora;
+        const rawWin = res.type === "tsumo" ? res.win : res.wins.get(winner);
+        const paoSeat = this.paoSeatFor(winP, rawWin);
+        const paoUnits = this.paoYakumanUnits(winP, rawWin);
+        const paoTotal = paoUnits * (isDealerWin ? 48e3 : 32e3);
+        const win = this.applyExtraFan(rawWin, extraFan, isDealerWin);
+        if (res.type === "tsumo") {
+          let pureGain = 0;
+          for (let seat = 0; seat < n; seat++) {
+            if (seat === winner) continue;
+            const base2 = isDealerWin ? win.oya[0] || 0 : seat === this.dealerSeat ? win.ko[0] || 0 : win.ko[1] || 0;
+            const payment = base2 + this.honba * 100;
+            scores[seat] -= payment;
+            scores[winner] += payment;
+            huDelta[seat] -= base2;
+            pureGain += base2;
+          }
+          if (paoSeat != null && paoTotal > 0) {
+            for (let seat = 0; seat < n; seat++) {
+              if (seat === winner) continue;
+              const paoShare = (isDealerWin || seat === this.dealerSeat ? 16e3 : 8e3) * paoUnits;
+              scores[seat] += paoShare + this.honba * 100;
+              scores[winner] -= paoShare + this.honba * 100;
+              huDelta[seat] += paoShare;
+              pureGain -= paoShare;
+            }
+            const paoPayment = paoTotal + (n - 1) * this.honba * 100;
+            scores[paoSeat] -= paoPayment;
+            scores[winner] += paoPayment;
+            huDelta[paoSeat] -= paoTotal;
+            pureGain += paoTotal;
+          }
+          huDelta[winner] += pureGain;
+        } else {
+          const base2 = win.ten || 0;
+          const honbaPayment = winnerIndex === 0 ? this.honba * 300 : 0;
+          scores[res.loser] -= base2 + honbaPayment;
+          scores[winner] += base2 + honbaPayment;
+          huDelta[res.loser] -= base2;
+          huDelta[winner] += base2;
+          if (paoSeat != null && paoSeat !== res.loser && paoTotal > 0) {
+            const split = paoTotal / 2;
+            scores[res.loser] += split + honbaPayment;
+            scores[paoSeat] -= split + honbaPayment;
+            huDelta[res.loser] += split;
+            huDelta[paoSeat] -= split;
+          }
         }
-      } else {
-        const base = w.ten || 0;
-        pay[res.loser] = base + this.honba * 300;
-        purePay[res.loser] = base;
-        gain = pay[res.loser];
-        pureGain = base;
+        const yakuInfo = mapYaku(win.yaku, {
+          roundWind: this.roundWind,
+          seatWind: this.seatWindOf(winner)
+        });
+        details.set(winner, {
+          yiFans: this.rebuildYiFans(yakuInfo.yiFans),
+          isYiMan: yakuInfo.isYiMan || win.yakuman > 0,
+          manType: manTypeFromResult({ han: win.han, fu: win.fu, yakuman: win.yakuman, name: win.name }),
+          baoFan: doraBreak.omote,
+          liBaoFan: doraBreak.ura,
+          redBaoFan: doraBreak.aka,
+          baBeiFan: doraBreak.babei,
+          fu: win.fu,
+          totalFan: win.han
+        });
       }
       const stickBonus = this.riichiSticks * 1e3;
-      gain += stickBonus;
-      for (let s = 0; s < n; s++) scores[s] -= pay[s];
-      scores[winner] += gain;
-      const yakuInfo = mapYaku(w.yaku, {
-        roundWind: this.roundWind,
-        seatWind: this.seatWindOf(winner)
-      });
-      const detail = {
-        yiFans: this.rebuildYiFans(yakuInfo.yiFans),
-        isYiMan: yakuInfo.isYiMan || w.yakuman > 0,
-        manType: manTypeFromResult({ han: w.han, fu: w.fu, yakuman: w.yakuman, name: w.name }),
-        baoFan: doraBreak.omote,
-        liBaoFan: doraBreak.ura,
-        redBaoFan: doraBreak.aka,
-        baBeiFan: doraBreak.babei,
-        fu: w.fu,
-        totalFan: w.han
-      };
-      dealerContinues = isDealerWin;
+      if (stickBonus) scores[winners[0]] += stickBonus;
       this.riichiSticks = 0;
-      const gameOver = this.decideGameOver(dealerContinues, scores);
-      const huDelta = purePay.map((v) => -v);
-      huDelta[winner] = pureGain;
-      ui = this.buildStopUserInfos(scores, winner, detail, null, gameOver, huDelta);
+      dealerContinues = winners.includes(this.dealerSeat);
+      const gameOver = this.decideGameOver(dealerContinues, scores, {
+        multiRonDealerContinuation: res.type === "ron" && winners.length > 1 && dealerContinues
+      });
+      this.renchanCount = dealerContinues ? this.renchanCount + 1 : 0;
+      this.recordHumanHandStats(res, huDelta, dealerContinues);
+      this.prepareFinalResult(scores, gameOver);
+      ui = this.buildStopUserInfos(scores, winners, details, null, gameOver, huDelta);
       this.emit(RiichiMsg.ENtfGameStop, {
-        huSeats: [winner],
-        huCardSeat: res.type === "ron" ? res.loser : winner,
+        huSeats: winners,
+        huCardSeat: res.type === "ron" ? res.loser : winners[0],
         huCard: res.card || 0,
-        liBaoPreCards: winP.riichi ? this.uraIndicators.slice() : [],
+        liBaoPreCards: winners.some((seat) => this.players[seat].riichi) ? this.uraIndicators.slice() : [],
         isFinal: gameOver,
         userInfos: ui,
         baoPreCards: this.doraIndicators.slice(),
@@ -9068,14 +14058,15 @@
       else if (han === 5) base2 = 2e3;
       else base2 = Math.min(fu * 2 ** (2 + han), 2e3);
       const c = (x) => Math.ceil(x / 100) * 100;
-      return __spreadProps(__spreadValues({}, w), {
+      return {
+        ...w,
         han,
         ten: c(base2 * (isDealerWin ? 6 : 4)),
         oya: [c(base2 * 2)],
         // 庄家自摸：每家付 base×2
         ko: [c(base2 * 2), c(base2)]
         // 闲家自摸：庄家付 base×2，其他闲家付 base
-      });
+      };
     }
     // 宝牌拆分统计（表 / 里 / 赤 / 拔北）
     countDora(p, ronTile) {
@@ -9109,39 +14100,59 @@
     rebuildYiFans(yiFans) {
       return yiFans.filter((y) => y.yiType !== YiType.Bao && y.yiType !== YiType.RedBao && y.yiType !== YiType.LiBao && y.yiType !== YiType.BaBeiBao);
     }
+    recordHumanHandStats(result, huDelta, dealerContinues) {
+      const stats = this.matchStats;
+      const human = this.players[0];
+      stats.hands += 1;
+      if (human.riichi) stats.riichi += 1;
+      if (human.melds.some((meld) => meld.type === "chi" || meld.type === "pon" || meld.type === "kan")) stats.calls += 1;
+      const winners = result.type === "tsumo" ? [result.winner] : result.type === "ron" ? result.winners : [];
+      if (winners.includes(0)) {
+        stats.wins += 1;
+        stats[result.type] += 1;
+        stats.winPoints += Math.max(0, huDelta?.[0] || 0);
+        stats.winTurns += this.xunNum;
+      }
+      if (result.type === "ron" && result.loser === 0) stats.dealIns += 1;
+      if (dealerContinues && this.dealerSeat === 0) stats.maxRenchan = Math.max(stats.maxRenchan, this.renchanCount);
+    }
+    prepareFinalResult(scores, isFinal) {
+      if (!isFinal || this._finalResult || !this.onFinalResult) return;
+      this._finalResult = this.onFinalResult(scores.slice(), this) || null;
+    }
     buildStopUserInfos(scores, winner, detail, tenpai, isFinal, huDelta) {
       const out = [];
-      const order = this.players.map((_, s) => s).sort((a, b) => scores[b] - scores[a] || a - b);
+      const order = this.players.map((_, seat) => seat).sort((left, right) => scores[right] - scores[left] || left - right);
       const rankOf = [];
-      order.forEach((s, i) => {
-        rankOf[s] = i + 1;
+      order.forEach((seat, index) => {
+        rankOf[seat] = index + 1;
       });
-      const uma = this.playersN === 3 ? [15, 0, -15] : [35, 5, -15, -25];
+      const winnerSeats = new Set(Array.isArray(winner) ? winner : winner == null ? [] : [winner]);
+      const uma = this.playersN === 3 ? [15, 0, -15] : [15, 5, -5, -15];
       for (let s = 0; s < this.playersN; s++) {
         const p = this.players[s];
-      const isWinner = winner === s;
-      const change = huDelta ? huDelta[s] || 0 : 0;
-      // changeScore = 本手净分差（含立直棒/本场棒，与实机一致）；
-      // yiFanChangeDian = 纯番符打点（不含立直棒/本场棒，之前的需求）。
-      // handStart 取上一手结束时的累计分(this.scores)，首手则用 startScore。
-      const handStart = this.scores ? this.scores[s] : this.startScore;
-      const netDelta = scores[s] - handStart;
-      const rank = rankOf[s];
+        const isWinner = winnerSeats.has(s);
+        const currentDetail = detail instanceof Map ? detail.get(s) : isWinner ? detail : null;
+        const rankResult = isFinal && s === 0 ? this._finalResult?.rank : null;
+        const change = huDelta ? huDelta[s] || 0 : 0;
+        const handStart = this.scores ? this.scores[s] : this.startScore;
+        const netDelta = scores[s] - handStart;
+        const rank = rankOf[s];
         const jing = isFinal ? (scores[s] - this.startScore) / 1e3 + uma[rank - 1] : 0;
         out.push({
           seat: s,
           score: scores[s],
           handCards: p.hand.slice(),
           changeScore: netDelta,
-          yiFans: isWinner && detail ? detail.yiFans : [],
-          baoFan: isWinner && detail ? detail.baoFan : 0,
-          liBaoFan: isWinner && detail ? detail.liBaoFan : 0,
-          redBaoFan: isWinner && detail ? detail.redBaoFan : 0,
-          fu: isWinner && detail ? detail.fu : 0,
-          totalFan: isWinner && detail ? detail.totalFan : 0,
-          isYiMan: isWinner && detail ? detail.isYiMan : false,
-          manType: isWinner && detail ? detail.manType : 0,
-          baBeiFan: isWinner && detail ? detail.baBeiFan : 0,
+          yiFans: currentDetail?.yiFans || [],
+          baoFan: currentDetail?.baoFan || 0,
+          liBaoFan: currentDetail?.liBaoFan || 0,
+          redBaoFan: currentDetail?.redBaoFan || 0,
+          fu: currentDetail?.fu || 0,
+          totalFan: currentDetail?.totalFan || 0,
+          isYiMan: currentDetail?.isYiMan || false,
+          manType: currentDetail?.manType || 0,
+          baBeiFan: currentDetail?.baBeiFan || 0,
           doorCardsInfos: p.melds.filter((m) => m.type !== "babei").map((m) => ({
             cards: m.tiles.slice(),
             action: m.type === "chi" ? PlayAction.Chi : m.type === "pon" ? PlayAction.Peng : m.type === "ankan" ? PlayAction.AnGang : PlayAction.MingGang,
@@ -9156,74 +14167,61 @@
           yiFanChangeDian: change,
           jingSuanScore: jing,
           jieBi: Math.round(jing * 100),
-          changePT: 0,
+          changePT: rankResult?.change || 0,
           isBaoPai: false,
           matchingScore: 0,
           isMatchingAward: false,
           lianZhuang: this.honba,
-          maxFan: isWinner && detail ? detail.totalFan : 0,
+          maxFan: currentDetail?.totalFan || 0,
           realJieBi: 0,
           finalBi: 0,
           level: 0,
           loveValue: 0,
           oldLevel: 0,
           oldLoveValue: 0,
-          // 实机每人必带 oldPTLevel/oldPTPoint（段位与 PT），缺失会让结算界面段位区显示异常
-          ptLevel: 0,
-          ptPoint: 0,
-          oldPTLevel: this.ptLevel || 16,
-          oldPTPoint: this.ptPoint || 2605,
+          ptLevel: rankResult?.level || 0,
+          ptPoint: rankResult?.point || 0,
+          oldPTLevel: rankResult?.oldLevel || 0,
+          oldPTPoint: rankResult?.oldPoint || 0,
           itemRewardLevel: 0,
           itemRewards: []
         });
       }
       return out;
     }
-    decideGameOver(dealerContinues, scores) {
-      if (scores.some((s) => s < 0)) return true;
+    decideGameOver(dealerContinues, scores, { drawNoPenalty = false, multiRonDealerContinuation = false } = {}) {
+      if (scores.some((score) => score < 0)) return true;
       if (this.handIndex + 1 >= this.maxHands) return true;
-      // 1位必要点数：四麻 30000 / 三麻 40000（用户指定规则）
-      const necessary = this.playersN === 3 ? 40000 : 30000;
-      const top = Math.max.apply(null, scores);
-      const topMeets = top >= necessary;
-      const isAllLast = this.juNum + 1 >= this.playersN;
-      const wind = ["", "\u4E1C", "\u5357"][this.roundWind] || "?";
-      const ju = this.juNum + 1;
-      // 南场（roundWind>=2）非末局：只要顶部达成必要点即结算（用户选定：任意南场局末即结算）
-      if (this.roundWind >= 2 && !isAllLast && topMeets) {
-        console.log("[riichi] decideGameOver: " + wind + ju + " 顶部=" + top + ">=必要点" + necessary + " → 南场达成条件，结算");
-        return true;
+      if (drawNoPenalty) return false;
+      const necessary = this.playersN === 3 ? 4e4 : 3e4;
+      const order = this.players.map((_, seat) => seat).sort((left, right) => scores[right] - scores[left] || left - right);
+      const topSeat = order[0];
+      const topMeets = scores[topSeat] >= necessary;
+      const lastSeat = this.juNum === this.playersN - 1;
+      if (this.roundWind < this.regularWinds || this.roundWind === this.regularWinds && !lastSeat) return false;
+      if (this.roundWind === this.regularWinds) {
+        if (dealerContinues) return topSeat === this.dealerSeat && topMeets;
+        return topMeets;
       }
-      if (!isAllLast) return false;
-      // 末局
-      if (!dealerContinues) {
-        console.log("[riichi] decideGameOver: " + wind + ju + " 庄家未连庄 → 终局");
-        return true;
-      }
-      if (this.roundWind >= 2) {
-        console.log("[riichi] decideGameOver: " + wind + ju + " 南4末局 → 强行结算");
-        return true;
-      }
-      // 东 All Last：达成必要点则终局，否则南入（连庄进南场）
-      console.log("[riichi] decideGameOver: " + wind + ju + " 庄家=seat" + this.dealerSeat + " 顶部=" + top + " 必要点=" + necessary + " 达成=" + topMeets + " → " + (topMeets ? "\u7EC8\u5C40" : "\u5357\u5165"));
-      return topMeets;
+      if (multiRonDealerContinuation) return false;
+      if (topMeets) return true;
+      return lastSeat && !dealerContinues;
     }
-    async finishHand(gameOver, dealerContinues, scores) {
+    async finishHand(gameOver, dealerContinues, scores, { draw = false } = {}) {
       this.scores = scores.slice();
       this.handIndex += 1;
-      if (dealerContinues) {
+      if (draw || dealerContinues) {
         this.honba += 1;
-        if (!gameOver && this.roundWind === 1 && this.juNum + 1 >= this.playersN) {
-          this.roundWind = 2;
-          this.juNum = 0;
-          this.honba = 0;
-          // 南入：本场 All Last 庄家未登顶才延长，且 dealerContinues=true（连庄），
-          // 故庄家必须保持（连庄进南场），不能重置为 0，否则会变成下家坐庄。
-        }
       } else {
         this.honba = 0;
+      }
+      if (!dealerContinues) {
         this.juNum += 1;
         this.dealerSeat = this.nextSeat(this.dealerSeat);
+        if (this.juNum >= this.playersN) {
+          this.juNum = 0;
+          this.roundWind += 1;
+        }
       }
       if (gameOver) {
         this.matchOver = true;
@@ -9239,75 +14237,161 @@
       this.scores = new Array(this.playersN).fill(this.startScore);
       this.handIndex = 0;
       this.juNum = 0;
+      this.roundWind = 1;
       this.honba = 0;
+      this.renchanCount = 0;
       this.dealerSeat = 0;
     }
     // ================= AI =================
-    aiTurn(seat, drew, can) {
+    aiTurn(seat, drew, can, cantPlays = []) {
       const p = this.players[seat];
       if (can.includes(PlayAction.Hu)) return { action: PlayAction.Hu, card: p.drawnTile };
+      const danger = this.dangerKinds(seat);
       if (can.includes(PlayAction.BaBei)) {
         const north = this.northInHand(p);
         if (north != null) return { action: PlayAction.BaBei, card: north };
       }
       if (can.includes(PlayAction.Riichi)) {
-        const best2 = this.bestDiscard(p);
-        if (best2.shanten === 0) return { action: PlayAction.Riichi, card: best2.discardId };
+        const decision = this.riichiDecision(p, danger);
+        if (decision) return decision;
       }
-      if (can.includes(PlayAction.AnGang) && this.aiWantsKan(p)) {
+      if (can.includes(PlayAction.AnGang) && this.aiWantsKan(p, danger)) {
         return { action: PlayAction.AnGang, card: this.concealedQuadTile(p) };
       }
-      if (can.includes(PlayAction.PengGang) && this.aiWantsKan(p)) {
+      if (can.includes(PlayAction.PengGang) && this.aiWantsKan(p, danger)) {
         return { action: PlayAction.PengGang, card: this.addedKanTile(p) };
       }
+      const currentShanten = this.currentShanten(p);
+      const fold = this.aiShouldFold(p, currentShanten, danger);
       const best = this.bestDiscard(p, {
-        dangerKinds: this.dangerKinds(seat),
+        forbiddenKinds: new Set(cantPlays.map((value) => Math.floor(value / 10))),
+        dangerKinds: danger,
+        dangerWeight: fold ? 22 : currentShanten <= 1 ? 4 : 8,
+        maxShantenLoss: fold ? currentShanten >= 3 ? 2 : 1 : 0,
+        shantenLossPenalty: fold ? 90 : 260,
         forced: p.riichi && p.riichiTurn !== this.xunNum ? p.drawnTile : null
       });
       return { action: PlayAction.Normal, card: best.discardId };
     }
-    // 他家立直时的安全度参考
     dangerKinds(seat) {
-      const riichiOthers = this.players.filter((q) => q.seat !== seat && q.riichi);
-      if (!riichiOthers.length) return null;
+      const threats = this.players.filter((player) => player.seat !== seat).map((player) => ({
+        player,
+        openMelds: player.melds.filter((meld) => meld.type !== "ankan" && meld.type !== "babei").length,
+        level: player.riichi ? 1 : player.melds.filter((meld) => meld.type !== "ankan" && meld.type !== "babei").length >= 2 ? 0.55 : 0
+      })).filter((threat) => threat.level > 0);
+      if (!threats.length) return null;
+      const visible = this.visibleCounts();
+      const riskByKind = /* @__PURE__ */ new Map();
       const safe = /* @__PURE__ */ new Set();
       const risky = /* @__PURE__ */ new Set();
-      for (const q of riichiOthers) for (const k of q.discardKinds) safe.add(k);
-      for (const q of riichiOthers) {
-        for (const k of Array.from(safe)) if (!q.discardKinds.has(k)) safe.delete(k);
-      }
-      for (let suit = 1; suit <= 3; suit++) {
-        for (let rank = 3; rank <= 7; rank++) {
-          const k = suit * 10 + rank;
-          if (!safe.has(k)) risky.add(k);
+      for (let suit = 1; suit <= 4; suit++) {
+        const maxRank = suit === 4 ? 7 : 9;
+        for (let rank = 1; rank <= maxRank; rank++) {
+          const kind = suit * 10 + rank;
+          const idx = tileIndex(tileId(suit, rank, 1));
+          let risk = 0;
+          for (const { player, level } of threats) {
+            if (player.discardKinds.has(kind)) continue;
+            let threatRisk;
+            if (suit === 4) {
+              const shown = visible[idx] || 0;
+              threatRisk = shown >= 3 ? 0 : shown === 2 ? 4 : shown === 1 ? 9 : 14;
+            } else {
+              threatRisk = rank === 1 || rank === 9 ? 8 : rank === 2 || rank === 8 ? 12 : rank === 3 || rank === 7 ? 15 : 19;
+              const sujiSafe = [rank - 3, rank + 3].some((otherRank) => otherRank >= 1 && otherRank <= 9 && player.discardKinds.has(suit * 10 + otherRank));
+              if (sujiSafe) threatRisk *= 0.48;
+              const leftWall = rank > 1 && visible[idx - 1] >= 4;
+              const rightWall = rank < 9 && visible[idx + 1] >= 4;
+              if (leftWall || rightWall) threatRisk *= 0.55;
+              if (rank === 1 && rightWall || rank === 9 && leftWall) threatRisk = 0;
+            }
+            risk = Math.max(risk, threatRisk * level);
+          }
+          riskByKind.set(kind, risk);
+          if (risk === 0) safe.add(kind);
+          else if (risk >= 12) risky.add(kind);
         }
       }
-      return { safe, risky };
+      return { threats: threats.length, safe, risky, riskByKind };
     }
-    aiWantsKan(p) {
-      if (p.riichi) return false;
-      return this.bestDiscard(p).shanten > 1;
+    aiShouldFold(p, shanten, danger) {
+      if (!danger) return false;
+      const ranks = this.players.map((player) => player.score).sort((a, b) => b - a);
+      const leading = p.score === ranks[0];
+      const allLast = this.isAllLast();
+      if (allLast && !leading) return shanten >= 3;
+      if (allLast && leading) return shanten >= 1;
+      const dora = p.hand.filter((tile) => this.doraKinds().has(kindOf2(tile)) || this.akaSet.has(tile)).length;
+      if (shanten >= 3) return true;
+      if (shanten === 2 && dora < 2) return true;
+      return shanten === 1 && danger.threats > 1 && dora === 0;
+    }
+    riichiDecision(p, danger) {
+      const discardKinds = this.formalTenpaiDiscards(p);
+      let best = null;
+      const remainOf = this.remainOfFor(p);
+      for (const kind of discardKinds) {
+        const card = p.hand.find((tile) => kindOf2(tile) === kind && !this.akaSet.has(tile)) ?? p.hand.find((tile) => kindOf2(tile) === kind);
+        const hand = p.hand.slice();
+        hand.splice(hand.indexOf(card), 1);
+        const waits = handWaits(hand, p.melds, remainOf);
+        let damaYaku = false;
+        for (const wait of waits.waits) {
+          if (calcWin(hand, p.melds, this.akaSet, this.winOpts(p, true, wait)).hasYaku) {
+            damaYaku = true;
+            break;
+          }
+        }
+        const candidate = { card, ukeire: waits.ukeire, waitCount: waits.waitKinds.length, damaYaku };
+        if (!best || candidate.ukeire > best.ukeire || candidate.ukeire === best.ukeire && candidate.waitCount > best.waitCount || candidate.ukeire === best.ukeire && candidate.waitCount === best.waitCount && candidate.card < best.card) best = candidate;
+      }
+      if (!best) return null;
+      const scores = this.players.map((player) => player.score);
+      const leading = p.score === Math.max(...scores);
+      const lead = p.score - Math.max(...scores.filter((_, seat) => seat !== p.seat));
+      const badWait = best.ukeire <= 2 || best.waitCount === 1 && best.ukeire <= 3;
+      if (best.damaYaku && (danger && badWait || this.isAllLast() && leading && lead >= 8e3)) {
+        return { action: PlayAction.Normal, card: best.card };
+      }
+      if (best.ukeire <= 0 && best.damaYaku) return { action: PlayAction.Normal, card: best.card };
+      return { action: PlayAction.Riichi, card: best.card };
+    }
+    aiWantsKan(p, danger = null) {
+      const scores = this.players.map((player) => player.score);
+      const leading = p.score === Math.max(...scores);
+      if (danger || this.isAllLast() && leading) return false;
+      if (p.riichi) return true;
+      const shanten = this.currentShanten(p);
+      const dora = p.hand.filter((tile) => this.doraKinds().has(kindOf2(tile)) || this.akaSet.has(tile)).length;
+      return shanten >= 2 || dora >= 2 || p.seat === this.dealerSeat && shanten >= 1;
     }
     aiClaim(seat, discarderSeat, card, can) {
       const p = this.players[seat];
       if (can.includes(PlayAction.Hu)) return { action: PlayAction.Hu };
-      const cur = this.currentShanten(p);
+      const current = this.currentShanten(p);
+      const danger = this.dangerKinds(seat);
+      if (this.aiShouldFold(p, current, danger)) return null;
       if (can.includes(PlayAction.MingGang)) {
-        if (cur > 1) return { action: PlayAction.MingGang };
+        const after = this.shantenAfterClaim(p, card, "pon");
+        if (after <= current && this.worthOpening(p, card, "kan") && this.aiWantsKan(p, danger)) {
+          return { action: PlayAction.MingGang, otherCards: this.previewTiles(p, card, 3) };
+        }
       }
       if (can.includes(PlayAction.Peng)) {
         const after = this.shantenAfterClaim(p, card, "pon");
-        if (after < cur && this.worthOpening(p, card, "pon")) {
+        if (after < current && this.worthOpening(p, card, "pon")) {
           return { action: PlayAction.Peng, otherCards: this.previewTiles(p, card, 2) };
         }
       }
       if (can.includes(PlayAction.Chi)) {
-        const chi = this.chiTiles(p, card);
-        if (chi) {
-          const after = this.shantenAfterClaim(p, card, "chi", chi);
-          if (after < cur && this.worthOpening(p, card, "chi")) {
-            return { action: PlayAction.Chi, otherCards: chi };
-          }
+        let best = null;
+        for (const option of this.chiOptions(p, card)) {
+          const after = this.shantenAfterClaim(p, card, "chi", option);
+          const candidate = { option, after };
+          if (!best || candidate.after < best.after || candidate.after === best.after && candidate.option.join() < best.option.join()) best = candidate;
+        }
+        if (best && best.after < current && this.worthOpening(p, card, "chi", best.option)) {
+          return { action: PlayAction.Chi, otherCards: best.option };
         }
       }
       return null;
@@ -9315,17 +14399,37 @@
     currentShanten(p) {
       return handShanten(p.hand, p.melds);
     }
-    // 副露价值：已副露 / 碰到役牌 / 已接近听牌 / 宝牌够多才鸣
-    worthOpening(p, card, kind) {
-      if (!p.menzen) return true;
-      const { suit, rank } = decodeId(card);
-      const isYakuhai = suit === 4 && (rank >= 5 || rank === this.roundWind || rank === this.seatWindOf(p.seat));
-      if (kind === "pon" && isYakuhai) return true;
-      const cur = this.currentShanten(p);
-      if (cur <= 1) return true;
-      const dk = this.doraKinds();
-      const doraN = p.hand.filter((t) => dk.has(kindOf2(t)) || this.akaSet.has(t)).length;
-      return doraN >= 2 && cur <= 2;
+    isYakuhaiKind(p, kind) {
+      const { suit, rank } = decodeId(tileId(Math.floor(kind / 10), kind % 10, 1));
+      return suit === 4 && (rank >= 5 || rank === this.roundWind || rank === this.seatWindOf(p.seat));
+    }
+    hasOpenYakuRoute(p, card, claimKind, used = []) {
+      const proposedType = claimKind === "chi" ? "chi" : "pon";
+      const proposed = { type: proposedType, tiles: [...used, card] };
+      const melds = p.melds.concat([proposed]);
+      const tiles = p.hand.concat([card], used).concat(melds.flatMap((meld) => meld.tiles || []));
+      const tripletKinds = new Set(melds.filter((meld) => meld.type === "pon" || meld.type === "kan" || meld.type === "ankan").map((meld) => kindOf2(meld.tiles[0])));
+      if (claimKind !== "chi" && this.isYakuhaiKind(p, kindOf2(card))) return true;
+      if ([...tripletKinds].some((kind) => this.isYakuhaiKind(p, kind))) return true;
+      const decoded = tiles.map(decodeId);
+      if (decoded.every(({ suit, rank }) => suit !== 4 && rank >= 2 && rank <= 8)) return true;
+      const suits = new Set(decoded.filter(({ suit }) => suit !== 4).map(({ suit }) => suit));
+      if (suits.size <= 1) return true;
+      if (melds.every((meld) => meld.type !== "chi")) {
+        const counts = /* @__PURE__ */ new Map();
+        for (const tile of p.hand) counts.set(kindOf2(tile), (counts.get(kindOf2(tile)) || 0) + 1);
+        const pairOrTriplet = [...counts.values()].filter((count) => count >= 2).length;
+        if (pairOrTriplet + melds.length >= 4) return true;
+      }
+      return false;
+    }
+    worthOpening(p, card, kind, used = []) {
+      if (!this.hasOpenYakuRoute(p, card, kind, used)) return false;
+      const current = this.currentShanten(p);
+      if (kind === "pon" && this.isYakuhaiKind(p, kindOf2(card))) return true;
+      const doraKinds = this.doraKinds();
+      const dora = p.hand.filter((tile) => doraKinds.has(kindOf2(tile)) || this.akaSet.has(tile)).length;
+      return current <= 2 || dora >= 2;
     }
     shantenAfterClaim(p, card, kind, chiTiles = null) {
       const hand = p.hand.slice();
@@ -9346,10 +14450,17 @@
         }
         meld = { type: "chi", tiles: [...chiTiles, card] };
       }
-      return chooseDiscard(hand, p.melds.concat([meld]), {
-        doraKinds: this.doraKinds(),
-        akaSet: this.akaSet
-      }).shanten;
+      const action = kind === "chi" ? PlayAction.Chi : PlayAction.Peng;
+      const forbiddenKinds = this.kuikaeKinds(action, meld.tiles, card);
+      try {
+        return chooseDiscard(hand, p.melds.concat([meld]), {
+          doraKinds: this.doraKinds(),
+          akaSet: this.akaSet,
+          forbiddenKinds
+        }).shanten;
+      } catch {
+        return 99;
+      }
     }
     previewTiles(p, card, n) {
       const out = [];
@@ -9368,40 +14479,118 @@
     // 客户端在收到 NtfSendCard 的瞬间就可能调用 submitDraw，此时 _pending 尚未就绪，
     // 直接调用会成 no-op 导致引擎永久等待。因此 submitDraw/submitClaim 在未就绪时
     // 缓存请求，waitHuman 进入等待时立即消费缓冲，避免死锁。
+    setInternalState(values) {
+      for (const [key, value] of Object.entries(values || {})) {
+        const state = Number(key);
+        if (Number.isInteger(state) && state >= 0 && state <= 5) this.internalState[state] = !!value;
+      }
+    }
+    setHumanAutoplay(enabled) {
+      this.autoHuman = !!enabled;
+      if (!this.autoHuman || !this._pending) return;
+      const pending = this._pending;
+      this.resolveHumanPending(pending, this.timeoutHumanAction(pending.kind));
+    }
+    automaticHumanAction(kind) {
+      const expected = kind === "draw" ? this._expectedDraw : this._expectedClaim;
+      if (!expected) return null;
+      if (expected.actions.includes(PlayAction.Hu) && this.internalState[1]) return { action: PlayAction.Hu };
+      if (kind === "claim") return this.internalState[2] ? { action: PlayAction.Guo, otherCards: [] } : null;
+      const player = this.players[expected.seat];
+      if (expected.actions.includes(PlayAction.AnGang) && player.riichi && this.internalState[4]) {
+        return { action: PlayAction.AnGang, card: this.concealedQuadTile(player) };
+      }
+      if (expected.actions.includes(PlayAction.BaBei) && player.riichi && this.internalState[5]) {
+        return { action: PlayAction.BaBei, card: this.northInHand(player) };
+      }
+      if (this.internalState[3] && expected.drew && player.drawnTile != null) {
+        return { action: PlayAction.Normal, card: player.drawnTile };
+      }
+      return null;
+    }
+    timeoutHumanAction(kind) {
+      if (kind === "claim") return { action: PlayAction.Guo, otherCards: [] };
+      const expected = this._expectedDraw;
+      const player = this.players[expected.seat];
+      if (expected.drew && player.drawnTile != null) return { action: PlayAction.Normal, card: player.drawnTile };
+      const forbiddenKinds = new Set((expected.cantPlays || []).map((value) => Math.floor(value / 10)));
+      return { action: PlayAction.Normal, card: this.bestDiscard(player, { forbiddenKinds }).discardId };
+    }
+    resolveHumanPending(pending, payload) {
+      if (this._pending !== pending) return;
+      if (pending.timer) clearTimeout(pending.timer);
+      const player = this.players[0];
+      const elapsed = (Date.now() - pending.startedAt) / 1e3;
+      const timeBank = Number.isFinite(player.timeBank) ? player.timeBank : this.extraTime;
+      player.timeBank = Math.max(0, timeBank - Math.max(0, elapsed - this.baseTime));
+      if (pending.kind === "draw") this._expectedDraw = null;
+      else this._expectedClaim = null;
+      this._pending = null;
+      pending.resolve(payload || {});
+    }
     waitHuman(kind) {
       return new Promise((resolve) => {
-        this._pending = { kind, resolve };
-        if (kind === "draw" && this._bufferedDraw != null) {
-          const p = this._bufferedDraw;
-          this._bufferedDraw = null;
-          this._pending = null;
-          resolve(p || {});
-        } else if (kind === "claim" && this._bufferedClaim != null) {
-          const p = this._bufferedClaim;
-          this._bufferedClaim = null;
-          this._pending = null;
-          resolve(p || {});
+        const pending = { kind, resolve, startedAt: Date.now(), timer: null };
+        this._pending = pending;
+        const buffered = kind === "draw" ? this._bufferedDraw : this._bufferedClaim;
+        if (buffered != null) {
+          if (kind === "draw") this._bufferedDraw = null;
+          else this._bufferedClaim = null;
+          this.resolveHumanPending(pending, buffered);
+          return;
         }
+        const automatic = this.automaticHumanAction(kind);
+        if (automatic) {
+          queueMicrotask(() => this.resolveHumanPending(pending, automatic));
+          return;
+        }
+        if (this.autoHuman) {
+          const payload = this.timeoutHumanAction(kind);
+          queueMicrotask(() => this.resolveHumanPending(pending, payload));
+          return;
+        }
+        const player = this.players[0];
+        const timeoutMs = Math.max(0, this.baseTime + player.timeBank) * 1e3;
+        pending.timer = setTimeout(() => {
+          const payload = this.timeoutHumanAction(kind);
+          this.resolveHumanPending(pending, payload);
+        }, timeoutMs);
       });
     }
     submitDraw(payload) {
+      const result = this.validateTurnPayload(payload);
+      if (result !== Result.Succ) return result;
+      this._expectedDraw = null;
+      this._processing = true;
       if (this._pending && this._pending.kind === "draw") {
-        const r = this._pending.resolve;
-        this._pending = null;
-        r(payload || {});
-      } else if (!this._processing) {
-        // 仅在「非动作执行中」缓冲（合法早到响应）；动作执行中的包视为重复包直接丢弃
+        this.resolveHumanPending(this._pending, payload || {});
+      } else {
         this._bufferedDraw = payload || {};
       }
+      return Result.Succ;
     }
     submitClaim(payload) {
+      const result = this.validateClaimPayload(payload);
+      if (result !== Result.Succ) return result;
+      this._expectedClaim = null;
+      this._processing = true;
       if (this._pending && this._pending.kind === "claim") {
-        const r = this._pending.resolve;
-        this._pending = null;
-        r(payload || {});
-      } else if (!this._processing) {
+        this.resolveHumanPending(this._pending, payload || {});
+      } else {
         this._bufferedClaim = payload || {};
       }
+      return Result.Succ;
+    }
+    cancelPending() {
+      this._expectedDraw = null;
+      this._expectedClaim = null;
+      this._bufferedDraw = null;
+      this._bufferedClaim = null;
+      if (!this._pending) return;
+      if (this._pending.timer) clearTimeout(this._pending.timer);
+      const resolve = this._pending.resolve;
+      this._pending = null;
+      resolve({});
     }
     // 调试快照
     snapshot() {
@@ -9431,13 +14620,14 @@
     };
   }
 
-  // pb.mjs
+  // mockjs/pb.mjs
   var import_light = __toESM(require_light(), 1);
 
-  // riichi_desc.mjs
-  var riichi_desc_default = { "nested": { "riichi": { "options": { "optimize_for": "SPEED", "go_package": "gitlab.gg.com/riichi_mahjong/proto/go/client/game_logic/riichi", "csharp_namespace": "Com.Framework.Protocol" }, "nested": { "CardType": { "values": { "None": 0, "Wan": 1, "Tong": 2, "Tiao": 3, "Zi": 4, "Hua": 5 } }, "Result": { "values": { "Succ": 0, "Fail_InternalError": 1, "Fail_InvalidParam": 2, "Fail_InvalidSequence": 3, "Fail_ActionNotInCanPlayActions": 101, "Fail_CardInCantPlays": 102, "Fail_RiichiPlayCardWrong": 103, "Fail_CardNotInHand": 104, "Fail_CardNotMatchAction": 105, "Fail_ActionNotInCanQiangActions": 201, "Fail_InvalidOtherCards": 202 } }, "Wind": { "values": { "East": 0, "South": 1, "West": 2, "North": 3 } }, "RiichiMsg": { "values": { "ENone": 0, "EReqPrepare": 1, "ERspPrepare": 2, "EReqPlayCard": 3, "ERspPlayCard": 4, "EReqQiangCard": 5, "ERspQiangCard": 6, "EReqSetInternalState": 7, "ERspSetInternalState": 8, "EReqCloseOfflineTip": 9, "ERspCloseOfflineTip": 10, "EReqClickUI": 11, "ERspClickUI": 12, "ENtfToPrepare": 1001, "ENtfPrepare": 1002, "ENtfGameStart": 1003, "ENtfSendCard": 1004, "ENtfPlayCard": 1005, "ENtfQiangCard": 1006, "ENtfQiangCardEnd": 1007, "ENtfGameStop": 1008, "ENtfOfflineTip": 1009, "EGmBegin": 5e4, "EGmReqStopGame": 50001, "EGmRspStopGame": 50002, "EGmReqInitCard": 50003, "EGmRspInitCard": 50004, "EGmReqSetRobotConfig": 50005, "EGmRspSetRobotConfig": 50006, "EGmEnd": 6e4 } }, "PlayAction": { "values": { "Normal": 0, "Guo": 1, "Chi": 2, "Peng": 3, "MingGang": 4, "PengGang": 5, "AnGang": 6, "Riichi": 7, "Hu": 8, "JiuZhongJiuLiuJu": 9, "BaBei": 10 } }, "FanFuType": { "values": { "NoFanFu": 0, "FanFuNormal": 1 } }, "YiType": { "values": { "NoYi": 0, "RedBao": 101, "Bao": 102, "LiBao": 103, "BaBeiBao": 104, "LiZhi": 1101, "YiFa": 1102, "MengQianQingZiMoHu": 1103, "PingHu": 1104, "YiBeiKou": 1105, "DuanYaoJiu": 1301, "YiPaiZiFeng": 1302, "YiPaiChangFeng": 1303, "YiPaiSanYuanBai": 1304, "YiPaiSanYuanFa": 1305, "YiPaiSanYuanZhong": 1306, "LingShangKaiHua": 1307, "HaiDiLaoYue": 1308, "HeDiMoYu": 1309, "QiangGang": 1310, "YiPaiBeiFeng": 1311, "ShuangLiZi": 2101, "QiDuiZi": 2102, "HunQuanDaiYaoJiu": 2201, "YiQiTongGuan": 2202, "SanSeTongShun": 2203, "SanSeTongKe": 2301, "SanAnKe": 2302, "SanGangZi": 2303, "DuiDuiHu": 2304, "HunLaoTou": 2305, "XiaoSanYuan": 2306, "ErBeiKou": 3101, "ChunQuanDaiYaoJiu": 3201, "HunYiSe": 3202, "LiuJuManGuan": 5301, "QingYiSe": 6201, "TianHu": 91101, "DiHu": 91102, "GuoShiWuShuang": 91103, "JiuLianBaoDeng": 91104, "SiAnKe": 91105, "SiGangZi": 91301, "QingLaoTou": 91302, "ZiYiSe": 91303, "XiaoSiXi": 91304, "DaSanYuan": 91305, "LvYiSe": 91306, "GuoShiWuShuangShiSanMian": 92101, "ChunZhengJiuLianBaoDeng": 92102, "SiAnKeDanQi": 92103, "DaSiXi": 92301 } }, "LiuJuType": { "values": { "HuangPai": 0, "SiFengLianDa": 1, "SiGang": 2, "JiuZhongJiuPai": 3, "SiJiaLiZhi": 4 } }, "ManType": { "values": { "NoMan": 0, "ManGuan": 1, "TiaoMan": 2, "BeiMan": 3, "SanBeiMan": 4, "YiMan": 5 } }, "InternalStateType": { "values": { "LiPai": 0, "HuPai": 1, "PengGangChi": 2, "MoQie": 3, "LiZhiGang": 4, "LiZhiBoBei": 5 } }, "ZhenTingType": { "values": { "ZhenTingType_RiichiFuriten": 0, "ZhenTingType_TemporaryFuriten": 1, "ZhenTingType_SelfFuriten": 2 } }, "ClickUIType": { "values": { "ClickUITypeUnknown": 0, "ClickUITypeNoYiTip": 1 } }, "EnumItemRewardLevel": { "values": { "enumItemRewardLevelNo": 0, "enumItemRewardLevelOneHan": 1, "enumItemRewardLevelTwoHan": 2, "enumItemRewardLevelThreeHan": 3, "enumItemRewardLevelFourHan": 4, "enumItemRewardLevelMangan": 5, "enumItemRewardLevelJumpFullHan": 6, "enumItemRewardLevelDoubleFullHan": 7, "enumItemRewardLevelTripleFullHan": 8, "enumItemRewardLevelYakuman": 9, "enumItemRewardLevelDoubleYakuman": 10 } }, "TingInfo": { "fields": { "play": { "type": "int32", "id": 1 }, "ting": { "type": "int32", "id": 2 }, "hasYiWhenMo": { "type": "bool", "id": 3 }, "yiManChance": { "type": "int32", "id": 4 }, "fanFuTypeWhenMo": { "type": "int32", "id": 5 }, "hasYiWhenRong": { "type": "bool", "id": 6 }, "manType": { "type": "ManType", "id": 7 } } }, "YiFan": { "fields": { "yiType": { "type": "int32", "id": 1 }, "fan": { "type": "int32", "id": 2 }, "isYiMan": { "type": "bool", "id": 3 }, "isFuLuMinus": { "type": "bool", "id": 4 } } }, "ToPrepareUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "userID": { "type": "uint64", "id": 2 } } }, "NtfToPrepare": { "fields": { "userInfos": { "rule": "repeated", "type": "ToPrepareUserInfo", "id": 1 } } }, "PrepareUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 } } }, "NtfPrepare": { "fields": { "seat": { "type": "int32", "id": 1 }, "userInfos": { "rule": "repeated", "type": "PrepareUserInfo", "id": 2 } } }, "GameStartUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "score": { "type": "int64", "id": 2 }, "initScore": { "type": "int64", "id": 3 }, "handCards": { "rule": "repeated", "type": "int32", "id": 4 }, "tingInfos": { "rule": "repeated", "type": "TingInfo", "id": 5 }, "canPlayActions": { "rule": "repeated", "type": "int32", "id": 6 }, "xunNum": { "type": "int32", "id": 7 } } }, "NtfGameStart": { "fields": { "changWind": { "type": "int32", "id": 1 }, "juNum": { "type": "int32", "id": 2 }, "benChangNum": { "type": "int32", "id": 3 }, "zhuangSeat": { "type": "int32", "id": 4 }, "baoPreCard": { "type": "int32", "id": 6 }, "remainDuiCardNum": { "type": "int32", "id": 7 }, "userInfos": { "rule": "repeated", "type": "GameStartUserInfo", "id": 9 }, "leftTimer": { "type": "int32", "id": 11 }, "defaultMinTimeout": { "type": "int32", "id": 12 }, "riichiBangNum": { "type": "int32", "id": 13 }, "isAllLast": { "type": "bool", "id": 14 }, "gameID": { "type": "string", "id": 15 }, "duiCardsStrEncode": { "type": "string", "id": 16 }, "duiCardsStrSaltEncode": { "type": "string", "id": 17 }, "ServerRedundantTimeOut": { "type": "int32", "id": 23 }, "FirstGameStartRedundantTimeOut": { "type": "int32", "id": 24 } } }, "SendCardUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "card": { "type": "int32", "id": 2 }, "tingInfos": { "rule": "repeated", "type": "TingInfo", "id": 3 }, "canPlayActions": { "rule": "repeated", "type": "int32", "id": 4 }, "leftTimer": { "type": "int32", "id": 5 }, "isZhenTing": { "type": "bool", "id": 6 }, "xunNum": { "type": "int32", "id": 7 }, "zhenTingTypes": { "rule": "repeated", "type": "int32", "id": 8 } } }, "NtfSendCard": { "fields": { "seat": { "type": "int32", "id": 1 }, "baoPreCard": { "type": "int32", "id": 3 }, "userInfos": { "rule": "repeated", "type": "SendCardUserInfo", "id": 4 } } }, "PlayCardUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "canQiangActions": { "rule": "repeated", "type": "int32", "id": 2 }, "isZhenTing": { "type": "bool", "id": 6 }, "leftTimer": { "type": "int32", "id": 7 }, "canAnGangNoNumCardsAfterRiichi": { "rule": "repeated", "type": "int32", "id": 8 }, "zhenTingTypes": { "rule": "repeated", "type": "int32", "id": 9 } } }, "NtfPlayCard": { "fields": { "seat": { "type": "int32", "id": 1 }, "card": { "type": "int32", "id": 2 }, "action": { "type": "int32", "id": 3 }, "isMoQie": { "type": "bool", "id": 5 }, "userInfos": { "rule": "repeated", "type": "PlayCardUserInfo", "id": 6 } } }, "QiangCardUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 } } }, "NtfQiangCard": { "fields": { "seat": { "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "otherCards": { "rule": "repeated", "type": "int32", "id": 3 }, "userInfos": { "rule": "repeated", "type": "QiangCardUserInfo", "id": 4 } } }, "QiangCardEndUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "tingInfos": { "rule": "repeated", "type": "TingInfo", "id": 2 }, "canPlayActions": { "rule": "repeated", "type": "int32", "id": 3 }, "isZhenTing": { "type": "bool", "id": 4 }, "cantPlays": { "rule": "repeated", "type": "int32", "id": 5 }, "leftTimer": { "type": "int32", "id": 6 }, "xunNum": { "type": "int32", "id": 7 }, "zhenTingTypes": { "rule": "repeated", "type": "int32", "id": 8 } } }, "NtfQiangCardEnd": { "fields": { "seats": { "rule": "repeated", "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "otherCards": { "rule": "repeated", "type": "int32", "id": 3 }, "userInfos": { "rule": "repeated", "type": "QiangCardEndUserInfo", "id": 4 } } }, "GameStopUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "score": { "type": "int64", "id": 2 }, "handCards": { "rule": "repeated", "type": "int32", "id": 3 }, "changeScore": { "type": "int64", "id": 4 }, "yiFans": { "rule": "repeated", "type": "YiFan", "id": 5 }, "baoFan": { "type": "int32", "id": 6 }, "liBaoFan": { "type": "int32", "id": 7 }, "redBaoFan": { "type": "int32", "id": 8 }, "fu": { "type": "int32", "id": 9 }, "totalFan": { "type": "int32", "id": 10 }, "isYiMan": { "type": "bool", "id": 11 }, "jingSuanScore": { "type": "float", "id": 12 }, "changePT": { "type": "int64", "id": 13 }, "rank": { "type": "int32", "id": 14 }, "doorCardsInfos": { "rule": "repeated", "type": "DoorCardsInfo", "id": 15 }, "tings": { "rule": "repeated", "type": "int32", "id": 16 }, "manType": { "type": "int32", "id": 17 }, "alreadyRiichi": { "type": "bool", "id": 18 }, "baBeiCards": { "rule": "repeated", "type": "int32", "id": 19 }, "baBeiFan": { "type": "int32", "id": 20 }, "yiFanChangeDian": { "type": "int64", "id": 21 }, "isBaoPai": { "type": "bool", "id": 22 }, "jieBi": { "type": "int64", "id": 23 }, "matchingScore": { "type": "int32", "id": 24 }, "isMatchingAward": { "type": "bool", "id": 25 }, "lianZhuang": { "type": "int32", "id": 26 }, "maxFan": { "type": "int32", "id": 27 }, "realJieBi": { "type": "int64", "id": 28 }, "finalBi": { "type": "int64", "id": 29 }, "level": { "type": "int64", "id": 103 }, "loveValue": { "type": "int64", "id": 104 }, "oldLevel": { "type": "int64", "id": 105 }, "oldLoveValue": { "type": "int64", "id": 106 }, "ptLevel": { "type": "int32", "id": 107 }, "ptPoint": { "type": "int32", "id": 108 }, "oldPTLevel": { "type": "int32", "id": 109 }, "oldPTPoint": { "type": "int32", "id": 110 }, "itemRewardLevel": { "type": "int32", "id": 111 }, "itemRewards": { "rule": "repeated", "type": "ItemReward", "id": 112 } } }, "ItemReward": { "fields": { "itemId": { "type": "int64", "id": 1 }, "itemCount": { "type": "int64", "id": 2 } } }, "NtfGameStop": { "fields": { "huSeats": { "rule": "repeated", "type": "int32", "id": 1 }, "huCardSeat": { "type": "int32", "id": 2 }, "huCard": { "type": "int32", "id": 3 }, "liBaoPreCards": { "rule": "repeated", "type": "int32", "id": 4 }, "isFinal": { "type": "bool", "id": 5 }, "userInfos": { "rule": "repeated", "type": "GameStopUserInfo", "id": 6 }, "baoPreCards": { "rule": "repeated", "type": "int32", "id": 7 }, "liuJuManGuanSeats": { "rule": "repeated", "type": "int32", "id": 8 }, "liuJuType": { "type": "int32", "id": 9 }, "liuJuSeat": { "type": "int32", "id": 10 }, "duiCards": { "rule": "repeated", "type": "int32", "id": 11 }, "duiCardsStr": { "type": "string", "id": 12 }, "duiCardsStrSalt": { "type": "string", "id": 13 }, "stopType": { "type": "int32", "id": 14 }, "winningStreak": { "type": "int32", "id": 15 } } }, "ReqPrepare": { "fields": {} }, "RspPrepare": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqPlayCard": { "fields": { "card": { "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "isTimeout": { "type": "bool", "id": 3 } } }, "RspPlayCard": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqQiangCard": { "fields": { "action": { "type": "int32", "id": 1 }, "otherCards": { "rule": "repeated", "type": "int32", "id": 2 }, "isTimeout": { "type": "bool", "id": 3 } } }, "RspQiangCard": { "fields": { "result": { "type": "int32", "id": 1 } } }, "DoorCardsInfo": { "fields": { "cards": { "rule": "repeated", "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "qiangSeat": { "type": "int32", "id": 3 } } }, "Offline2OnlineUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "handCardsNum": { "type": "int32", "id": 2 }, "doorCardsInfos": { "rule": "repeated", "type": "DoorCardsInfo", "id": 3 }, "handCards": { "rule": "repeated", "type": "int32", "id": 4 }, "playedCards": { "rule": "repeated", "type": "int32", "id": 5 }, "PlayedCardsOtherTake": { "rule": "repeated", "type": "int32", "id": 6 }, "riichiTagCard": { "type": "int32", "id": 7 }, "alreadyRiichi": { "type": "bool", "id": 8 }, "tingInfos": { "rule": "repeated", "type": "TingInfo", "id": 9 }, "score": { "type": "int64", "id": 10 }, "canPlayActions": { "rule": "repeated", "type": "int32", "id": 11 }, "isZhenTing": { "type": "bool", "id": 12 }, "moQieMap": { "keyType": "int32", "type": "bool", "id": 14 }, "leftTimer": { "type": "int32", "id": 15 }, "cantPlays": { "rule": "repeated", "type": "int32", "id": 16 }, "changeScore": { "type": "int64", "id": 17 }, "baBeiCards": { "rule": "repeated", "type": "int32", "id": 18 }, "internalState": { "keyType": "int32", "type": "int32", "id": 19 }, "initScore": { "type": "int64", "id": 20 }, "canAnGangNoNumCardsAfterRiichi": { "rule": "repeated", "type": "int32", "id": 21 }, "DefaultMinTimeout": { "type": "int32", "id": 22 }, "ServerRedundantTimeOut": { "type": "int32", "id": 23 }, "zhenTingTypes": { "rule": "repeated", "type": "int32", "id": 24 }, "zhenTingTypesGuo": { "rule": "repeated", "type": "int32", "id": 25 } } }, "QiangInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "otherCards": { "rule": "repeated", "type": "int32", "id": 3 } } }, "Offline2OnlineGameScene": { "fields": { "seat": { "type": "int32", "id": 1 }, "changWind": { "type": "int32", "id": 2 }, "juNum": { "type": "int32", "id": 3 }, "benChangNum": { "type": "int32", "id": 4 }, "zhuangSeat": { "type": "int32", "id": 5 }, "openBaoPreCards": { "rule": "repeated", "type": "int32", "id": 6 }, "remainDuiCardNum": { "type": "int32", "id": 7 }, "currentSeat": { "type": "int32", "id": 8 }, "currentPlayCard": { "type": "int32", "id": 9 }, "currentAction": { "type": "int32", "id": 10 }, "canQiangActions": { "rule": "repeated", "type": "int32", "id": 11 }, "qiangInfos": { "rule": "repeated", "type": "QiangInfo", "id": 12 }, "offline2OnlineUserInfos": { "rule": "repeated", "type": "Offline2OnlineUserInfo", "id": 13 }, "currentPlayEndTime": { "type": "int64", "id": 14 }, "currentQiangEndTime": { "type": "int64", "id": 15 }, "defaultMinTimeout": { "type": "int32", "id": 16 }, "ServerRedundantTimeOut": { "type": "int32", "id": 25 }, "riichiBangNum": { "type": "int32", "id": 17 }, "gameID": { "type": "string", "id": 18 }, "preSeat": { "type": "int32", "id": 19 }, "prePlayCard": { "type": "int32", "id": 20 }, "preAction": { "type": "int32", "id": 21 }, "preQiangInfos": { "rule": "repeated", "type": "QiangInfo", "id": 22 }, "duiCardsStrEncode": { "type": "string", "id": 23 }, "duiCardsStrSaltEncode": { "type": "string", "id": 24 }, "MapFriendPoll": { "keyType": "int32", "type": "bool", "id": 26 }, "FriendOutTime": { "type": "int64", "id": 27 } } }, "NtfOfflineToolTip": { "fields": { "isTempBlock": { "type": "bool", "id": 1 } } }, "SendBackOnlineReq": { "fields": {} }, "SendBackOnlineRsp": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqSetInternalState": { "fields": { "InternalState": { "keyType": "int32", "type": "int32", "id": 1 } } }, "RspSetInternalState": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqCloseOfflineTip": { "fields": {} }, "RspCloseOfflineTip": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqClickUI": { "fields": { "tp": { "type": "int32", "id": 1 } } }, "RspClickUI": { "fields": { "result": { "type": "int32", "id": 1 } } }, "GmReqStopGame": { "fields": {} }, "GmRspStopGame": { "fields": {} }, "GmReqInitCard": { "fields": { "cardId": { "type": "int32", "id": 1 }, "isZimo": { "type": "bool", "id": 2 }, "isForbidRobotHu": { "type": "bool", "id": 3 } } }, "GmRspInitCard": { "fields": {} }, "GmReqSetRobotConfig": { "fields": { "robotSpeedLevel": { "type": "int32", "id": 1 } }, "nested": { "RobotSpeed": { "values": { "Normal": 0, "HalfTime": 1, "Fast": 2 } } } }, "GmRspSetRobotConfig": { "fields": {} }, "KRiichiMsg": { "fields": { "msgType": { "type": "RiichiMsg", "id": 1 }, "time": { "type": "int64", "id": 3 }, "payload": { "type": "bytes", "id": 100 } } } } } } };
+  // mockjs/riichi_desc.mjs
+  var riichiDesc = { "nested": { "riichi": { "options": { "optimize_for": "SPEED", "go_package": "gitlab.gg.com/riichi_mahjong/proto/go/client/game_logic/riichi", "csharp_namespace": "Com.Framework.Protocol" }, "nested": { "CardType": { "values": { "None": 0, "Wan": 1, "Tong": 2, "Tiao": 3, "Zi": 4, "Hua": 5 } }, "Result": { "values": { "Succ": 0, "Fail_InternalError": 1, "Fail_InvalidParam": 2, "Fail_InvalidSequence": 3, "Fail_ActionNotInCanPlayActions": 101, "Fail_CardInCantPlays": 102, "Fail_RiichiPlayCardWrong": 103, "Fail_CardNotInHand": 104, "Fail_CardNotMatchAction": 105, "Fail_ActionNotInCanQiangActions": 201, "Fail_InvalidOtherCards": 202 } }, "Wind": { "values": { "East": 0, "South": 1, "West": 2, "North": 3 } }, "RiichiMsg": { "values": { "ENone": 0, "EReqPrepare": 1, "ERspPrepare": 2, "EReqPlayCard": 3, "ERspPlayCard": 4, "EReqQiangCard": 5, "ERspQiangCard": 6, "EReqSetInternalState": 7, "ERspSetInternalState": 8, "EReqCloseOfflineTip": 9, "ERspCloseOfflineTip": 10, "EReqClickUI": 11, "ERspClickUI": 12, "ENtfToPrepare": 1001, "ENtfPrepare": 1002, "ENtfGameStart": 1003, "ENtfSendCard": 1004, "ENtfPlayCard": 1005, "ENtfQiangCard": 1006, "ENtfQiangCardEnd": 1007, "ENtfGameStop": 1008, "ENtfOfflineTip": 1009, "EGmBegin": 5e4, "EGmReqStopGame": 50001, "EGmRspStopGame": 50002, "EGmReqInitCard": 50003, "EGmRspInitCard": 50004, "EGmReqSetRobotConfig": 50005, "EGmRspSetRobotConfig": 50006, "EGmEnd": 6e4 } }, "PlayAction": { "values": { "Normal": 0, "Guo": 1, "Chi": 2, "Peng": 3, "MingGang": 4, "PengGang": 5, "AnGang": 6, "Riichi": 7, "Hu": 8, "JiuZhongJiuLiuJu": 9, "BaBei": 10 } }, "FanFuType": { "values": { "NoFanFu": 0, "FanFuNormal": 1 } }, "YiType": { "values": { "NoYi": 0, "RedBao": 101, "Bao": 102, "LiBao": 103, "BaBeiBao": 104, "LiZhi": 1101, "YiFa": 1102, "MengQianQingZiMoHu": 1103, "PingHu": 1104, "YiBeiKou": 1105, "DuanYaoJiu": 1301, "YiPaiZiFeng": 1302, "YiPaiChangFeng": 1303, "YiPaiSanYuanBai": 1304, "YiPaiSanYuanFa": 1305, "YiPaiSanYuanZhong": 1306, "LingShangKaiHua": 1307, "HaiDiLaoYue": 1308, "HeDiMoYu": 1309, "QiangGang": 1310, "YiPaiBeiFeng": 1311, "ShuangLiZi": 2101, "QiDuiZi": 2102, "HunQuanDaiYaoJiu": 2201, "YiQiTongGuan": 2202, "SanSeTongShun": 2203, "SanSeTongKe": 2301, "SanAnKe": 2302, "SanGangZi": 2303, "DuiDuiHu": 2304, "HunLaoTou": 2305, "XiaoSanYuan": 2306, "ErBeiKou": 3101, "ChunQuanDaiYaoJiu": 3201, "HunYiSe": 3202, "LiuJuManGuan": 5301, "QingYiSe": 6201, "TianHu": 91101, "DiHu": 91102, "GuoShiWuShuang": 91103, "JiuLianBaoDeng": 91104, "SiAnKe": 91105, "SiGangZi": 91301, "QingLaoTou": 91302, "ZiYiSe": 91303, "XiaoSiXi": 91304, "DaSanYuan": 91305, "LvYiSe": 91306, "GuoShiWuShuangShiSanMian": 92101, "ChunZhengJiuLianBaoDeng": 92102, "SiAnKeDanQi": 92103, "DaSiXi": 92301 } }, "LiuJuType": { "values": { "HuangPai": 0, "SiFengLianDa": 1, "SiGang": 2, "JiuZhongJiuPai": 3, "SiJiaLiZhi": 4 } }, "ManType": { "values": { "NoMan": 0, "ManGuan": 1, "TiaoMan": 2, "BeiMan": 3, "SanBeiMan": 4, "YiMan": 5 } }, "InternalStateType": { "values": { "LiPai": 0, "HuPai": 1, "PengGangChi": 2, "MoQie": 3, "LiZhiGang": 4, "LiZhiBoBei": 5 } }, "ZhenTingType": { "values": { "ZhenTingType_RiichiFuriten": 0, "ZhenTingType_TemporaryFuriten": 1, "ZhenTingType_SelfFuriten": 2 } }, "ClickUIType": { "values": { "ClickUITypeUnknown": 0, "ClickUITypeNoYiTip": 1 } }, "EnumItemRewardLevel": { "values": { "enumItemRewardLevelNo": 0, "enumItemRewardLevelOneHan": 1, "enumItemRewardLevelTwoHan": 2, "enumItemRewardLevelThreeHan": 3, "enumItemRewardLevelFourHan": 4, "enumItemRewardLevelMangan": 5, "enumItemRewardLevelJumpFullHan": 6, "enumItemRewardLevelDoubleFullHan": 7, "enumItemRewardLevelTripleFullHan": 8, "enumItemRewardLevelYakuman": 9, "enumItemRewardLevelDoubleYakuman": 10 } }, "TingInfo": { "fields": { "play": { "type": "int32", "id": 1 }, "ting": { "type": "int32", "id": 2 }, "hasYiWhenMo": { "type": "bool", "id": 3 }, "yiManChance": { "type": "int32", "id": 4 }, "fanFuTypeWhenMo": { "type": "int32", "id": 5 }, "hasYiWhenRong": { "type": "bool", "id": 6 }, "manType": { "type": "ManType", "id": 7 } } }, "YiFan": { "fields": { "yiType": { "type": "int32", "id": 1 }, "fan": { "type": "int32", "id": 2 }, "isYiMan": { "type": "bool", "id": 3 }, "isFuLuMinus": { "type": "bool", "id": 4 } } }, "ToPrepareUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "userID": { "type": "uint64", "id": 2 } } }, "NtfToPrepare": { "fields": { "userInfos": { "rule": "repeated", "type": "ToPrepareUserInfo", "id": 1 } } }, "PrepareUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 } } }, "NtfPrepare": { "fields": { "seat": { "type": "int32", "id": 1 }, "userInfos": { "rule": "repeated", "type": "PrepareUserInfo", "id": 2 } } }, "GameStartUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "score": { "type": "int64", "id": 2 }, "initScore": { "type": "int64", "id": 3 }, "handCards": { "rule": "repeated", "type": "int32", "id": 4 }, "tingInfos": { "rule": "repeated", "type": "TingInfo", "id": 5 }, "canPlayActions": { "rule": "repeated", "type": "int32", "id": 6 }, "xunNum": { "type": "int32", "id": 7 } } }, "NtfGameStart": { "fields": { "changWind": { "type": "int32", "id": 1 }, "juNum": { "type": "int32", "id": 2 }, "benChangNum": { "type": "int32", "id": 3 }, "zhuangSeat": { "type": "int32", "id": 4 }, "baoPreCard": { "type": "int32", "id": 6 }, "remainDuiCardNum": { "type": "int32", "id": 7 }, "userInfos": { "rule": "repeated", "type": "GameStartUserInfo", "id": 9 }, "leftTimer": { "type": "int32", "id": 11 }, "defaultMinTimeout": { "type": "int32", "id": 12 }, "riichiBangNum": { "type": "int32", "id": 13 }, "isAllLast": { "type": "bool", "id": 14 }, "gameID": { "type": "string", "id": 15 }, "duiCardsStrEncode": { "type": "string", "id": 16 }, "duiCardsStrSaltEncode": { "type": "string", "id": 17 }, "ServerRedundantTimeOut": { "type": "int32", "id": 23 }, "FirstGameStartRedundantTimeOut": { "type": "int32", "id": 24 } } }, "SendCardUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "card": { "type": "int32", "id": 2 }, "tingInfos": { "rule": "repeated", "type": "TingInfo", "id": 3 }, "canPlayActions": { "rule": "repeated", "type": "int32", "id": 4 }, "leftTimer": { "type": "int32", "id": 5 }, "isZhenTing": { "type": "bool", "id": 6 }, "xunNum": { "type": "int32", "id": 7 }, "zhenTingTypes": { "rule": "repeated", "type": "int32", "id": 8 } } }, "NtfSendCard": { "fields": { "seat": { "type": "int32", "id": 1 }, "baoPreCard": { "type": "int32", "id": 3 }, "userInfos": { "rule": "repeated", "type": "SendCardUserInfo", "id": 4 } } }, "PlayCardUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "canQiangActions": { "rule": "repeated", "type": "int32", "id": 2 }, "isZhenTing": { "type": "bool", "id": 6 }, "leftTimer": { "type": "int32", "id": 7 }, "canAnGangNoNumCardsAfterRiichi": { "rule": "repeated", "type": "int32", "id": 8 }, "zhenTingTypes": { "rule": "repeated", "type": "int32", "id": 9 } } }, "NtfPlayCard": { "fields": { "seat": { "type": "int32", "id": 1 }, "card": { "type": "int32", "id": 2 }, "action": { "type": "int32", "id": 3 }, "isMoQie": { "type": "bool", "id": 5 }, "userInfos": { "rule": "repeated", "type": "PlayCardUserInfo", "id": 6 } } }, "QiangCardUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 } } }, "NtfQiangCard": { "fields": { "seat": { "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "otherCards": { "rule": "repeated", "type": "int32", "id": 3 }, "userInfos": { "rule": "repeated", "type": "QiangCardUserInfo", "id": 4 } } }, "QiangCardEndUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "tingInfos": { "rule": "repeated", "type": "TingInfo", "id": 2 }, "canPlayActions": { "rule": "repeated", "type": "int32", "id": 3 }, "isZhenTing": { "type": "bool", "id": 4 }, "cantPlays": { "rule": "repeated", "type": "int32", "id": 5 }, "leftTimer": { "type": "int32", "id": 6 }, "xunNum": { "type": "int32", "id": 7 }, "zhenTingTypes": { "rule": "repeated", "type": "int32", "id": 8 } } }, "NtfQiangCardEnd": { "fields": { "seats": { "rule": "repeated", "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "otherCards": { "rule": "repeated", "type": "int32", "id": 3 }, "userInfos": { "rule": "repeated", "type": "QiangCardEndUserInfo", "id": 4 } } }, "GameStopUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "score": { "type": "int64", "id": 2 }, "handCards": { "rule": "repeated", "type": "int32", "id": 3 }, "changeScore": { "type": "int64", "id": 4 }, "yiFans": { "rule": "repeated", "type": "YiFan", "id": 5 }, "baoFan": { "type": "int32", "id": 6 }, "liBaoFan": { "type": "int32", "id": 7 }, "redBaoFan": { "type": "int32", "id": 8 }, "fu": { "type": "int32", "id": 9 }, "totalFan": { "type": "int32", "id": 10 }, "isYiMan": { "type": "bool", "id": 11 }, "jingSuanScore": { "type": "float", "id": 12 }, "changePT": { "type": "int64", "id": 13 }, "rank": { "type": "int32", "id": 14 }, "doorCardsInfos": { "rule": "repeated", "type": "DoorCardsInfo", "id": 15 }, "tings": { "rule": "repeated", "type": "int32", "id": 16 }, "manType": { "type": "int32", "id": 17 }, "alreadyRiichi": { "type": "bool", "id": 18 }, "baBeiCards": { "rule": "repeated", "type": "int32", "id": 19 }, "baBeiFan": { "type": "int32", "id": 20 }, "yiFanChangeDian": { "type": "int64", "id": 21 }, "isBaoPai": { "type": "bool", "id": 22 }, "jieBi": { "type": "int64", "id": 23 }, "matchingScore": { "type": "int32", "id": 24 }, "isMatchingAward": { "type": "bool", "id": 25 }, "lianZhuang": { "type": "int32", "id": 26 }, "maxFan": { "type": "int32", "id": 27 }, "realJieBi": { "type": "int64", "id": 28 }, "finalBi": { "type": "int64", "id": 29 }, "level": { "type": "int64", "id": 103 }, "loveValue": { "type": "int64", "id": 104 }, "oldLevel": { "type": "int64", "id": 105 }, "oldLoveValue": { "type": "int64", "id": 106 }, "ptLevel": { "type": "int32", "id": 107 }, "ptPoint": { "type": "int32", "id": 108 }, "oldPTLevel": { "type": "int32", "id": 109 }, "oldPTPoint": { "type": "int32", "id": 110 }, "itemRewardLevel": { "type": "int32", "id": 111 }, "itemRewards": { "rule": "repeated", "type": "ItemReward", "id": 112 } } }, "ItemReward": { "fields": { "itemId": { "type": "int64", "id": 1 }, "itemCount": { "type": "int64", "id": 2 } } }, "NtfGameStop": { "fields": { "huSeats": { "rule": "repeated", "type": "int32", "id": 1 }, "huCardSeat": { "type": "int32", "id": 2 }, "huCard": { "type": "int32", "id": 3 }, "liBaoPreCards": { "rule": "repeated", "type": "int32", "id": 4 }, "isFinal": { "type": "bool", "id": 5 }, "userInfos": { "rule": "repeated", "type": "GameStopUserInfo", "id": 6 }, "baoPreCards": { "rule": "repeated", "type": "int32", "id": 7 }, "liuJuManGuanSeats": { "rule": "repeated", "type": "int32", "id": 8 }, "liuJuType": { "type": "int32", "id": 9 }, "liuJuSeat": { "type": "int32", "id": 10 }, "duiCards": { "rule": "repeated", "type": "int32", "id": 11 }, "duiCardsStr": { "type": "string", "id": 12 }, "duiCardsStrSalt": { "type": "string", "id": 13 }, "stopType": { "type": "int32", "id": 14 }, "winningStreak": { "type": "int32", "id": 15 } } }, "ReqPrepare": { "fields": {} }, "RspPrepare": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqPlayCard": { "fields": { "card": { "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "isTimeout": { "type": "bool", "id": 3 } } }, "RspPlayCard": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqQiangCard": { "fields": { "action": { "type": "int32", "id": 1 }, "otherCards": { "rule": "repeated", "type": "int32", "id": 2 }, "isTimeout": { "type": "bool", "id": 3 } } }, "RspQiangCard": { "fields": { "result": { "type": "int32", "id": 1 } } }, "DoorCardsInfo": { "fields": { "cards": { "rule": "repeated", "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "qiangSeat": { "type": "int32", "id": 3 } } }, "Offline2OnlineUserInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "handCardsNum": { "type": "int32", "id": 2 }, "doorCardsInfos": { "rule": "repeated", "type": "DoorCardsInfo", "id": 3 }, "handCards": { "rule": "repeated", "type": "int32", "id": 4 }, "playedCards": { "rule": "repeated", "type": "int32", "id": 5 }, "PlayedCardsOtherTake": { "rule": "repeated", "type": "int32", "id": 6 }, "riichiTagCard": { "type": "int32", "id": 7 }, "alreadyRiichi": { "type": "bool", "id": 8 }, "tingInfos": { "rule": "repeated", "type": "TingInfo", "id": 9 }, "score": { "type": "int64", "id": 10 }, "canPlayActions": { "rule": "repeated", "type": "int32", "id": 11 }, "isZhenTing": { "type": "bool", "id": 12 }, "moQieMap": { "keyType": "int32", "type": "bool", "id": 14 }, "leftTimer": { "type": "int32", "id": 15 }, "cantPlays": { "rule": "repeated", "type": "int32", "id": 16 }, "changeScore": { "type": "int64", "id": 17 }, "baBeiCards": { "rule": "repeated", "type": "int32", "id": 18 }, "internalState": { "keyType": "int32", "type": "int32", "id": 19 }, "initScore": { "type": "int64", "id": 20 }, "canAnGangNoNumCardsAfterRiichi": { "rule": "repeated", "type": "int32", "id": 21 }, "DefaultMinTimeout": { "type": "int32", "id": 22 }, "ServerRedundantTimeOut": { "type": "int32", "id": 23 }, "zhenTingTypes": { "rule": "repeated", "type": "int32", "id": 24 }, "zhenTingTypesGuo": { "rule": "repeated", "type": "int32", "id": 25 } } }, "QiangInfo": { "fields": { "seat": { "type": "int32", "id": 1 }, "action": { "type": "int32", "id": 2 }, "otherCards": { "rule": "repeated", "type": "int32", "id": 3 } } }, "Offline2OnlineGameScene": { "fields": { "seat": { "type": "int32", "id": 1 }, "changWind": { "type": "int32", "id": 2 }, "juNum": { "type": "int32", "id": 3 }, "benChangNum": { "type": "int32", "id": 4 }, "zhuangSeat": { "type": "int32", "id": 5 }, "openBaoPreCards": { "rule": "repeated", "type": "int32", "id": 6 }, "remainDuiCardNum": { "type": "int32", "id": 7 }, "currentSeat": { "type": "int32", "id": 8 }, "currentPlayCard": { "type": "int32", "id": 9 }, "currentAction": { "type": "int32", "id": 10 }, "canQiangActions": { "rule": "repeated", "type": "int32", "id": 11 }, "qiangInfos": { "rule": "repeated", "type": "QiangInfo", "id": 12 }, "offline2OnlineUserInfos": { "rule": "repeated", "type": "Offline2OnlineUserInfo", "id": 13 }, "currentPlayEndTime": { "type": "int64", "id": 14 }, "currentQiangEndTime": { "type": "int64", "id": 15 }, "defaultMinTimeout": { "type": "int32", "id": 16 }, "ServerRedundantTimeOut": { "type": "int32", "id": 25 }, "riichiBangNum": { "type": "int32", "id": 17 }, "gameID": { "type": "string", "id": 18 }, "preSeat": { "type": "int32", "id": 19 }, "prePlayCard": { "type": "int32", "id": 20 }, "preAction": { "type": "int32", "id": 21 }, "preQiangInfos": { "rule": "repeated", "type": "QiangInfo", "id": 22 }, "duiCardsStrEncode": { "type": "string", "id": 23 }, "duiCardsStrSaltEncode": { "type": "string", "id": 24 }, "MapFriendPoll": { "keyType": "int32", "type": "bool", "id": 26 }, "FriendOutTime": { "type": "int64", "id": 27 } } }, "NtfOfflineToolTip": { "fields": { "isTempBlock": { "type": "bool", "id": 1 } } }, "SendBackOnlineReq": { "fields": {} }, "SendBackOnlineRsp": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqSetInternalState": { "fields": { "InternalState": { "keyType": "int32", "type": "int32", "id": 1 } } }, "RspSetInternalState": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqCloseOfflineTip": { "fields": {} }, "RspCloseOfflineTip": { "fields": { "result": { "type": "int32", "id": 1 } } }, "ReqClickUI": { "fields": { "tp": { "type": "int32", "id": 1 } } }, "RspClickUI": { "fields": { "result": { "type": "int32", "id": 1 } } }, "GmReqStopGame": { "fields": {} }, "GmRspStopGame": { "fields": {} }, "GmReqInitCard": { "fields": { "cardId": { "type": "int32", "id": 1 }, "isZimo": { "type": "bool", "id": 2 }, "isForbidRobotHu": { "type": "bool", "id": 3 } } }, "GmRspInitCard": { "fields": {} }, "GmReqSetRobotConfig": { "fields": { "robotSpeedLevel": { "type": "int32", "id": 1 } }, "nested": { "RobotSpeed": { "values": { "Normal": 0, "HalfTime": 1, "Fast": 2 } } } }, "GmRspSetRobotConfig": { "fields": {} }, "KRiichiMsg": { "fields": { "msgType": { "type": "RiichiMsg", "id": 1 }, "time": { "type": "int64", "id": 3 }, "payload": { "type": "bytes", "id": 100 } } } } } } };
+  var riichi_desc_default = riichiDesc;
 
-  // pb.mjs
+  // mockjs/pb.mjs
   var root = import_light.default.Root.fromJSON(riichi_desc_default);
   function encodeMsg(typeName, obj) {
     const T = root.lookupType("riichi." + typeName);
@@ -9454,7 +14644,7 @@
     return T.toObject(m, { defaults: true, arrays: true, objects: true, enums: Number });
   }
 
-  // browser_entry.mjs
+  // mockjs/browser_entry.mjs
   var MSG_NAME = {
     1: "ReqPrepare",
     2: "RspPrepare",
@@ -9483,17 +14673,25 @@
       this.opts = {
         players: opts.players != null ? opts.players : 4,
         akaCount: opts.akaCount != null ? opts.akaCount : 1,
-        startScore: opts.startScore != null ? opts.startScore : 25e3,
-        // 一局东风战的手数上限：三麻 12、四麻 16（含连庄）
-        maxHands: opts.maxHands != null ? opts.maxHands : opts.players === 3 ? 12 : 16,
+        startScore: opts.startScore != null ? opts.startScore : opts.players === 3 ? 35e3 : 25e3,
+        matchLength: opts.matchLength === "hanchan" ? "hanchan" : "east",
+        maxHands: opts.maxHands != null ? opts.maxHands : opts.matchLength === "hanchan" ? 64 : 32,
         // AI 思考延迟倍率。0 = 瞬间（自测用），1 = 正常观感
         speed: opts.speed != null ? opts.speed : 1,
         seed: opts.seed,
+        baseTime: opts.baseTime != null ? opts.baseTime : 5,
+        extraTime: opts.extraTime != null ? opts.extraTime : 20,
+        internalState: { ...opts.internalState || {} },
         autoHuman: opts.autoHuman != null ? opts.autoHuman : false,
         // 座位 -> 真实 userID，必须与 20408/20014 下发的牌桌 uid 完全一致
         uids: opts.uids || null
       };
       this.onFrame = opts.onFrame || (() => {
+      });
+      this.onFinish = opts.onFinish || (() => {
+      });
+      this.onFinalResult = opts.onFinalResult || (() => null);
+      this.onSettingsChange = opts.onSettingsChange || (() => {
       });
       this.log = opts.log || (() => {
       });
@@ -9530,15 +14728,21 @@
         players: o.players,
         akaCount: o.akaCount,
         startScore: o.startScore,
+        matchLength: o.matchLength,
         maxHands: o.maxHands,
         speed: o.speed,
         seed,
+        baseTime: o.baseTime,
+        extraTime: o.extraTime,
+        internalState: o.internalState,
         uids: o.uids,
         autoHuman: o.autoHuman,
+        onFinalResult: (scores, engine) => this.onFinalResult(scores, engine),
         // false=0号位真人，true=AI代打（测试用）
         emit: (ev, payload) => this.send(ev, payload),
-        onFinish: () => {
+        onFinish: (scores) => {
           this.matchOver = true;
+          this.onFinish(scores.slice(), eng);
           this.log("[riichi] \u7EC8\u5C40\uFF0C\u5F15\u64CE\u505C\u6B62\uFF1B\u7B49\u5BA2\u6237\u7AEF 20102 \u6536\u573A\u6216 20403 \u91CD\u65B0\u5339\u914D");
         }
       });
@@ -9576,20 +14780,25 @@
         case RiichiMsg.EReqPlayCard: {
           const e = this.ensureEngine();
           if (!e) return;
-          this.send(RiichiMsg.ERspPlayCard, { result: 0 });
-          e.submitDraw(payload);
+          const result = e.submitDraw(payload);
+          this.send(RiichiMsg.ERspPlayCard, { result });
           break;
         }
         case RiichiMsg.EReqQiangCard: {
           const e = this.ensureEngine();
           if (!e) return;
-          this.send(RiichiMsg.ERspQiangCard, { result: 0 });
-          e.submitClaim(payload);
+          const result = e.submitClaim(payload);
+          this.send(RiichiMsg.ERspQiangCard, { result });
           break;
         }
-        case RiichiMsg.EReqSetInternalState:
+        case RiichiMsg.EReqSetInternalState: {
+          const values = payload.InternalState || payload.internalState || {};
+          this.opts.internalState = { ...this.opts.internalState, ...values };
+          if (this.engine) this.engine.setInternalState(values);
+          this.onSettingsChange({ ...this.opts.internalState });
           this.send(RiichiMsg.ERspSetInternalState, { result: 0 });
           break;
+        }
         case RiichiMsg.EReqCloseOfflineTip:
           this.send(RiichiMsg.ERspCloseOfflineTip, { result: 0 });
           break;
@@ -9615,11 +14824,7 @@
       } catch (e) {
       }
       try {
-        eng.submitDraw({});
-      } catch (e) {
-      }
-      try {
-        eng.submitClaim({});
+        eng.cancelPending();
       } catch (e) {
       }
     }
@@ -9642,26 +14847,3 @@
     tileId
   };
 })();
-/*! Bundled license information:
-
-long/umd/index.js:
-  (**
-   * @license
-   * Copyright 2009 The Closure Library Authors
-   * Copyright 2020 Daniel Wirtz / The long.js Authors.
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *     http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   *
-   * SPDX-License-Identifier: Apache-2.0
-   *)
-*/

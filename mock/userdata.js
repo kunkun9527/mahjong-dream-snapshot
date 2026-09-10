@@ -25,6 +25,7 @@
   var DT_MAHJONG_WARRIOR = 26;
   var DT_MAHJONG_WARRIOR_SKIN = 37;
   var DT_SIGN_IN = 34;   // 签到：row "0".f1 = 最后签到 Unix 时间戳，跨日判定看它
+  var DT_PROFILE = 42;
 
   var DT_NAMES = {
     1: 'BasicInfo', 2: 'GameSetting', 3: 'RankingMatchInfo', 4: 'HighlightRecord',
@@ -289,6 +290,98 @@
     return this._makeChange(2, ch[0], ch[1], ch[2]);
   };
 
+  function sameBytes(a, b) {
+    if (!a || !b || a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  /** DT42 ProfileInfo 的实测字段：10场次、11局数、12和牌、13放铳、14副露、
+   *  16和牌打点、17被飞、18最大连庄、19和牌巡目、20荣和、21自摸、22立直。 */
+  function encodeProfileInfo(bytes, stats) {
+    var w = P.W(), fs = P.parse(bytes || new Uint8Array(0));
+    var replaced = { 10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 16: 1, 17: 1, 18: 1, 19: 1, 20: 1, 21: 1, 22: 1, 40: 1 };
+    for (var i = 0; i < fs.length; i++) {
+      if (!replaced[fs[i][0]]) P.reencode(w, fs[i][0], fs[i][1], fs[i][2]);
+    }
+    var values = {
+      10: stats.games, 11: stats.hands, 12: stats.wins, 13: stats.dealIns,
+      14: stats.calls, 16: stats.winPoints, 17: stats.busts, 18: stats.maxRenchan,
+      19: stats.winTurns, 20: stats.ron, 21: stats.tsumo, 22: stats.riichi
+    };
+    for (var field in values) {
+      var value = Math.max(0, Number(values[field]) || 0);
+      if (value) w.v(Number(field), value);
+    }
+    return w.bytes();
+  }
+
+  function encodeProfileBlock(bytes, stats) {
+    var w = P.W(), fs = P.parse(bytes), wanted = {
+      '1_0': stats.byLength.east,
+      '1_1': stats.byLength.hanchan
+    };
+    for (var i = 0; i < fs.length; i++) {
+      var f = fs[i], value = f[2];
+      if (f[0] === 2 && f[1] === 2) {
+        var entry = P.dict(value);
+        var key = entry[1] instanceof Uint8Array ? P.fromUtf8(entry[1]) : '';
+        if (wanted[key] && entry[2] instanceof Uint8Array) {
+          var wrapper = entry[2];
+          var info = P.get(wrapper, 2) || new Uint8Array(0);
+          wrapper = P.setBytes(wrapper, 2, encodeProfileInfo(info, wanted[key]));
+          value = P.setBytes(value, 2, wrapper);
+        }
+      }
+      P.reencode(w, f[0], f[1], value);
+    }
+    return w.bytes();
+  }
+
+  /** 把唯一 JSON 档案的三/四麻东风、半庄统计同步回原客户端 DT42 战绩页。 */
+  UserData.prototype.updateProfileStats = function (stats) {
+    var row = this.row(DT_PROFILE, '0');
+    if (!row || !stats || !stats.yonma || !stats.sanma) return null;
+    var w = P.W(), fs = P.parse(row);
+    for (var i = 0; i < fs.length; i++) {
+      var f = fs[i], value = f[2];
+      if (f[1] === 2 && f[0] === 1) value = encodeProfileBlock(value, stats.yonma);
+      else if (f[1] === 2 && f[0] === 2) value = encodeProfileBlock(value, stats.sanma);
+      P.reencode(w, f[0], f[1], value);
+    }
+    var next = w.bytes();
+    if (sameBytes(row, next)) return null;
+    var ch = this.setRow(DT_PROFILE, '0', next);
+    return this._makeChange(DT_PROFILE, ch[0], ch[1], ch[2]);
+  };
+
+
+  /** 同步三/四麻本地段位到 DT41；4001=四麻，4002=三麻。 */
+  UserData.prototype.updateRanks = function (ranks) {
+    var out = [];
+    var modes = [{ key: '4001', rank: ranks && ranks.yonma }, { key: '4002', rank: ranks && ranks.sanma }];
+    for (var i = 0; i < modes.length; i++) {
+      var item = modes[i], row = this.row(41, item.key);
+      if (!row || !item.rank) continue;
+      row = P.setVarint(row, 1, item.rank.level || 1);
+      row = P.setVarint(row, 2, item.rank.point || 0);
+      var ch = this.setRow(41, item.key, row);
+      out.push(this._makeChange(41, ch[0], ch[1], ch[2]));
+    }
+    return out;
+  };
+
+  /** 修改本地昵称：UserBasic.f1(UserBasicInfo).f1 = nickname。 */
+  UserData.prototype.updateNickname = function (nickname) {
+    var row = this.row(DT_BASIC_INFO, '0');
+    if (!row) return null;
+    var basic = P.get(row, 1) || new Uint8Array(0);
+    basic = P.setBytes(basic, 1, P.utf8(nickname));
+    row = P.setBytes(row, 1, basic);
+    var ch = this.setRow(DT_BASIC_INFO, '0', row);
+    return this._makeChange(DT_BASIC_INFO, ch[0], ch[1], ch[2]);
+  };
+
   MJ.userdata = {
     UserData: UserData, Module: Module,
     DT_NAMES: DT_NAMES,
@@ -296,6 +389,6 @@
     DT_BASIC_INFO: DT_BASIC_INFO, DT_HEAD: DT_HEAD,
     DT_MAHJONG_WARRIOR: DT_MAHJONG_WARRIOR,
     DT_MAHJONG_WARRIOR_SKIN: DT_MAHJONG_WARRIOR_SKIN,
-    DT_SIGN_IN: DT_SIGN_IN
+    DT_SIGN_IN: DT_SIGN_IN, DT_PROFILE: DT_PROFILE
   };
 })(typeof window !== 'undefined' ? window : globalThis);

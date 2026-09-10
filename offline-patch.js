@@ -1,42 +1,36 @@
-/* 激情麻将 离线补丁
- * 1) 把游戏内硬编码的 wss://riichiproxy1.mahjongdreamone.com:443 接到「浏览器内的」
- *    JS Mock 服务端（mock/server.js 的 FakeWebSocket），不再需要任何外部进程；
- *    如果 mock 脚本没加载上，则退化为重定向到本地 wss://host:9443（Python 版）
- * 2) 把所有外网 HTTP 请求（埋点 / SDK / CDN）拦下来，避免离线环境下卡住
- * 3) 提供 window.__mjmock 便于在控制台观察收发帧
- */
+/* 激情麻将本地单机补丁：游戏 WebSocket 接到本机服务，并阻止所有外网请求。 */
 (function () {
   'use strict';
 
-  // 浏览器内 Mock（mock/server.js）。
-  var INPROC = window.__mj && window.__mj.server && window.__mj.server.FakeWebSocket;
-
-  // 本地允许直连的 host（静态资源）
-  var LOCAL = [location.host];
-
-  // 需要拦截并返回空响应的外部域
-  var BLOCK = /(qsdkapi-q\.ggbak\.com|kfapi\.quickapi\.net|playgame\.quickjoy\.com|tb16888-\d\.mahjongdreamone\.com|dumplog\.mahjongdreamone\.com|aso\.mahjongdreamone\.com|mjdream\.com)/;
-
-  // 需要改写到本地镜像的外部资源域
-  var REWRITE = [
-    [/^https?:\/\/example\.com\/(.*)$/,
-      location.origin + location.pathname.replace(/[^/]+$/, '') + '$1']
-  ];
-
-  function rewriteUrl(u) {
-    if (typeof u !== 'string') return u;
-    for (var i = 0; i < REWRITE.length; i++) {
-      if (REWRITE[i][0].test(u)) return u.replace(REWRITE[i][0], REWRITE[i][1]);
-    }
-    return u;
+  var LOCAL_WS = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws' + location.search;
+  function localUrl(value) {
+    if (!value || /^(data:|blob:|about:)/i.test(String(value))) return true;
+    try { return new URL(String(value), location.href).origin === location.origin; }
+    catch (e) { return false; }
+  }
+  function localAssetUrl(value) {
+    try {
+      var parsed = new URL(String(value), location.href);
+      if (parsed.pathname.indexOf('/StreamingAssets/') === 0) {
+        return location.origin + parsed.pathname + parsed.search;
+      }
+    } catch (e) { /* block below */ }
+    return null;
+  }
+  function emptyResponse() {
+    return Promise.resolve(new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } }));
   }
 
   var stats = { sent: 0, recv: 0, frames: [] };
+  function recordFrame(frame) {
+    stats.frames.push(frame);
+    if (stats.frames.length > 200) stats.frames.shift();
+  }
   window.__mjmock = {
     stats: stats,
-    url: INPROC,
-    inproc: !!INPROC,
-    server: INPROC ? window.__mj.server : null,
+    url: LOCAL_WS,
+    inproc: false,
+    server: null,
     dump: function (n) { return stats.frames.slice(-(n || 20)); }
   };
 
@@ -45,25 +39,20 @@
   function PatchedWS(url, protocols) {
     var orig = url;
     var isGame = /riichiproxy|mahjongproxy|riichi_proxy/i.test(String(url));
-    var ws;
-    if (isGame && INPROC) {
-      // 完全在浏览器内应答，不产生任何真实网络连接
-      ws = new INPROC(orig, protocols);
-      console.log('[offline] WS 交给内置 JS Mock:', orig);
-    } else {
-      ws = protocols === undefined ? new NativeWS(url)
-        : new NativeWS(url, protocols);
-    }
+    var target = isGame ? LOCAL_WS : url;
+    if (!isGame && !localUrl(url)) throw new Error('离线模式阻止外部 WebSocket: ' + url);
+    var ws = protocols === undefined ? new NativeWS(target) : new NativeWS(target, protocols);
+    if (isGame) console.log('[offline] 游戏 WS 接到本机服务:', target);
     ws.binaryType = 'arraybuffer';
     var _send = ws.send.bind(ws);
     ws.send = function (d) {
       stats.sent++;
-      stats.frames.push({ dir: 'send', len: d && d.byteLength || 0, t: Date.now() });
+      recordFrame({ dir: 'send', len: d && d.byteLength || 0, t: Date.now() });
       return _send(d);
     };
     ws.addEventListener('message', function (e) {
       stats.recv++;
-      stats.frames.push({ dir: 'recv', len: e.data && e.data.byteLength || 0, t: Date.now() });
+      recordFrame({ dir: 'recv', len: e.data && e.data.byteLength || 0, t: Date.now() });
     });
     ws.addEventListener('open', function () { console.log('[offline] WS 已连接', url); });
     ws.addEventListener('error', function (e) { console.warn('[offline] WS 错误', e); });
@@ -76,7 +65,7 @@
   try {
     Object.defineProperty(PatchedWS, Symbol.hasInstance, {
       value: function (o) {
-        return o instanceof NativeWS || (!!INPROC && o instanceof INPROC);
+        return o instanceof NativeWS;
       }
     });
   } catch (e) { /* 老浏览器忽略 */ }
@@ -86,32 +75,12 @@
   var nativeFetch = window.fetch && window.fetch.bind(window);
   if (nativeFetch) {
     window.fetch = function (input, init) {
-      var u = (typeof input === 'string') ? input : (input && input.url) || '';
-      if (BLOCK.test(u)) {
-        if (init && init.body instanceof Blob && u.includes("datalog")) {
-          init.body.text().then(function (text) {
-            var data = JSON.parse(text);
-            try {
-              var binaryString = atob(data.msg);
-              var bytes = new Uint8Array(binaryString.length);
-              for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-              }
-              data = new TextDecoder('utf-8').decode(bytes);
-            } catch(e) { }
-            console.log('[offline] 上报日志:', data);
-          });
-        } else {
-          console.log('[offline] 拦截 fetch:', u);
-        }
-        return Promise.resolve(new Response('{}', {
-          status: 200, headers: { 'Content-Type': 'application/json' }
-        }));
-      }
-      var nu = rewriteUrl(u);
-      if (nu !== u) {
-        console.log('[offline] 重写 fetch:', u, '->', nu);
-        return nativeFetch(nu, init);
+      var url = (typeof input === 'string') ? input : (input && input.url) || '';
+      var assetUrl = localAssetUrl(url);
+      if (assetUrl) return nativeFetch(assetUrl, init);
+      if (!localUrl(url)) {
+        console.log('[offline] 拦截外部 fetch:', url);
+        return emptyResponse();
       }
       return nativeFetch(input, init);
     };
@@ -119,27 +88,28 @@
 
   // ---------------- XHR 劫持 ----------------
   var open = XMLHttpRequest.prototype.open;
+  var setRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
   XMLHttpRequest.prototype.open = function (m, u) {
     var args = Array.prototype.slice.call(arguments);
-    if (typeof u === 'string') {
-      if (BLOCK.test(u)) {
-        console.log('[offline] 拦截 XHR:', u);
-        args[1] = 'data:application/json,{}';
-      } else {
-        var nu = rewriteUrl(u);
-        if (nu !== u) {
-          console.log('[offline] 重写 XHR:', u, '->', nu);
-          args[1] = nu;
-        }
-      }
+    var assetUrl = localAssetUrl(u);
+    this._mjOfflineBlocked = typeof u === 'string' && !assetUrl && !localUrl(u);
+    if (assetUrl) {
+      args[1] = assetUrl;
+    } else if (this._mjOfflineBlocked) {
+      console.log('[offline] 拦截外部 XHR:', u);
+      args[1] = location.origin + '/mock/empty.json';
     }
     return open.apply(this, args);
+  };
+  XMLHttpRequest.prototype.setRequestHeader = function (name, value) {
+    if (this._mjOfflineBlocked && String(name).toLowerCase() === 'range') return;
+    return setRequestHeader.call(this, name, value);
   };
 
   // ---------------- 外部 <script> 拦截 ----------------
   var setAttr = Element.prototype.setAttribute;
   Element.prototype.setAttribute = function (k, v) {
-    if (this.tagName === 'SCRIPT' && k === 'src' && BLOCK.test(String(v))) {
+    if (this.tagName === 'SCRIPT' && k === 'src' && !localUrl(v)) {
       console.log('[offline] 拦截 script:', v);
       return;
     }
@@ -150,11 +120,11 @@
     Object.defineProperty(HTMLScriptElement.prototype, 'src', {
       get: srcDesc.get,
       set: function (v) {
-        if (BLOCK.test(String(v))) {
+        if (!localUrl(v)) {
           console.log('[offline] 拦截 script.src:', v);
           return;
         }
-        srcDesc.set.call(this, rewriteUrl(v));
+        srcDesc.set.call(this, v);
       },
       configurable: true
     });
@@ -185,11 +155,12 @@
     }
   }
   function patchHelper(helper) {
-    if (!helper || !helper.getUrlParams) return;
-    if (helper.__patched) return;
+    if (!helper || typeof helper.getUrlParams !== 'function') return false;
+    if (helper.__patched) return true;
     helper.__patched = true;
     helper.getUrlParams = safeGetUrlParams;
     console.log('[offline] 已 patch webGLPluginHelper.getUrlParams');
+    return true;
   }
   // 轮询：framework.js 是 async 加载，等 Module/webGLPluginHelper 出现
   var tries = 0;
@@ -200,11 +171,9 @@
     var candidates = [window, window.Module, window.unityInstance, window.QuickService];
     for (var i = 0; i < candidates.length; i++) {
       var c = candidates[i];
-      if (c && c.webGLPluginHelper) {
-        patchHelper(c.webGLPluginHelper);
-        done = true;
+      if (!c || !Object.prototype.hasOwnProperty.call(c, 'webGLPluginHelper')) continue;
+      if (patchHelper(c.webGLPluginHelper)) done = true;
       }
-    }
     if (done || tries > 600) clearInterval(timer);  // 最多 60 秒
   }, 100);
 })();

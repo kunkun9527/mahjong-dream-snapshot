@@ -14,16 +14,22 @@
   var MJ = global.__mj || (global.__mj = {});
 
   // ---------------------------------------------------------------- 解码
+  function numberIfSafe(value) {
+    return value <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(value) : value;
+  }
+
   function readVarint(buf, pos) {
-    var result = 0;
-    var shiftMul = 1;
-    while (pos < buf.length) {
+    var result = 0n;
+    var shift = 0n;
+    var count = 0;
+    while (pos < buf.length && count < 10) {
       var b = buf[pos++];
-      result += (b & 0x7f) * shiftMul;
-      if ((b & 0x80) === 0) return [result, pos];
-      shiftMul *= 128;
-      if (shiftMul > 1e19) throw new Error('varint 过长');
+      result |= BigInt(b & 0x7f) << shift;
+      count++;
+      if ((b & 0x80) === 0) return [numberIfSafe(result), pos];
+      shift += 7n;
     }
+    if (count >= 10) throw new Error('varint 过长');
     throw new Error('varint 截断');
   }
 
@@ -35,6 +41,7 @@
     while (pos < buf.length) {
       var r = readVarint(buf, pos);
       var key = r[0];
+      if (typeof key === 'bigint') throw new Error('字段号过大');
       pos = r[1];
       var fn = Math.floor(key / 8);
       var wt = key & 7;
@@ -46,20 +53,21 @@
       } else if (wt === 2) {
         r = readVarint(buf, pos);
         var len = r[0];
+        if (typeof len === 'bigint') throw new Error('长度过大');
         pos = r[1];
         if (pos + len > buf.length) throw new Error('长度越界');
         out.push([fn, 2, buf.subarray(pos, pos + len)]);
         pos += len;
       } else if (wt === 5) {
         if (pos + 4 > buf.length) throw new Error('fixed32 越界');
-        out.push([fn, 5, buf[pos] | (buf[pos + 1] << 8) |
-                          (buf[pos + 2] << 16) | (buf[pos + 3] * 0x1000000)]);
+        out.push([fn, 5, (buf[pos] | (buf[pos + 1] << 8) |
+                          (buf[pos + 2] << 16) | (buf[pos + 3] << 24)) >>> 0]);
         pos += 4;
       } else if (wt === 1) {
         if (pos + 8 > buf.length) throw new Error('fixed64 越界');
-        var lo = buf[pos] + buf[pos + 1] * 256 + buf[pos + 2] * 65536 + buf[pos + 3] * 16777216;
-        var hi = buf[pos + 4] + buf[pos + 5] * 256 + buf[pos + 6] * 65536 + buf[pos + 7] * 16777216;
-        out.push([fn, 1, lo + hi * 4294967296]);
+        var fixed = 0n;
+        for (var j = 0; j < 8; j++) fixed |= BigInt(buf[pos + j]) << BigInt(j * 8);
+        out.push([fn, 1, numberIfSafe(fixed)]);
         pos += 8;
       } else {
         throw new Error('不支持的 wire type ' + wt);
@@ -97,14 +105,14 @@
 
   // ---------------------------------------------------------------- 编码
   function varintBytes(n) {
-    if (n < 0) n += 18446744073709551616; // 2^64
+    n = typeof n === 'bigint' ? n : BigInt(Math.trunc(n));
+    n = BigInt.asUintN(64, n);
     var out = [];
-    while (true) {
-      var b = n % 128;
-      n = Math.floor(n / 128);
-      if (n) out.push(b | 0x80);
-      else { out.push(b); break; }
-    }
+    do {
+      var b = Number(n & 0x7fn);
+      n >>= 7n;
+      out.push(n ? b | 0x80 : b);
+    } while (n);
     return out;
   }
 
@@ -137,9 +145,14 @@
   };
   Writer.prototype.f64 = function (fn, n) {
     this.tag(fn, 1);
-    var lo = n % 4294967296, hi = Math.floor(n / 4294967296);
-    return this.raw([lo & 0xff, (lo >>> 8) & 0xff, (lo >>> 16) & 0xff, (lo >>> 24) & 0xff,
-                     hi & 0xff, (hi >>> 8) & 0xff, (hi >>> 16) & 0xff, (hi >>> 24) & 0xff]);
+    n = typeof n === 'bigint' ? n : BigInt(Math.trunc(n));
+    n = BigInt.asUintN(64, n);
+    var out = [];
+    for (var i = 0; i < 8; i++) {
+      out.push(Number(n & 0xffn));
+      n >>= 8n;
+    }
+    return this.raw(out);
   };
   /** packed repeated varint（即使单元素也用 packed，匹配原版 wire） */
   Writer.prototype.packed = function (fn, list) {
@@ -178,8 +191,9 @@
     var fs = parse(blob);
     for (var i = 0; i < fs.length; i++) {
       var f = fs[i];
-      if (f[0] === fn && f[1] === 0 && !done) { w.v(fn, value); done = true; }
-      else reencode(w, f[0], f[1], f[2]);
+      if (f[0] === fn && f[1] === 0) {
+        if (!done) { w.v(fn, value); done = true; }
+      } else reencode(w, f[0], f[1], f[2]);
     }
     if (!done) w.v(fn, value);
     return w.bytes();
@@ -191,8 +205,9 @@
     var fs = parse(blob);
     for (var i = 0; i < fs.length; i++) {
       var f = fs[i];
-      if (f[0] === fn && f[1] === 2 && !done) { w.s(fn, value); done = true; }
-      else reencode(w, f[0], f[1], f[2]);
+      if (f[0] === fn && f[1] === 2) {
+        if (!done) { w.s(fn, value); done = true; }
+      } else reencode(w, f[0], f[1], f[2]);
     }
     if (!done) w.s(fn, value);
     return w.bytes();

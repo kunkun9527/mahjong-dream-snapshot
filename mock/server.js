@@ -40,7 +40,7 @@
    *    ?mjSpeed=0.4   AI 思考延迟倍率，0 = 瞬间
    */
   var CONFIG = MJ.config || (MJ.config = {
-    players: 4, akaCount: 1, speed: 1, seed: undefined, autoHuman: false
+    players: 4, matchLength: 'east', akaCount: 1, speed: 1, seed: undefined, autoHuman: false
   });
   (function readQuery() {
     try {
@@ -48,6 +48,10 @@
       if (q.get('mjPlayers')) {
         CONFIG.players = parseInt(q.get('mjPlayers'), 10);
         CONFIG.playersExplicit = true;   // 显式指定时忽略匹配请求里的 gameType
+      }
+      if (q.get('mjLength')) {
+        CONFIG.matchLength = q.get('mjLength') === 'hanchan' ? 'hanchan' : 'east';
+        CONFIG.matchLengthExplicit = true;
       }
       if (q.get('mjMatchDelay')) CONFIG.matchDelay = parseInt(q.get('mjMatchDelay'), 10);
       if (q.get('mjSeed')) CONFIG.seed = parseInt(q.get('mjSeed'), 10);
@@ -215,6 +219,26 @@
       return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
   }
+  function randomSeed() {
+    if (global.crypto && global.crypto.getRandomValues) {
+      var values = new Uint32Array(1);
+      global.crypto.getRandomValues(values);
+      return values[0];
+    }
+    return Math.floor(Math.random() * 0x100000000);
+  }
+
+  function seededRng(seed) {
+    var state = Number(seed) >>> 0;
+    return function () {
+      state = state + 0x6D2B79F5 | 0;
+      var t = state;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
 
   // ---------------------------------------------------------------- Session
   function Session() {
@@ -231,6 +255,9 @@
     // 断线重连恢复用（见 HANDLERS[20162]）：
     this.table = null;          // 牌桌快照 { sanma, self, robots }，20403 匹配成型时写入
     this.handFrames = [];       // 本局已下发的 20018 通知帧，重连后按序重放以重建局面
+    this.matchTimer = null;       // 可取消的匹配完成计时器
+    this.engineStartTimer = null; // 组桌完成后延迟启动引擎的计时器，同样必须可取消
+    this.matchToken = 0;          // 防止旧计时器在重新匹配后误开桌
   }
 
   /** 服务端主动下推一帧（不由某个请求触发，比如 AI 摸打产生的对局事件）。
@@ -247,6 +274,9 @@
 
   /** 连接断开时释放附属资源 */
   Session.prototype.destroy = function () {
+    if (this.matchTimer) { clearTimeout(this.matchTimer); this.matchTimer = null; }
+    if (this.engineStartTimer) { clearTimeout(this.engineStartTimer); this.engineStartTimer = null; }
+    this.matchToken += 1;
     if (this.riichi) {
       try { this.riichi.stop(); } catch (e) { /* ignore */ }
       this.riichi = null;
@@ -451,6 +481,40 @@
     return withChange(100904, changes);
   };
 
+  function payloadText(bytes) {
+    var fields;
+    try { fields = P.parse(bytes); } catch (e) { return ''; }
+    for (var i = 0; i < fields.length; i++) {
+      if (fields[i][1] !== 2 || !(fields[i][2] instanceof Uint8Array)) continue;
+      var value = P.fromUtf8(fields[i][2]);
+      if (value && !/[\u0000-\u001f\u007f]/.test(value)) return value;
+      value = payloadText(fields[i][2]);
+      if (value) return value;
+    }
+    return '';
+  }
+
+  function validNickname(value) {
+    var nickname = String(value || '').trim();
+    return nickname && !/[\u0000-\u001f\u007f]/.test(nickname) ? nickname : null;
+  }
+
+  /** 昵称预校验；客户端长度/字符规则优先，本地服务兜底拒绝空白和控制字符。 */
+  HANDLERS[100151] = function (sess, payload) {
+    var nickname = validNickname(payloadText(payload));
+    return [[100152, P.W().v(1, nickname ? 0 : 2).bytes(), 1, null]];
+  };
+
+  /** 修改基础资料；快照中该 RPC 仅用于昵称，数据通过 f24 更新 DT1。 */
+  HANDLERS[100007] = function (sess, payload) {
+    var nickname = validNickname(payloadText(payload));
+    if (!nickname) return [[100008, P.W().v(1, 2).bytes(), 1, null]];
+    var changes = USERDATA.updateNickname(nickname);
+    if (sess.localProfile) sess.localProfile.nickname = nickname;
+    if (typeof sess.onNicknameChange === 'function') sess.onNicknameChange(nickname);
+    return withChange(100008, changes, P.W().v(1, 0).bytes());
+  };
+
   /** 100003 KClientLobbyModifyGameSettingRequest -> 100004 */
   HANDLERS[100003] = function (sess, payload) {
     var d = P.dict(payload);
@@ -582,11 +646,24 @@
       players: CONFIG.players,
       // 三麻起点 35000（抓包 NtfGameStart 里 score/initScore 就是 35000）
       startScore: CONFIG.players === 3 ? 35000 : 25000,
+      matchLength: CONFIG.matchLength,
       akaCount: CONFIG.akaCount,
       speed: CONFIG.speed,
-      seed: CONFIG.seed,
+      seed: sess.table && sess.table.seed != null ? sess.table.seed : CONFIG.seed,
       uids: uids,
       autoHuman: CONFIG.autoHuman,
+      internalState: sess.internalState || {},
+      onSettingsChange: function (state) {
+        sess.internalState = state;
+        if (typeof sess.onSettingsChange === 'function') sess.onSettingsChange(state);
+      },
+      onFinalResult: function (scores, engine) {
+        if (typeof sess.onFinalResult === 'function') return sess.onFinalResult(scores, engine);
+        return null;
+      },
+      onFinish: function (scores, engine) {
+        if (typeof sess.onMatchFinish === 'function') sess.onMatchFinish(scores, engine);
+      },
       log: function (s) { log(s); },
       onFrame: function (ev, bytes) {
         log('  => 20018 %s %dB', riichiName(ev), bytes.length);
@@ -600,7 +677,6 @@
         if (ev >= 1000) {
           if (ev === RIICHI_NTF_TO_PREPARE) sess.handFrames = [];
           sess.handFrames.push([ev, bytes]);
-          if (!sess.replaying && sess.handFrames.length > 600) sess.handFrames.shift();
           // 重放进行中：新帧只入队，由 replayHand 顺着下标追上来一起发，
           // 免得历史帧和新帧交错把客户端的牌局搅乱。
           if (sess.replaying) return;
@@ -755,14 +831,18 @@
 
   /** 从 USERDATA 读取本机玩家当前选中的装备，组装成 SimpleInGameSummaryInfo。
    *  每次匹配时动态读取，确保用户在大厅换角色/皮肤后下一局能生效。 */
-  function getSelfProfile() {
+  function getSelfProfile(sess, sanma) {
+    var localRank = sess && sess.localProfile ? sess.localProfile.ranks[sanma ? 'sanma' : 'yonma'] : null;
     var profile = {
-      uid: UID, nick: 'Mayx', head: 1009, frame: 2001, title: 3001,
-      bang: 140009, warrior: 1, skin: 1001, level: 16, likability: 6, pt: 2605
+      uid: UID, nick: sess && sess.localProfile ? sess.localProfile.nickname : '离线玩家', head: 1009, frame: 2001, title: 3001,
+      bang: 140009, warrior: 1, skin: 1001, level: localRank ? localRank.level : 1, likability: 6, pt: localRank ? localRank.point : 0
     };
     try {
       var row = USERDATA.row(1, '0');         // DT_BASIC_INFO
       if (row) {
+        var basic = P.get(row, 1);
+        var nickname = basic && P.get(basic, 1);
+        if (nickname instanceof Uint8Array && nickname.length) profile.nick = P.fromUtf8(nickname);
         var equip = P.get(row, 2);             // UserBasicEquipment map
         if (equip && equip.length) {
           var fs = P.parse(equip);
@@ -795,13 +875,14 @@
   }
 
   /** 给 AI 机器人随机分配一个雀士及其皮肤/头像 */
-  function makeRobot(idx, humanWarrior) {
+  function makeRobot(idx, humanWarrior, rng) {
     var base = ROBOTS[idx];
-    var ids = Object.keys(WARRIOR_TABLE);
-    var w = parseInt(ids[Math.floor(Math.random() * ids.length)], 10);
+    var ids = Object.keys(WARRIOR_TABLE).filter(function (id) { return Number(id) !== Number(humanWarrior); });
+    if (!ids.length) ids = Object.keys(WARRIOR_TABLE);
+    var w = parseInt(ids[Math.floor(rng() * ids.length)], 10);
     var pair = WARRIOR_TABLE[w];
-    var pick = pair[Math.floor(Math.random() * pair.length)];
-    var b = BANG_POOL[Math.floor(Math.random() * BANG_POOL.length)];
+    var pick = pair[Math.floor(rng() * pair.length)];
+    var b = BANG_POOL[Math.floor(rng() * BANG_POOL.length)];
     return {
       uid: base.uid, nick: base.nick, head: pick.head, frame: base.frame,
       title: base.title, bang: b,
@@ -837,28 +918,11 @@
     return w.bytes();
   }
 
-  /** FriendGameSetting —— 东风战设置，数值照抄抓包 */
-  function encGameSetting(sanma) {
-    var adv = P.W()
-      .v(1, sanma ? 3 : 1)      // StartingPoint
-      .v(3, sanma ? 7 : 6)      // RequiredPoint
-      .v(5, sanma ? 11 : 12)    // RedTreasureCards
-      .v(6, 15)                 // Eclipse
-      .v(9, 2)                  // useZiMoSunNew
-      .bytes();
-    return P.W()
-      .v(1, sanma ? 1 : 2)      // Mode
-      .v(3, 3)                  // PonderTime
-      .s(4, adv)
-      .v(14, 2)                 // useEmotionNew
-      .v(15, 2)                 // useDiffHandOrDrawNew
-      .bytes();
-  }
 
   /** 随机 20 字符牌局 ID，形如 d9s4grlhjab6eqidh2jg */
-  function randGameId() {
+  function randGameId(rng) {
     var cs = 'abcdefghijklmnopqrstuvwxyz0123456789', s = '';
-    for (var i = 0; i < 20; i++) s += cs.charAt(Math.floor(Math.random() * cs.length));
+    for (var i = 0; i < 20; i++) s += cs.charAt(Math.floor(rng() * cs.length));
     return s;
   }
 
@@ -873,7 +937,7 @@
     var w = P.W()
       .v(1, t.sanma ? GAME_TYPE.SANMA : GAME_TYPE.YONMA)
       .v(2, sess.tableId || 1)
-      .v(3, t.sanma ? 3 : 4)                     // seatCount
+      .v(3, t.sanma ? 3 : 4)
       .s(4, encTableUser(0, t.self, false));
     if (withRobots) {
       for (var i = 0; i < t.robots.length; i++) {
@@ -881,10 +945,13 @@
       }
     }
     return w
-      .v(6, 7)                                   // roomType
-      .s(7, encGameSetting(t.sanma))
-      .v(8, 3)                                   // roomID
-      .s(11, t.logId)                            // gameLogID
+      .v(5, 7)
+      .v(6, t.roomId || 1)
+      .v(7, t.matchLength === 'hanchan' ? 1 : 0)
+      .s(9, t.logId)
+      .s(10, t.gameId)
+      // 旧版客户端还从这两个字段读取同一组标识。
+      .s(11, t.logId)
       .s(12, t.gameId)
       .bytes();
   }
@@ -896,6 +963,11 @@
       var d = P.dict(payload);
       if (d[1] instanceof Uint8Array) srm = P.dict(d[1]);
     } catch (e) { /* 用默认值 */ }
+    if (d && d[1] instanceof Uint8Array) {
+      log('  [match] request=%s', Array.prototype.map.call(d[1], function (b) {
+        return ('0' + b.toString(16)).slice(-2);
+      }).join(''));
+    }
 
     // 非立直麻将游戏类型：忽略，只回 20404 空包
     if (!RIICHI_GAME_TYPES[srm[1]]) {
@@ -907,9 +979,10 @@
     var sanma = srm[1] === GAME_TYPE.SANMA;
     if (CONFIG.playersExplicit) sanma = CONFIG.players === 3;
     else CONFIG.players = sanma ? 3 : 4;
+    if (!CONFIG.matchLengthExplicit) CONFIG.matchLength = Number(srm[2] || 0) === 1 ? 'hanchan' : 'east';
 
-    log('  [match] gameType=%s roomType=%s roomID=%s -> %s麻',
-      srm[1], srm[3], srm[4], sanma ? '三' : '四');
+    log('  [match] gameType=%s roomType=%s roomID=%s -> %s麻%s',
+      srm[1], srm[3], srm[4], sanma ? '三' : '四', CONFIG.matchLength === 'hanchan' ? '半庄' : '东风');
 
     sess.tableId = 1;
     sess.seat = 0;
@@ -921,29 +994,39 @@
       sess.riichi = null;
     }
 
+    if (sess.matchTimer) clearTimeout(sess.matchTimer);
+    if (sess.engineStartTimer) { clearTimeout(sess.engineStartTimer); sess.engineStartTimer = null; }
+    var matchToken = ++sess.matchToken;
     var delay = CONFIG.matchDelay != null ? CONFIG.matchDelay : 1500;
-    setTimeout(function () {
+    sess.matchTimer = setTimeout(function () {
+      sess.matchTimer = null;
+      if (sess.matchToken !== matchToken) return;
       if (!sess.socket || sess.socket.readyState !== OPEN) return;
 
       // 1) 房间成型 —— 动态读取本机玩家装备
-      var selfProfile = getSelfProfile();
+      var selfProfile = getSelfProfile(sess, sanma);
+      var matchSeed = CONFIG.seed != null ? Number(CONFIG.seed) >>> 0 : randomSeed();
+      var matchRng = seededRng(matchSeed);
       // 牌桌快照：断线重连时 20162 要用它原样复述牌桌（房间号/对手/装备都不能变）
       sess.table = {
         sanma: sanma,
+        matchLength: CONFIG.matchLength,
+        seed: matchSeed,
+        roomId: Number(srm[4] || 1),
         self: selfProfile,
         robots: [],
-        logId: String(5118685 + Math.floor(Math.random() * 1000)),
-        gameId: randGameId()
+        logId: String(5118685 + Math.floor(matchRng() * 1000)),
+        gameId: randGameId(matchRng)
       };
       sess.handFrames = [];
-      log('  [match] => 20408 RankingMatchResultNotify (warrior=%s skin=%s)',
-        selfProfile.warrior, selfProfile.skin);
+      log('  [match] => 20408 RankingMatchResultNotify (warrior=%s skin=%s seed=%s)',
+        selfProfile.warrior, selfProfile.skin, matchSeed);
       sess.push(20408, P.W().s(2, encTableInfo(sess, false)).bytes(), 1, null);
 
       // 2) 对手逐个「离线托管 + 入座」—— 随机分配雀士
       var n = (sanma ? 3 : 4) - 1;
       for (var i = 0; i < n; i++) {
-        var r = makeRobot(i, selfProfile.warrior);
+        var r = makeRobot(i, selfProfile.warrior, matchRng);
         var seat = i + 1;
         sess.table.robots.push(r);
         log('  [match] => 20164/20014 seat%d %s(%d) warrior=%s', seat, r.nick, r.uid, r.warrior);
@@ -952,11 +1035,14 @@
       }
 
       // 3) 牌桌就绪，拉起引擎 —— 它会主动推 NtfToPrepare(1001)
-      setTimeout(function () {
+      var engineStartDelay = CONFIG.engineStartDelay != null ? CONFIG.engineStartDelay : 200;
+      sess.engineStartTimer = setTimeout(function () {
+        sess.engineStartTimer = null;
+        if (sess.matchToken !== matchToken || !sess.tableId) return;
         if (!sess.socket || sess.socket.readyState !== OPEN) return;
         var g = getRiichi(sess);
         if (g && g.ensureEngine) g.ensureEngine();
-      }, 200);
+      }, engineStartDelay);
     }, delay);
 
     return [[20404, new Uint8Array(0), 1, null]];
@@ -965,12 +1051,21 @@
   /** 20405 取消匹配 -> 20406 */
   HANDLERS[20405] = function (sess) {
     log('  [match] 取消匹配');
+    if (sess.matchTimer) { clearTimeout(sess.matchTimer); sess.matchTimer = null; }
+    if (sess.engineStartTimer) { clearTimeout(sess.engineStartTimer); sess.engineStartTimer = null; }
+    sess.matchToken += 1;
+    sess.tableId = 0;
+    sess.seat = -1;
+    sess.table = null;
     return [[20406, new Uint8Array(0), 1, null]];
   };
 
   /** 20025 LeaveTable -> 20026：对局中或结算界面点「回到大厅」 */
   HANDLERS[20025] = function (sess) {
     log('  [leave] 离桌');
+    if (sess.matchTimer) { clearTimeout(sess.matchTimer); sess.matchTimer = null; }
+    if (sess.engineStartTimer) { clearTimeout(sess.engineStartTimer); sess.engineStartTimer = null; }
+    sess.matchToken += 1;
     sess.tableId = 0; sess.seat = -1;
     sess.table = null; sess.handFrames = []; sess.replaying = false; sess._replayStarted = false;
     if (sess.riichi) { try { sess.riichi.stop(); } catch (e) {} sess.riichi = null; }
@@ -981,6 +1076,9 @@
    *  真实抓包：isFinal 结算后客户端发此消息确认退出，服务器回 20103 后回到大厅 */
   HANDLERS[20102] = function (sess) {
     log('  [finish] 客户端确认结算完成，退出对局');
+    if (sess.matchTimer) { clearTimeout(sess.matchTimer); sess.matchTimer = null; }
+    if (sess.engineStartTimer) { clearTimeout(sess.engineStartTimer); sess.engineStartTimer = null; }
+    sess.matchToken += 1;
     sess.tableId = 0; sess.seat = -1;
     sess.table = null; sess.handFrames = []; sess.replaying = false; sess._replayStarted = false;
     if (sess.riichi) { try { sess.riichi.stop(); } catch (e) {} sess.riichi = null; }
@@ -1036,12 +1134,13 @@
         out = [[mid + 1, REPLAY[mid + 1], 1, null]];
         tag = 'replay';
       } else {
-        out = [[mid + 1, new Uint8Array(0), 1, null]];
-        tag = 'auto-ok';
+        out = [[mid + 1, P.W().v(1, 1).bytes(), 1, null]];
+        tag = 'unsupported';
         LOG.unhandled.push({
           msgId: mid, name: nameOf(mid), seq: seq,
           payload: payload, t: nowMs()
         });
+        if (LOG.unhandled.length > 200) LOG.unhandled.shift();
       }
     } else {
       try {
@@ -1232,6 +1331,12 @@
     config: CONFIG,
     encodeKRiichi: encodeKRiichi,
     riichiNames: RIICHI_NAMES,
+    dispatch: dispatch,
+    createSession: function () { return new Session(); },
+    setUserdata: function (bytes) { USERDATA = new U.UserData(bytes, UID); },
+    updateNickname: function (nickname) { return USERDATA.updateNickname(nickname); },
+    updateRanks: function (ranks) { return USERDATA.updateRanks(ranks); },
+    updateProfileStats: function (stats) { return USERDATA.updateProfileStats(stats); },
 
     /** 当前大厅数据状态（可在控制台直接改） */
     get userdata() { return USERDATA; },
@@ -1245,7 +1350,7 @@
     /** 关掉刷屏日志 */
     quiet: function (on) { LOG.enabled = (on === false); },
 
-    /** 查看被 auto-ok 兜底的请求（说明还没实现对应 handler） */
+    /** 查看被明确拒绝的未实现请求。 */
     unhandled: function () {
       var seen = {};
       LOG.unhandled.forEach(function (r) {

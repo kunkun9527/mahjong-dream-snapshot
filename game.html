@@ -7,13 +7,7 @@
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
 
-    <!-- ==== 浏览器内 Mock 服务端：必须在 offline-patch.js 之前加载 ==== -->
-    <script type="text/javascript" src="mock/proto.js"></script>
-    <script type="text/javascript" src="mock/data.js"></script>
-    <script type="text/javascript" src="mock/userdata.js"></script>
-    <script type="text/javascript" src="mock/server.js"></script>
-    <script type="text/javascript" src="mock/riichi.js"></script>
-    <!-- ==== 离线补丁：WebSocket / HTTP 拦截 ==== -->
+    <!-- 本地服务提供权威 WebSocket；补丁在 Unity 初始化前安装劫持。 -->
     <script type="text/javascript" src="offline-patch.js"></script>
     <script type="text/javascript" src="spark-md5.js"></script>
 
@@ -109,35 +103,19 @@
         updateBannerVisibility();
       }
       
-      if (window.location.search == '?undefined') {
-        var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/mj-h5.loader.js";
-        var config = {
-          dataUrl: buildUrl + "/mj-h5.data.unityweb",
-          frameworkUrl: buildUrl + "/mj-h5.framework.js.unityweb",
-          codeUrl: buildUrl + "/mj-h5.wasm.unityweb",
-          symbolsUrl: buildUrl + "/mj-h5.symbols.json.unityweb",
-          streamingAssetsUrl: "StreamingAssets",
-          companyName: "DefaultCompany",
-          productName: "激情麻将",
-          productVersion: "1.1.107241726.0",
-          showBanner: unityShowBanner,
-        };
-      } else {
-        var buildUrl = "Build_intl";
-        var loaderUrl = buildUrl + "/mj-h5.loader.js";
-        var config = {
-          dataUrl: buildUrl + "/mj-h5.data.unityweb",
-          frameworkUrl: buildUrl + "/mj-h5.framework.js.unityweb",
-          codeUrl: buildUrl + "/mj-h5.wasm.unityweb",
-          symbolsUrl: buildUrl + "/mj-h5.symbols.json.unityweb",
-          streamingAssetsUrl: "StreamingAssets",
-          companyName: "DefaultCompany",
-          productName: "Mahjong Dream",
-          productVersion: "1.1.107211826.0",
-          showBanner: unityShowBanner,
-        };
-      }
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/mj-h5.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/mj-h5.data.unityweb",
+        frameworkUrl: buildUrl + "/mj-h5.framework.js.unityweb",
+        codeUrl: buildUrl + "/mj-h5.wasm.unityweb",
+        symbolsUrl: buildUrl + "/mj-h5.symbols.json.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "激情麻将",
+        productVersion: "1.1.107241726.0",
+        showBanner: unityShowBanner,
+      };
 
       // By default, Unity keeps WebGL canvas render target size matched with
       // the DOM size of the canvas element (scaled by window.devicePixelRatio)
@@ -173,6 +151,11 @@
 
       var gameInstance = null;
       var script = document.createElement("script");
+      script.onerror = () => {
+        clearInterval(time);
+        loadingBar.style.display = "none";
+        alert("离线游戏加载失败，请确认已通过 start-game.bat 启动。");
+      };
       script.src = loaderUrl;
       var currentProgress = 0;
       var bootingUpTime = performance.now();
@@ -199,6 +182,8 @@
             progressBarFull.style.width = 100 + "%";
             loadingBar.style.display = "none";
           }).catch((message) => {
+            clearInterval(time);
+            loadingBar.style.display = "none";
             alert(message);
           });
       };
