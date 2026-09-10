@@ -588,7 +588,7 @@ npm test
 | 文件 | 主要覆盖 |
 | --- | --- |
 | `test/action-validation.test.mjs` | 非法动作不变性、实体杠牌、食替、振听、抢杠/抢北、超时和断线托管 |
-| `test/ai-strategy.test.mjs` | 防守风险、无役副露、All Last 默听、确定性与预算 |
+| `test/ai-strategy.test.mjs` | 防守风险、无役副露、All Last 默听、确定性与预算、隐藏字段读取隔离 |
 | `test/build-smoke.test.mjs` | 内层 Protobuf 往返、浏览器 bundle 全局导出契约 |
 | `test/engine-smoke.test.mjs` | 固定 seed、四模式终局守恒、三麻牌池、计分上下文 |
 | `test/local-service.test.mjs` | 档案原子写入/损坏恢复、段位、HTTP/Range/HEAD、WS 和单页面限制 |
@@ -602,6 +602,7 @@ npm test
 | `test/draw-progression-regression.test.mjs` | 流局本场、途中流局终局边界、延长场多响、个人连庄 |
 | `test/scoring-regression.test.mjs` | 拔北岭上、暗杠红宝、包牌本场及混合役满支付 |
 | `test/engine-invariants.test.mjs` | 四模式 × 5 种子自战，通知边界实体牌、余牌、点棒及窗口不变量 |
+| `test/claim-boundaries.test.mjs` | 吃后无合法弃牌、吃碰替代荣和的振听、自持四张形式听牌 |
 
 固定 seed 自战用于验证四种模式都能终局且点棒加未领取供托守恒。自动测试不能替代 Unity 浏览器端的演出、按钮、音频和资源完整性手测。
 
@@ -776,7 +777,7 @@ local/server.mjs
 7. **浏览器 E2E**：Node 测试覆盖逻辑，但 Edge/Chrome 中完整资源、动画、音频、断线和长时间运行仍需人工验收；
 8. **生成数据来源**：`mock/data.js` 标注了生成工具，但仓库未包含完整可复现生成链，后续若需更新快照应先补工具或 ADR；
 9. **静态文件暴露面**：loopback 假设下可接受，但若未来改变监听范围，必须先增加允许列表、鉴权和更严格响应头；
-10. **工作区治理**：当前大量修复仍处于未提交状态，正式审查时应按“服务/协议/引擎/测试/生成物”拆分可解释提交。
+10. **工作区治理**：离线恢复与首轮审查已通过 `64dcc3e` 入库；后续修复应继续按规则、服务及对应测试拆分可解释提交。
 
 完整功能状态和验收项以 `docs/repair-backlog.md` 为准；本文用于解释系统如何工作，不替代 backlog。
 

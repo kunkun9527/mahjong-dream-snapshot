@@ -112,3 +112,19 @@ test('组桌完成后取消匹配不会被延迟任务幽灵开局', async () =>
     mock.config.engineStartDelay = oldEngineStartDelay;
   }
 });
+
+test('短时连续资料查询正常响应，不得通过断线重置正在进行的牌局', () => {
+  const session = mock.createSession();
+  const closed = [];
+  session.socket = { readyState: 1, close(...args) { closed.push(args); } };
+  session.tableId = 123;
+  const query = P.W().s(2, P.W().v(1, 39).bytes()).bytes();
+  try {
+    const responses = Array.from({ length: 20 }, () => mock.handlers[100141](session, query));
+    assert.deepEqual(closed, []);
+    assert.ok(responses.every((frames) => frames.length > 0 && frames[0][0] === 100142));
+    assert.equal(session.tableId, 123);
+  } finally {
+    session.destroy();
+  }
+});

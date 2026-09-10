@@ -191,12 +191,16 @@ server.on('upgrade', (request, socket, head) => {
 
 websocketServer.on('connection', (websocket) => {
   activeSocket = websocket;
+  const connectedAt = Date.now();
+  const recentRequests = [];
+  let serverClose = null;
   const adapter = {
     readyState: 1,
     _deliver(bytes) {
       if (websocket.readyState === WebSocket.OPEN) websocket.send(bytes, { binary: true });
     },
     close(code, reason) {
+      serverClose = { code, reason: String(reason || '') };
       websocket.close(code, reason);
     },
   };
@@ -209,11 +213,22 @@ websocketServer.on('connection', (websocket) => {
 
   websocket.on('message', (data, isBinary) => {
     if (!isBinary) return;
+    // 仅保留消息编号，不记录昵称、存档、手牌或完整报文。
+    try {
+      recentRequests.push(Number(globalThis.__mj.proto.dict(new Uint8Array(data))[2]) || 0);
+      if (recentRequests.length > 12) recentRequests.shift();
+    } catch { /* 诊断解析失败不能改变原分发行为 */ }
     const frames = mock.dispatch(session, new Uint8Array(data));
     for (const frame of frames) adapter._deliver(frame);
     persistSoon();
   });
-  websocket.on('close', () => {
+  websocket.on('close', (code, reason) => {
+    console.log('[local] WebSocket 关闭：' + JSON.stringify({
+      time: new Date().toISOString(), code, reason: reason.toString(),
+      source: serverClose ? 'server' : 'peer-or-transport', serverClose,
+      connectedMs: Date.now() - connectedAt, recentRequests,
+      inMatch: !!session.riichi?.engine && !session.riichi.matchOver,
+    }));
     if (activeSocket === websocket) activeSocket = null;
     adapter.readyState = 3;
     if (!session.riichi && (session.matchTimer || session.engineStartTimer)) {

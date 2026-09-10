@@ -78,6 +78,8 @@ test('loopback 服务提供静态文件、WebSocket，并拒绝第二活动页�
     execArgv: [],
     stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
   });
+  let output = '';
+  child.stdout.on('data', (chunk) => { output += chunk; });
   const url = await new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('本地服务启动超时')), 10_000);
     child.once('error', reject);
@@ -117,13 +119,47 @@ test('loopback 服务提供静态文件、WebSocket，并拒绝第二活动页�
     assert.equal(responseFields[2], 100142);
     assert.equal(responseFields[11], 7);
     assert.ok(responseFields[3] instanceof Uint8Array && responseFields[3].length > 0);
+    const burst = new Promise((resolve, reject) => {
+      const received = new Set();
+      const timer = setTimeout(() => { cleanup(); reject(new Error('资料查询响应超时')); }, 5_000);
+      const onClose = () => { cleanup(); reject(new Error('资料查询导致连接被关闭')); };
+      const onMessage = (data) => {
+        const fields = P.dict(new Uint8Array(data));
+        if (fields[2] !== 100142 || fields[11] < 100 || fields[11] >= 120) return;
+        received.add(fields[11]);
+        if (received.size === 20) { cleanup(); resolve(); }
+      };
+      const cleanup = () => {
+        clearTimeout(timer); first.off('close', onClose); first.off('message', onMessage);
+      };
+      first.on('close', onClose);
+      first.on('message', onMessage);
+    });
+    const query = P.W().s(2, P.W().v(1, 39).bytes()).bytes();
+    for (let i = 100; i < 120; i++) first.send(P.W().v(2, 100141).v(11, i).s(3, query).bytes());
+    await burst;
+    assert.equal(first.readyState, WebSocket.OPEN);
     const secondStatus = await new Promise((resolve) => {
       const second = new WebSocket(url.replace('http:', 'ws:') + 'ws');
       second.once('unexpected-response', (_request, response2) => resolve(response2.statusCode));
       second.once('error', () => resolve(0));
     });
     assert.equal(secondStatus, 409);
-    first.close();
+    const closeLogged = new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { child.stdout.off('data', check); reject(new Error('未记录连接关闭原因')); }, 5_000);
+      const check = () => {
+        if (!output.split('\n').slice(0, -1).some((line) => line.includes('WebSocket 关闭：') && line.includes('"reason":"test-close"'))) return;
+        clearTimeout(timer); child.stdout.off('data', check); resolve();
+      };
+      child.stdout.on('data', check);
+    });
+    first.close(1000, 'test-close');
+    await closeLogged;
+    const line = output.split('\n').find((line) => line.includes('WebSocket 关闭：'));
+    const diagnostic = JSON.parse(line.slice(line.indexOf('{')));
+    assert.equal(diagnostic.code, 1000);
+    assert.equal(diagnostic.source, 'peer-or-transport');
+    assert.deepEqual(diagnostic.recentRequests, Array(12).fill(100141));
   } finally {
     child.kill('SIGTERM');
     await new Promise((resolve) => child.once('exit', resolve));

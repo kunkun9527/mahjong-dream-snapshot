@@ -391,17 +391,8 @@
    *  现在按服务端权威版本收敛，单次查询即同步，无需断线。
    */
   HANDLERS[100141] = function (sess, payload) {
-    // 刷屏检测
-    if (!sess._spamTs) sess._spamTs = [];
-    var now = nowMs();
-    sess._spamTs.push(now);
-    while (sess._spamTs.length > 0 && sess._spamTs[0] < now - 2000) sess._spamTs.shift();
-    if (sess._spamTs.length >= 10 && sess.socket) {
-      sess._spamTs = [];
-      try { sess.socket.close(1001, 'spam reset'); } catch (e) {}
-      return [];
-    }
-    
+    // 资料版本已按服务端权威值收敛；正常突发查询也必须响应。
+    // 不再用断线重置缓存，否则本地服务会误把仍在游戏的用户交给 AI。
     var queries = [];
     try {
       var fs = P.parse(payload);
