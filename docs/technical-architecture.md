@@ -481,10 +481,10 @@ userdata/profile.json
 {
   "version": 1,
   "nickname": "离线玩家",
-  "coins": 0,
+  "coins": 999999,
   "ranks": {
-    "yonma": { "level": 1, "point": 0 },
-    "sanma": { "level": 1, "point": 0 }
+    "yonma": { "level": 17, "point": 2300 },
+    "sanma": { "level": 17, "point": 2300 }
   },
   "stats": {
     "yonma": { "players": 4, "games": 0, "byLength": {} },
@@ -501,6 +501,8 @@ userdata/profile.json
 
 `lobbyData` 是 `mock/userdata.js` 当前大厅模块的 base64 序列化结果，用于保留原 UI 的装备、内容选择和其他兼容数据。
 
+`local/economy.mjs` 在首次启动时对新/旧档案执行一次补给，新增 `offlineEconomyVersion: 1`。雀币60001以当时背包余额×100；60002/60008/60009/60010/60011/60012各置999999，三四麻均为七段2300 PT。补给、段位和大厅快照一起落盘后才监听端口；以后不再覆盖消费或升降段结果。见 ADR 0003。
+
 ### 12.3 读写保证
 
 `local/profile.mjs`：
@@ -510,6 +512,7 @@ userdata/profile.json
 - 不存在时创建默认内存档案；
 - JSON 损坏时把原文件改名为 `profile.corrupt-<timestamp>.json`，再回退默认档案；
 - 保存时先写唯一临时文件，再 rename 为 `profile.json`；
+- 原子替换遇到 `EPERM/EACCES/EBUSY` 时等待10/20ms，最多三次尝试；绝不先删除旧档案；
 - 写入失败会清理临时文件并向上抛错；
 - 服务层以 Promise chain 串行保存，避免旧写入覆盖新状态。
 
@@ -523,6 +526,19 @@ userdata/profile.json
 - 对应段位 PT 和升降段；
 - 每场固定增加 100 本地金币；
 - 原客户端 ProfileInfo 显示字段。
+
+段位门槛及分房间 PT 直接使用 `mockjs/economy_catalog.mjs` 中的原 `Rank2*` 配置。初始 PT 不是降段下限；七段升段需4600 PT，负 PT 时按原表回退。匹配请求的房间ID经 Session 传入 `recordMatch()`，未指定时使用该段默认房间。用户确认保留原房间上限，因此七段开放乘风/御龙，不开放低级的启航/逐梦。
+
+### 12.5 四类离线商店
+
+- `mockjs/shop.mjs` 处理商品、价格、余额、限购、发货和刷新；`mock/server.js` 负责100500/100501购买、100502/100503刷新及wrapper f24增量。
+- 服务端 `ShopType`：招募1、杂货2、雀币5、荣耀7。不要使用界面标签枚举（招募3、杂货4、雀币2、荣耀5）。请求 f2为商品ID、f3为数量、f4固定1；当前空档位配置只接受f7=0。
+- 原配置由 `python tools/extract_economy_config.py` 只读提取，开发机需UnityPy/Brotli；运行游戏只读取生成的ESM目录，无Python或网络依赖，不改Unity产物。
+- 雀币每日按原8槽位/稀有度/单价生成；每天一次免费刷新，然后按原价格梯级扣费。杂货限购按日、荣耀按月（UTC+8）重置。
+- `UserData.changeInventory()` 先整体校验，再提交扣款和堆叠物品增量；唯一角色/装扮已拥有则不重复扣款，旧档案缺失时使用相同物品的离线模板补齐。
+- 同连接最近64条购物RPC重试可复用响应，避免重复扣费；更换连接清除缓存，跨连接不承诺订单幂等。
+- 库存/限购数据随 `lobbyData` 原子保存；普通请求沿用50ms合并保存，不能把响应成功视为断电前已同步写盘。真实WS回归验证四商店消费落盘并重启后不补满。
+- 不接入充值、抽卡或模组商店。`profile.coins`仍是单独的本地结算累计，不作为商店付款余额。
 
 ## 13. 随机性与复现
 

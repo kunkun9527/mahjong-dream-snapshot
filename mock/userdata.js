@@ -137,6 +137,50 @@
     return [key, data, ct];
   };
 
+  /** 背包数量：物品 / 礼物 / 材料共享 { 1:id, 2:count } 结构。 */
+  UserData.prototype.inventoryCount = function (dtype, id) {
+    if (![6, 7, 8].includes(dtype) || !Number.isSafeInteger(id) || id <= 0) {
+      throw new RangeError('非法背包物品');
+    }
+    var row = this.row(dtype, id);
+    var count = row ? (P.get(row, 2) || 0) : 0;
+    if (!Number.isSafeInteger(count) || count < 0) {
+      throw new RangeError('非法背包数量');
+    }
+    return count;
+  };
+
+  /** 先验证全部扣款/发货，再一次性提交；失败不改数量、模块版本或行顺序。 */
+  UserData.prototype.changeInventory = function (deltas) {
+    var totals = new Map();
+    for (var delta of deltas) {
+      this.inventoryCount(delta.dtype, delta.id);
+      if (!Number.isSafeInteger(delta.count)) throw new RangeError('非法数量变化');
+      var key = delta.dtype + ':' + delta.id;
+      var prior = totals.get(key);
+      var total = (prior ? prior.count : 0) + delta.count;
+      if (!Number.isSafeInteger(total)) throw new RangeError('数量变化溢出');
+      totals.set(key, { dtype: delta.dtype, id: delta.id, count: total });
+    }
+    var pending = [];
+    for (var entry of totals.values()) {
+      if (!entry.count) continue;
+      var count = this.inventoryCount(entry.dtype, entry.id) + entry.count;
+      if (!Number.isSafeInteger(count) || count < 0) {
+        throw new RangeError('余额不足或背包数量溢出');
+      }
+      var before = this.row(entry.dtype, entry.id) || P.W().v(1, entry.id).bytes();
+      pending.push({ dtype: entry.dtype, id: entry.id, bytes: P.setVarint(before, 2, count) });
+    }
+    if (!pending.length) return null;
+    var changes = {};
+    for (var update of pending) {
+      if (!changes[update.dtype]) changes[update.dtype] = [];
+      changes[update.dtype].push(this.setRow(update.dtype, update.id, update.bytes));
+    }
+    return changes;
+  };
+
   /** wrapper f24 的真实结构（对照正式服抓包 100012 确认）：
    *    f24 = DataChangeNotify { 1: UserDataChange }
    *  即 UserDataChange 外面还套了一层 f1，早期版本漏掉了这层，

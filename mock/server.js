@@ -296,6 +296,7 @@
   /** 重连时把旧会话的引擎接到新 WS 上 */
   Session.prototype.resume = function (socket) {
     var self = this;
+    if (this.socket !== socket) this.shopReplies = new Map();
     if (this.socket !== socket && this.riichi && this.riichi.resetClientSettings) {
       this.riichi.resetClientSettings();
     }
@@ -362,6 +363,60 @@
   // ---------------------------------------------------------- 各消息处理器
   var HANDLERS = {};
 
+  function handleShop(sess, payload, seq, mid, perform) {
+    var key = mid + ':' + seq;
+    if (!(payload instanceof Uint8Array)) return [[mid + 1, P.W().v(1, 1).bytes(), 1, null]];
+    var signature = payload.slice();
+    if (!sess.shopReplies) sess.shopReplies = new Map();
+    if (seq && sess.shopReplies.has(key)) {
+      var cached = sess.shopReplies.get(key);
+      return P.eq(cached.signature, signature) ? cached.response : [[mid + 1, P.W().v(1, 1).bytes(), 1, null]];
+    }
+    var response;
+    try {
+      if (!MJ.shop) throw new Error('商店模块未加载');
+      var result = perform();
+      var body = P.W().v(1, result.error);
+      if (!result.error && result.rewards) {
+        body.v(2, result.itemId).v(3, result.quantity);
+        for (var reward of result.rewards) body.s(4, P.W().v(1, reward[0]).v(2, reward[1]).bytes());
+      }
+      response = withChange(mid + 1, result.changes, body.bytes());
+    } catch (error) {
+      log('  [shop] 拒绝请求: %s', error.message);
+      response = [[mid + 1, P.W().v(1, 1).bytes(), 1, null]];
+    }
+    if (seq) {
+      sess.shopReplies.set(key, { signature: signature, response: response });
+      if (sess.shopReplies.size > 64) sess.shopReplies.delete(sess.shopReplies.keys().next().value);
+    }
+    return response;
+  }
+
+  HANDLERS[100500] = function (sess, payload, seq) {
+    return handleShop(sess, payload, seq, 100500, function () {
+      var fields = P.parse(payload), d = {}, seen = new Set();
+      for (var field of fields) {
+        if (![1, 2, 3, 4, 7].includes(field[0])) continue;
+        if (field[1] !== 0 || seen.has(field[0])) throw new Error('非法购买字段');
+        seen.add(field[0]); d[field[0]] = field[2];
+      }
+      if (fields.some(function (field) { return (field[0] === 6 || field[0] === 8) && field[2].length; })) {
+        throw new Error('不支持模组或付费换装购买');
+      }
+      return MJ.shop.purchase(USERDATA, {
+        shopType: d[1], itemId: d[2], quantity: d[3], exchangeCount: d[4], gearIndex: d[7] || 0
+      });
+    });
+  };
+
+  HANDLERS[100502] = function (sess, payload, seq) {
+    return handleShop(sess, payload, seq, 100502, function () {
+      P.parse(payload); // 空业务消息也必须保证 protobuf 结构合法。
+      return MJ.shop.refreshShop(USERDATA);
+    });
+  };
+
   /** 20001 KGameServerLoginRequest -> 20002 */
   HANDLERS[20001] = function (sess) {
     sess.loggedIn = true;
@@ -418,6 +473,9 @@
       if (Number(queries[qi][0]) === 39) touchTask = true;
     }
     if (touchTask) fixTaskRefreshTime('100141');
+    if (MJ.shop && (!queries.length || queries.some(function (query) { return Number(query[0]) === 30; }))) {
+      MJ.shop.synchronizeShop(USERDATA);
+    }
 
     if (!queries.length) return [[100142, USERDATA.serialize(), 1, null]];
 
@@ -975,6 +1033,7 @@
     if (CONFIG.playersExplicit) sanma = CONFIG.players === 3;
     else CONFIG.players = sanma ? 3 : 4;
     if (!CONFIG.matchLengthExplicit) CONFIG.matchLength = Number(srm[2] || 0) === 1 ? 'hanchan' : 'east';
+    sess.rankRoomId = [1, 2, 3, 4].includes(Number(srm[4])) ? Number(srm[4]) : null;
 
     log('  [match] gameType=%s roomType=%s roomID=%s -> %s麻%s',
       srm[1], srm[3], srm[4], sanma ? '三' : '四', CONFIG.matchLength === 'hanchan' ? '半庄' : '东风');

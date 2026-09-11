@@ -1,54 +1,34 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { ECONOMY_CATALOG as C } from '../mockjs/economy_catalog.mjs';
+import { setTimeout as delay } from 'node:timers/promises';
 
 export const PROFILE_VERSION = 1;
 
-const RANK_NAMES = ['新人', '９级', '８级', '７级', '６级', '５级', '４级', '３级', '２级', '１级', '初段', '二段', '三段', '四段', '五段', '六段', '七段', '八段', '九段', '十段', '最高段'];
-const RANK_MIN = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 400, 600, 800, 1_000, 1_200, 1_400, 1_600, 1_800, 2_000, 2_200];
-const RANK_UP = [20, 20, 20, 20, 40, 60, 80, 100, 100, 100, 400, 800, 1_200, 1_600, 2_000, 2_400, 2_800, 3_200, 3_600, 4_000, 0];
+const RANK_NAMES = ['新人', 'D3', 'D2', 'D1', 'C2', 'C1', 'B2', 'B1', 'A2', 'A1', '初段', '二段', '三段', '四段', '五段', '六段', '七段', '八段', '九段', '十段', '雀梦之巅', '雀梦之巅'];
 
-function rankDelta(players, matchLength, level, placement) {
-  const half = matchLength === 'hanchan';
-  let values;
-  if (players === 3) {
-    if (level <= 8) values = half ? [45, 0, 0] : [30, 0, 0];
-    else if (level <= 10) values = half ? [45, 0, -15 * (level - 8)] : [30, 0, -10 * (level - 8)];
-    else if (level === 21) values = half ? [8, 0, -8] : [5, 0, -5];
-    else {
-      const first = level <= 13 ? 50 : level <= 16 ? 70 : 90;
-      const last = -(level - 8) * 10;
-      values = half ? [Math.round(first * 1.5), 0, Math.round(last * 1.5)] : [first, 0, last];
-    }
-  } else {
-    if (level <= 8) values = half ? [30, 15, 0, 0] : [20, 10, 0, 0];
-    else if (level <= 10) values = half ? [30, 15, 0, -15 * (level - 8)] : [20, 10, 0, -10 * (level - 8)];
-    else if (level === 21) values = half ? [9, 0, -3, -9] : [6, 0, -2, -6];
-    else {
-      const first = level <= 13 ? 40 : level <= 16 ? 50 : 60;
-      const second = level <= 13 ? 10 : level <= 16 ? 20 : 30;
-      const last = -(level - 8) * 10;
-      values = half ? [Math.round(first * 1.5), Math.round(second * 1.5), 0, Math.round(last * 1.5)] : [first, second, 0, last];
-    }
-  }
-  return values[placement - 1] || 0;
-}
-
-export function applyRankResult(profile, { players, matchLength, placement }) {
+export function applyRankResult(profile, { players, matchLength, placement, roomId = null }) {
   const key = players === 3 ? 'sanma' : 'yonma';
+  const table = C[`${key}Ranks`];
   const rank = profile.ranks[key];
-  const oldLevel = Math.min(21, Math.max(1, Number(rank.level) || 1));
-  const oldPoint = Math.max(RANK_MIN[oldLevel - 1], Number(rank.point) || 0);
-  const change = rankDelta(players, matchLength, oldLevel, placement);
+  const oldLevel = Math.min(table.length, Math.max(1, Math.trunc(Number(rank.level)) || 1));
+  const oldPoint = Math.max(0, Number(rank.point) || 0);
+  const rule = table[oldLevel - 1];
+  const pointRule = C.rankPoints.find((row) => row.rank === oldLevel && row.room === roomId)
+    || C.rankPoints.find((row) => row.rank === oldLevel && row.room === rule.room);
+  const prefix = matchLength === 'hanchan' ? 'half' : 'east';
+  const change = pointRule?.[`${prefix}${placement}_${players}`] || 0;
   let level = oldLevel;
   let point = oldPoint + change;
-  if (RANK_UP[level - 1] && point >= RANK_UP[level - 1]) {
+  if (level < table.length && point >= rule.up) {
     level += 1;
-    point = RANK_MIN[level - 1];
-  } else if (level >= 12 && level <= 20 && point < RANK_MIN[level - 1]) {
+    // 雀梦之巅过渡段继承上一段 PT；普通升段从原表初始 PT 开始。
+    point = table[level - 1].inherit ? point : table[level - 1].initial;
+  } else if (level > 1 && rule.canDecrease && point < 0) {
     level -= 1;
-    point = Math.max(RANK_MIN[level - 1], RANK_UP[level - 1] - 1);
+    point = table[level - 1].down || table[level - 1].initial;
   } else {
-    point = Math.max(RANK_MIN[level - 1], point);
+    point = Math.max(0, point);
   }
   rank.level = level;
   rank.point = point;
@@ -90,10 +70,10 @@ export function createDefaultProfile() {
   return {
     version: PROFILE_VERSION,
     nickname: '离线玩家',
-    coins: 0,
+    coins: 999_999,
     ranks: {
-      yonma: { level: 1, point: 0 },
-      sanma: { level: 1, point: 0 },
+      yonma: { ...C.defaults.rank },
+      sanma: { ...C.defaults.rank },
     },
     stats: {
       yonma: emptyStats(4),
@@ -170,7 +150,16 @@ export async function saveProfile(directory, profile) {
   const temporary = `${file}.tmp-${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   try {
     await fs.writeFile(temporary, body, 'utf8');
-    await fs.rename(temporary, file);
+    for (let attempt = 0; ; attempt++) {
+      try {
+        await fs.rename(temporary, file);
+        break;
+      } catch (error) {
+        // Windows 短暂的读句柄/杀毒扫描可阻止替换；始终保留旧档案，最多尝试三次。
+        if (!['EPERM', 'EACCES', 'EBUSY'].includes(error.code) || attempt >= 2) throw error;
+        await delay(10 * 2 ** attempt);
+      }
+    }
   } catch (error) {
     await fs.rm(temporary, { force: true }).catch(() => {});
     throw error;
@@ -195,7 +184,7 @@ function addMatchStats(stats, placement, score, matchStats) {
 }
 
 
-export function recordMatch(profile, { players, matchLength, scores, matchStats = null }) {
+export function recordMatch(profile, { players, matchLength, scores, matchStats = null, roomId = null }) {
   const key = players === 3 ? 'sanma' : 'yonma';
   const stats = profile.stats[key];
   const order = scores.map((score, seat) => ({ score, seat }))
@@ -205,7 +194,7 @@ export function recordMatch(profile, { players, matchLength, scores, matchStats 
   stats[`${length}Games`] += 1;
   addMatchStats(stats, placement, scores[0], matchStats);
   addMatchStats(stats.byLength[length], placement, scores[0], matchStats);
-  const rank = applyRankResult(profile, { players, matchLength, placement });
+  const rank = applyRankResult(profile, { players, matchLength, placement, roomId });
   profile.coins += 100;
   return { placement, coins: 100, rank };
 }

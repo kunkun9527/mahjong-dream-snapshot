@@ -2,6 +2,7 @@ import { GameEngine } from './engine.mjs';
 import { encodeMsg, decodeMsg } from './pb.mjs';
 import { RiichiMsg, PlayAction, ManType, YiType, LiuJuType } from './proto_enum.mjs';
 import { tileName, decodeId, tileId } from './tiles.mjs';
+import * as shop from './shop.mjs';
 
 var MSG_NAME = {
   1: "ReqPrepare",
@@ -198,6 +199,7 @@ var RiichiSession = class {
 };
 var _g = typeof window !== "undefined" ? window : globalThis;
 var _MJ = _g.__mj || (_g.__mj = {});
+_MJ.shop = shop;
 _MJ.riichi = {
   RiichiSession,
   GameEngine,

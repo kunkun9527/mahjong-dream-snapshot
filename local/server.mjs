@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { WebSocketServer, WebSocket } from 'ws';
 
 import { loadProfile, saveProfile, recordMatch } from './profile.mjs';
+import { initializeOfflineEconomy } from './economy.mjs';
+import { ECONOMY_CATALOG } from '../mockjs/economy_catalog.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const requiredResources = ['index.html', 'game.html', 'Build/mj-h5.loader.js'];
@@ -26,9 +28,15 @@ await import('../mock/server.js');
 const mock = globalThis.__mj.server;
 mock.quiet(process.env.MJ_DEBUG !== '1');
 if (profile.lobbyData) mock.setUserdata(Buffer.from(profile.lobbyData, 'base64'));
+const economyUpgraded = initializeOfflineEconomy(profile, mock.userdata, ECONOMY_CATALOG.defaults);
 mock.updateNickname(profile.nickname);
 mock.updateRanks(profile.ranks);
 mock.updateProfileStats(profile.stats);
+if (economyUpgraded) {
+  profile.lobbyData = Buffer.from(mock.userdata.serialize()).toString('base64');
+  // 补给与完成标记必须一起落盘后才对外提供服务；失败不能假装升级成功。
+  await saveProfile(userdataDirectory, profile);
+}
 
 let saveTimer = null;
 let saveChain = Promise.resolve();
@@ -58,6 +66,7 @@ session.onFinalResult = (scores, engine) => {
     matchLength: engine.matchLength,
     scores,
     matchStats: engine.matchStats,
+    roomId: session.rankRoomId,
   });
   mock.updateRanks(profile.ranks);
   mock.updateProfileStats(profile.stats);

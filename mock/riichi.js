@@ -13,6 +13,10 @@
       throw mod = 0, e;
     }
   };
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
       for (let key of __getOwnPropNames(from))
@@ -4685,7 +4689,7 @@
         innerOk.apply(void 0, [ok, args.length].concat(args));
       }
       assert.ok = ok;
-      assert.equal = function equal(actual, expected, message) {
+      assert.equal = function equal2(actual, expected, message) {
         if (arguments.length < 2) {
           throw new ERR_MISSING_ARGS("actual", "expected");
         }
@@ -4695,7 +4699,7 @@
             expected,
             message,
             operator: "==",
-            stackStartFn: equal
+            stackStartFn: equal2
           });
         }
       };
@@ -14661,6 +14665,2270 @@
     return T.toObject(m, { defaults: true, arrays: true, objects: true, enums: Number });
   }
 
+  // mockjs/shop.mjs
+  var shop_exports = {};
+  __export(shop_exports, {
+    SHOP_ERROR: () => SHOP_ERROR,
+    SHOP_TYPE: () => SHOP_TYPE,
+    purchase: () => purchase,
+    refreshShop: () => refreshShop,
+    synchronizeShop: () => synchronizeShop
+  });
+
+  // mockjs/economy_catalog.mjs
+  var ECONOMY_CATALOG = {
+    "source": "StreamingAssets/Bundles/WebGL/commonconfigs_d005e1531b1cf360239da815293e48c6.bundle",
+    "sha256": "ed720b8300fcf05a69e59a524562f6d67220697239bcebfe86a2e35a70b0e581",
+    "shopTypes": {
+      "GROCERY": 2,
+      "COIN": 5,
+      "RECRUIT": 1,
+      "HONOR": 7
+    },
+    "protocolSource": "Build/mj-h5.data.unityweb",
+    "protocolSha256": "2384b9ca86cda9a3a4594dcf3eecba377041b1dffc46949b273ad01c1af4c7fd",
+    "defaults": {
+      "coinId": 60001,
+      "currencyIds": [
+        60001,
+        60002,
+        60008,
+        60009,
+        60010,
+        60011,
+        60012
+      ],
+      "rank": {
+        "level": 17,
+        "point": 2300
+      }
+    },
+    "grocery": [
+      {
+        "id": 60007,
+        "type": 6,
+        "tokenType": 0,
+        "price": 500,
+        "buyType": 0,
+        "limit": 0,
+        "sort": 60002
+      },
+      {
+        "id": 60008,
+        "type": 6,
+        "tokenType": 1,
+        "price": 50,
+        "buyType": 2,
+        "limit": 1,
+        "sort": 60001
+      }
+    ],
+    "recruit": [
+      {
+        "id": 1,
+        "type": 26,
+        "price": 130,
+        "sort": 26001,
+        "gears": []
+      },
+      {
+        "id": 3,
+        "type": 26,
+        "price": 130,
+        "sort": 26002,
+        "gears": []
+      },
+      {
+        "id": 4,
+        "type": 26,
+        "price": 130,
+        "sort": 26003,
+        "gears": []
+      },
+      {
+        "id": 5,
+        "type": 26,
+        "price": 130,
+        "sort": 26004,
+        "gears": []
+      },
+      {
+        "id": 6,
+        "type": 26,
+        "price": 260,
+        "sort": 26005,
+        "gears": []
+      },
+      {
+        "id": 7,
+        "type": 26,
+        "price": 260,
+        "sort": 26007,
+        "gears": []
+      },
+      {
+        "id": 8,
+        "type": 26,
+        "price": 260,
+        "sort": 26008,
+        "gears": []
+      },
+      {
+        "id": 9,
+        "type": 26,
+        "price": 260,
+        "sort": 26006,
+        "gears": []
+      },
+      {
+        "id": 10,
+        "type": 26,
+        "price": 260,
+        "sort": 26009,
+        "gears": []
+      },
+      {
+        "id": 80001,
+        "type": 8,
+        "price": 1,
+        "sort": 8001,
+        "gears": []
+      },
+      {
+        "id": 80002,
+        "type": 8,
+        "price": 1,
+        "sort": 8002,
+        "gears": []
+      },
+      {
+        "id": 80003,
+        "type": 8,
+        "price": 1,
+        "sort": 8003,
+        "gears": []
+      },
+      {
+        "id": 80004,
+        "type": 8,
+        "price": 1,
+        "sort": 8004,
+        "gears": []
+      },
+      {
+        "id": 80005,
+        "type": 8,
+        "price": 1,
+        "sort": 8005,
+        "gears": []
+      },
+      {
+        "id": 80006,
+        "type": 8,
+        "price": 1,
+        "sort": 8006,
+        "gears": []
+      },
+      {
+        "id": 80009,
+        "type": 8,
+        "price": 15,
+        "sort": 2,
+        "gears": []
+      },
+      {
+        "id": 80008,
+        "type": 8,
+        "price": 5,
+        "sort": 1,
+        "gears": []
+      },
+      {
+        "id": 140002,
+        "type": 14,
+        "price": 50,
+        "sort": 14001,
+        "gears": []
+      },
+      {
+        "id": 140003,
+        "type": 14,
+        "price": 50,
+        "sort": 14002,
+        "gears": []
+      },
+      {
+        "id": 140004,
+        "type": 14,
+        "price": 50,
+        "sort": 14003,
+        "gears": []
+      },
+      {
+        "id": 140005,
+        "type": 14,
+        "price": 50,
+        "sort": 14004,
+        "gears": []
+      },
+      {
+        "id": 140006,
+        "type": 14,
+        "price": 50,
+        "sort": 14005,
+        "gears": []
+      },
+      {
+        "id": 140007,
+        "type": 14,
+        "price": 50,
+        "sort": 14006,
+        "gears": []
+      },
+      {
+        "id": 140008,
+        "type": 14,
+        "price": 50,
+        "sort": 14007,
+        "gears": []
+      },
+      {
+        "id": 150003,
+        "type": 15,
+        "price": 50,
+        "sort": 15001,
+        "gears": []
+      },
+      {
+        "id": 150005,
+        "type": 15,
+        "price": 50,
+        "sort": 15002,
+        "gears": []
+      },
+      {
+        "id": 150006,
+        "type": 15,
+        "price": 50,
+        "sort": 15003,
+        "gears": []
+      },
+      {
+        "id": 150007,
+        "type": 15,
+        "price": 50,
+        "sort": 15004,
+        "gears": []
+      },
+      {
+        "id": 170002,
+        "type": 17,
+        "price": 50,
+        "sort": 17001,
+        "gears": []
+      },
+      {
+        "id": 170003,
+        "type": 17,
+        "price": 50,
+        "sort": 17002,
+        "gears": []
+      }
+    ],
+    "honor": [
+      {
+        "id": 150007,
+        "type": 15,
+        "price": 600,
+        "buyType": 1,
+        "limit": 0,
+        "sort": 150001,
+        "gears": []
+      },
+      {
+        "id": 140002,
+        "type": 14,
+        "price": 150,
+        "buyType": 1,
+        "limit": 0,
+        "sort": 140001,
+        "gears": []
+      },
+      {
+        "id": 140003,
+        "type": 14,
+        "price": 150,
+        "buyType": 1,
+        "limit": 0,
+        "sort": 140002,
+        "gears": []
+      },
+      {
+        "id": 70018,
+        "type": 7,
+        "price": 10,
+        "buyType": 2,
+        "limit": 5,
+        "sort": 70015,
+        "gears": []
+      },
+      {
+        "id": 70017,
+        "type": 7,
+        "price": 15,
+        "buyType": 2,
+        "limit": 5,
+        "sort": 70014,
+        "gears": []
+      },
+      {
+        "id": 70016,
+        "type": 7,
+        "price": 15,
+        "buyType": 2,
+        "limit": 5,
+        "sort": 70013,
+        "gears": []
+      },
+      {
+        "id": 70015,
+        "type": 7,
+        "price": 20,
+        "buyType": 2,
+        "limit": 5,
+        "sort": 70012,
+        "gears": []
+      },
+      {
+        "id": 70014,
+        "type": 7,
+        "price": 20,
+        "buyType": 2,
+        "limit": 5,
+        "sort": 70011,
+        "gears": []
+      },
+      {
+        "id": 70020,
+        "type": 7,
+        "price": 50,
+        "buyType": 2,
+        "limit": 3,
+        "sort": 70010,
+        "gears": []
+      },
+      {
+        "id": 70013,
+        "type": 7,
+        "price": 50,
+        "buyType": 2,
+        "limit": 3,
+        "sort": 70009,
+        "gears": []
+      },
+      {
+        "id": 70012,
+        "type": 7,
+        "price": 50,
+        "buyType": 2,
+        "limit": 3,
+        "sort": 70008,
+        "gears": []
+      },
+      {
+        "id": 70011,
+        "type": 7,
+        "price": 50,
+        "buyType": 2,
+        "limit": 3,
+        "sort": 70007,
+        "gears": []
+      },
+      {
+        "id": 70024,
+        "type": 7,
+        "price": 100,
+        "buyType": 2,
+        "limit": 2,
+        "sort": 70006,
+        "gears": []
+      },
+      {
+        "id": 70010,
+        "type": 7,
+        "price": 100,
+        "buyType": 2,
+        "limit": 2,
+        "sort": 70005,
+        "gears": []
+      },
+      {
+        "id": 70009,
+        "type": 7,
+        "price": 100,
+        "buyType": 2,
+        "limit": 2,
+        "sort": 70004,
+        "gears": []
+      },
+      {
+        "id": 70008,
+        "type": 7,
+        "price": 100,
+        "buyType": 2,
+        "limit": 2,
+        "sort": 70003,
+        "gears": []
+      },
+      {
+        "id": 70019,
+        "type": 7,
+        "price": 150,
+        "buyType": 2,
+        "limit": 1,
+        "sort": 70002,
+        "gears": []
+      },
+      {
+        "id": 70023,
+        "type": 7,
+        "price": 150,
+        "buyType": 2,
+        "limit": 1,
+        "sort": 70001,
+        "gears": []
+      }
+    ],
+    "coinSlots": [
+      {
+        "id": 1,
+        "type": 7,
+        "rarity": 1,
+        "count": 1
+      },
+      {
+        "id": 2,
+        "type": 7,
+        "rarity": 2,
+        "count": 1
+      },
+      {
+        "id": 3,
+        "type": 7,
+        "rarity": 3,
+        "count": 2
+      },
+      {
+        "id": 4,
+        "type": 7,
+        "rarity": 3,
+        "count": 2
+      },
+      {
+        "id": 5,
+        "type": 7,
+        "rarity": 4,
+        "count": 2
+      },
+      {
+        "id": 6,
+        "type": 7,
+        "rarity": 4,
+        "count": 2
+      },
+      {
+        "id": 7,
+        "type": 8,
+        "rarity": 0,
+        "count": 1
+      },
+      {
+        "id": 8,
+        "type": 8,
+        "rarity": 0,
+        "count": 1
+      }
+    ],
+    "refresh": [
+      {
+        "count": 1,
+        "tokenType": 0,
+        "price": 5e3
+      },
+      {
+        "count": 2,
+        "tokenType": 1,
+        "price": 10
+      },
+      {
+        "count": 3,
+        "tokenType": 1,
+        "price": 20
+      },
+      {
+        "count": 4,
+        "tokenType": 1,
+        "price": 40
+      },
+      {
+        "count": 5,
+        "tokenType": 1,
+        "price": 80
+      },
+      {
+        "count": 6,
+        "tokenType": 1,
+        "price": 80
+      },
+      {
+        "count": 7,
+        "tokenType": 1,
+        "price": 80
+      }
+    ],
+    "gifts": [
+      {
+        "id": 70023,
+        "type": 7,
+        "name": 21021,
+        "rarity": 1,
+        "price": 0
+      },
+      {
+        "id": 70019,
+        "type": 7,
+        "name": 21024,
+        "rarity": 1,
+        "price": 0
+      },
+      {
+        "id": 70008,
+        "type": 7,
+        "name": 21027,
+        "rarity": 2,
+        "price": 0
+      },
+      {
+        "id": 70009,
+        "type": 7,
+        "name": 21030,
+        "rarity": 2,
+        "price": 0
+      },
+      {
+        "id": 70010,
+        "type": 7,
+        "name": 21033,
+        "rarity": 2,
+        "price": 0
+      },
+      {
+        "id": 70024,
+        "type": 7,
+        "name": 21036,
+        "rarity": 2,
+        "price": 0
+      },
+      {
+        "id": 70011,
+        "type": 7,
+        "name": 21039,
+        "rarity": 3,
+        "price": 75e3
+      },
+      {
+        "id": 70012,
+        "type": 7,
+        "name": 21042,
+        "rarity": 3,
+        "price": 75e3
+      },
+      {
+        "id": 70013,
+        "type": 7,
+        "name": 21045,
+        "rarity": 3,
+        "price": 75e3
+      },
+      {
+        "id": 70020,
+        "type": 7,
+        "name": 21048,
+        "rarity": 3,
+        "price": 75e3
+      },
+      {
+        "id": 70014,
+        "type": 7,
+        "name": 21051,
+        "rarity": 4,
+        "price": 23e3
+      },
+      {
+        "id": 70015,
+        "type": 7,
+        "name": 21054,
+        "rarity": 4,
+        "price": 23e3
+      },
+      {
+        "id": 70016,
+        "type": 7,
+        "name": 21057,
+        "rarity": 4,
+        "price": 2e4
+      },
+      {
+        "id": 70017,
+        "type": 7,
+        "name": 21060,
+        "rarity": 4,
+        "price": 2e4
+      },
+      {
+        "id": 70018,
+        "type": 7,
+        "name": 21063,
+        "rarity": 4,
+        "price": 15e3
+      },
+      {
+        "id": 71001,
+        "type": 7,
+        "name": 21001,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71002,
+        "type": 7,
+        "name": 21003,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71003,
+        "type": 7,
+        "name": 21005,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71021,
+        "type": 7,
+        "name": 21007,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71022,
+        "type": 7,
+        "name": 21009,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71004,
+        "type": 7,
+        "name": 21013,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71005,
+        "type": 7,
+        "name": 21015,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71006,
+        "type": 7,
+        "name": 21017,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71007,
+        "type": 7,
+        "name": 21019,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 71023,
+        "type": 7,
+        "name": 21021,
+        "rarity": 1,
+        "price": 15e4
+      },
+      {
+        "id": 71019,
+        "type": 7,
+        "name": 21024,
+        "rarity": 1,
+        "price": 15e4
+      },
+      {
+        "id": 71008,
+        "type": 7,
+        "name": 21027,
+        "rarity": 2,
+        "price": 1e5
+      },
+      {
+        "id": 71009,
+        "type": 7,
+        "name": 21030,
+        "rarity": 2,
+        "price": 1e5
+      },
+      {
+        "id": 71010,
+        "type": 7,
+        "name": 21033,
+        "rarity": 2,
+        "price": 1e5
+      },
+      {
+        "id": 71024,
+        "type": 7,
+        "name": 21036,
+        "rarity": 2,
+        "price": 1e5
+      },
+      {
+        "id": 71011,
+        "type": 7,
+        "name": 21039,
+        "rarity": 3,
+        "price": 0
+      },
+      {
+        "id": 71012,
+        "type": 7,
+        "name": 21042,
+        "rarity": 3,
+        "price": 0
+      },
+      {
+        "id": 71013,
+        "type": 7,
+        "name": 21045,
+        "rarity": 3,
+        "price": 0
+      },
+      {
+        "id": 71020,
+        "type": 7,
+        "name": 21048,
+        "rarity": 3,
+        "price": 0
+      },
+      {
+        "id": 71014,
+        "type": 7,
+        "name": 21051,
+        "rarity": 4,
+        "price": 0
+      },
+      {
+        "id": 71015,
+        "type": 7,
+        "name": 21054,
+        "rarity": 4,
+        "price": 0
+      },
+      {
+        "id": 71016,
+        "type": 7,
+        "name": 21057,
+        "rarity": 4,
+        "price": 0
+      },
+      {
+        "id": 71017,
+        "type": 7,
+        "name": 21060,
+        "rarity": 4,
+        "price": 0
+      },
+      {
+        "id": 71018,
+        "type": 7,
+        "name": 21063,
+        "rarity": 4,
+        "price": 0
+      }
+    ],
+    "materials": [
+      {
+        "id": 80001,
+        "type": 8,
+        "name": 22001,
+        "rarity": 3,
+        "price": 5e4
+      },
+      {
+        "id": 80002,
+        "type": 8,
+        "name": 22003,
+        "rarity": 3,
+        "price": 5e4
+      },
+      {
+        "id": 80003,
+        "type": 8,
+        "name": 22005,
+        "rarity": 3,
+        "price": 5e4
+      },
+      {
+        "id": 80004,
+        "type": 8,
+        "name": 22007,
+        "rarity": 3,
+        "price": 5e4
+      },
+      {
+        "id": 80005,
+        "type": 8,
+        "name": 22009,
+        "rarity": 3,
+        "price": 5e4
+      },
+      {
+        "id": 80006,
+        "type": 8,
+        "name": 22011,
+        "rarity": 3,
+        "price": 5e4
+      },
+      {
+        "id": 80007,
+        "type": 8,
+        "name": 20029,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 80009,
+        "type": 8,
+        "name": 22013,
+        "rarity": 0,
+        "price": 0
+      },
+      {
+        "id": 80008,
+        "type": 8,
+        "name": 22015,
+        "rarity": 1,
+        "price": 0
+      }
+    ],
+    "dojos": [
+      {
+        "id": 1,
+        "name": 1800,
+        "minRank": 1,
+        "maxRank": 13,
+        "entryCurrency": 60001,
+        "entryBalance": 0,
+        "feeCurrency": 60001,
+        "fee": 0,
+        "rewardCurrency": 60001,
+        "rewardRate": 0
+      },
+      {
+        "id": 2,
+        "name": 1801,
+        "minRank": 11,
+        "maxRank": 16,
+        "entryCurrency": 60001,
+        "entryBalance": 3e3,
+        "feeCurrency": 60001,
+        "fee": 500,
+        "rewardCurrency": 60001,
+        "rewardRate": 50
+      },
+      {
+        "id": 3,
+        "name": 1802,
+        "minRank": 14,
+        "maxRank": 22,
+        "entryCurrency": 60001,
+        "entryBalance": 5e3,
+        "feeCurrency": 60001,
+        "fee": 1e3,
+        "rewardCurrency": 60001,
+        "rewardRate": 100
+      },
+      {
+        "id": 4,
+        "name": 1803,
+        "minRank": 17,
+        "maxRank": 22,
+        "entryCurrency": 60001,
+        "entryBalance": 1e4,
+        "feeCurrency": 60001,
+        "fee": 2e3,
+        "rewardCurrency": 60001,
+        "rewardRate": 200
+      }
+    ],
+    "yonmaRanks": [
+      {
+        "id": 1,
+        "room": 1,
+        "name": 122,
+        "initial": 0,
+        "up": 40,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 2,
+        "room": 1,
+        "name": 1848,
+        "initial": 0,
+        "up": 40,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 3,
+        "room": 1,
+        "name": 1849,
+        "initial": 0,
+        "up": 40,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 4,
+        "room": 1,
+        "name": 1850,
+        "initial": 0,
+        "up": 40,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 5,
+        "room": 1,
+        "name": 1851,
+        "initial": 0,
+        "up": 50,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 6,
+        "room": 1,
+        "name": 1852,
+        "initial": 0,
+        "up": 60,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 7,
+        "room": 1,
+        "name": 1853,
+        "initial": 0,
+        "up": 70,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 8,
+        "room": 1,
+        "name": 1854,
+        "initial": 0,
+        "up": 80,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 9,
+        "room": 1,
+        "name": 1855,
+        "initial": 0,
+        "up": 100,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 10,
+        "room": 1,
+        "name": 1856,
+        "initial": 140,
+        "up": 280,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 11,
+        "room": 2,
+        "name": 125,
+        "initial": 200,
+        "up": 400,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 12,
+        "room": 2,
+        "name": 127,
+        "initial": 400,
+        "up": 800,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 13,
+        "room": 2,
+        "name": 128,
+        "initial": 600,
+        "up": 1200,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 14,
+        "room": 3,
+        "name": 129,
+        "initial": 1e3,
+        "up": 2e3,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 15,
+        "room": 3,
+        "name": 130,
+        "initial": 1400,
+        "up": 2800,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 16,
+        "room": 3,
+        "name": 131,
+        "initial": 1800,
+        "up": 3600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 17,
+        "room": 4,
+        "name": 132,
+        "initial": 2300,
+        "up": 4600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 18,
+        "room": 4,
+        "name": 133,
+        "initial": 2800,
+        "up": 5600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 19,
+        "room": 4,
+        "name": 134,
+        "initial": 3300,
+        "up": 6600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 20,
+        "room": 4,
+        "name": 135,
+        "initial": 3800,
+        "up": 7600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 21,
+        "room": 4,
+        "name": 1857,
+        "initial": 7600,
+        "up": 8600,
+        "canDecrease": 0,
+        "inherit": 1,
+        "special": 0,
+        "down": 8500
+      },
+      {
+        "id": 22,
+        "room": 4,
+        "name": 1857,
+        "initial": 50,
+        "up": 100,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 1,
+        "down": 0
+      }
+    ],
+    "sanmaRanks": [
+      {
+        "id": 1,
+        "room": 1,
+        "name": 122,
+        "initial": 0,
+        "up": 30,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 2,
+        "room": 1,
+        "name": 1848,
+        "initial": 0,
+        "up": 30,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 3,
+        "room": 1,
+        "name": 1849,
+        "initial": 0,
+        "up": 30,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 4,
+        "room": 1,
+        "name": 1850,
+        "initial": 0,
+        "up": 30,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 5,
+        "room": 1,
+        "name": 1851,
+        "initial": 0,
+        "up": 40,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 6,
+        "room": 1,
+        "name": 1852,
+        "initial": 0,
+        "up": 50,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 7,
+        "room": 1,
+        "name": 1853,
+        "initial": 0,
+        "up": 60,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 8,
+        "room": 1,
+        "name": 1854,
+        "initial": 0,
+        "up": 70,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 9,
+        "room": 1,
+        "name": 1855,
+        "initial": 0,
+        "up": 80,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 10,
+        "room": 1,
+        "name": 1856,
+        "initial": 140,
+        "up": 240,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 11,
+        "room": 2,
+        "name": 125,
+        "initial": 200,
+        "up": 400,
+        "canDecrease": 0,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 12,
+        "room": 2,
+        "name": 127,
+        "initial": 400,
+        "up": 800,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 13,
+        "room": 2,
+        "name": 128,
+        "initial": 600,
+        "up": 1200,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 14,
+        "room": 3,
+        "name": 129,
+        "initial": 1e3,
+        "up": 2e3,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 15,
+        "room": 3,
+        "name": 130,
+        "initial": 1400,
+        "up": 2800,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 16,
+        "room": 3,
+        "name": 131,
+        "initial": 1800,
+        "up": 3600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 17,
+        "room": 4,
+        "name": 132,
+        "initial": 2300,
+        "up": 4600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 18,
+        "room": 4,
+        "name": 133,
+        "initial": 2800,
+        "up": 5600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 19,
+        "room": 4,
+        "name": 134,
+        "initial": 3300,
+        "up": 6600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 20,
+        "room": 4,
+        "name": 135,
+        "initial": 3800,
+        "up": 7600,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 0,
+        "down": 0
+      },
+      {
+        "id": 21,
+        "room": 4,
+        "name": 1857,
+        "initial": 7600,
+        "up": 8600,
+        "canDecrease": 0,
+        "inherit": 1,
+        "special": 0,
+        "down": 8500
+      },
+      {
+        "id": 22,
+        "room": 4,
+        "name": 1857,
+        "initial": 50,
+        "up": 100,
+        "canDecrease": 1,
+        "inherit": 0,
+        "special": 1,
+        "down": 0
+      }
+    ],
+    "rankPoints": [
+      {
+        "id": 1,
+        "room": 1,
+        "rank": 1,
+        "name": 122,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": 10,
+        "east4_4": 0,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": 15,
+        "half4_4": 0,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": 0,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": 0
+      },
+      {
+        "id": 2,
+        "room": 1,
+        "rank": 2,
+        "name": 1848,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": 10,
+        "east4_4": 0,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": 15,
+        "half4_4": 0,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": 0,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": 0
+      },
+      {
+        "id": 3,
+        "room": 1,
+        "rank": 3,
+        "name": 1849,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": 10,
+        "east4_4": 0,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": 15,
+        "half4_4": 0,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": 0,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": 0
+      },
+      {
+        "id": 4,
+        "room": 1,
+        "rank": 4,
+        "name": 1850,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": 5,
+        "east4_4": 0,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": 10,
+        "half4_4": 0,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": 0,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": 0
+      },
+      {
+        "id": 5,
+        "room": 1,
+        "rank": 5,
+        "name": 1851,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": 5,
+        "east4_4": 0,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": 10,
+        "half4_4": 0,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": 0,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": 0
+      },
+      {
+        "id": 6,
+        "room": 1,
+        "rank": 6,
+        "name": 1852,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": 0,
+        "east4_4": 0,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": 0,
+        "half4_4": 0,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": 0,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": 0
+      },
+      {
+        "id": 7,
+        "room": 1,
+        "rank": 7,
+        "name": 1853,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": 0,
+        "east4_4": -5,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": 0,
+        "half4_4": -5,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": 0,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": 0
+      },
+      {
+        "id": 8,
+        "room": 1,
+        "rank": 8,
+        "name": 1854,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": -5,
+        "east4_4": -10,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": -5,
+        "half4_4": -15,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": 0,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": 0
+      },
+      {
+        "id": 9,
+        "room": 1,
+        "rank": 9,
+        "name": 1855,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": -10,
+        "east4_4": -15,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": -15,
+        "half4_4": -20,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": -10,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": -15
+      },
+      {
+        "id": 10,
+        "room": 1,
+        "rank": 10,
+        "name": 1856,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": -10,
+        "east4_4": -20,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": -15,
+        "half4_4": -30,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": -15,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": -20
+      },
+      {
+        "id": 11,
+        "room": 1,
+        "rank": 11,
+        "name": 125,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": -20,
+        "east4_4": -30,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": -30,
+        "half4_4": -45,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": -25,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": -40
+      },
+      {
+        "id": 12,
+        "room": 1,
+        "rank": 12,
+        "name": 127,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": -20,
+        "east4_4": -40,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": -30,
+        "half4_4": -60,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": -30,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": -45
+      },
+      {
+        "id": 13,
+        "room": 1,
+        "rank": 13,
+        "name": 128,
+        "east1_4": 40,
+        "east2_4": 20,
+        "east3_4": -30,
+        "east4_4": -60,
+        "half1_4": 60,
+        "half2_4": 30,
+        "half3_4": -45,
+        "half4_4": -90,
+        "east1_3": 30,
+        "east2_3": 0,
+        "east3_3": -35,
+        "half1_3": 45,
+        "half2_3": 0,
+        "half3_3": -55
+      },
+      {
+        "id": 14,
+        "room": 2,
+        "rank": 11,
+        "name": 125,
+        "east1_4": 70,
+        "east2_4": 35,
+        "east3_4": -20,
+        "east4_4": -30,
+        "half1_4": 105,
+        "half2_4": 55,
+        "half3_4": -30,
+        "half4_4": -45,
+        "east1_3": 50,
+        "east2_3": 0,
+        "east3_3": -25,
+        "half1_3": 75,
+        "half2_3": 0,
+        "half3_3": -35
+      },
+      {
+        "id": 15,
+        "room": 2,
+        "rank": 12,
+        "name": 127,
+        "east1_4": 70,
+        "east2_4": 35,
+        "east3_4": -20,
+        "east4_4": -40,
+        "half1_4": 105,
+        "half2_4": 55,
+        "half3_4": -30,
+        "half4_4": -60,
+        "east1_3": 50,
+        "east2_3": 0,
+        "east3_3": -30,
+        "half1_3": 75,
+        "half2_3": 0,
+        "half3_3": -45
+      },
+      {
+        "id": 16,
+        "room": 2,
+        "rank": 13,
+        "name": 128,
+        "east1_4": 70,
+        "east2_4": 35,
+        "east3_4": -30,
+        "east4_4": -60,
+        "half1_4": 105,
+        "half2_4": 55,
+        "half3_4": -45,
+        "half4_4": -90,
+        "east1_3": 50,
+        "east2_3": 0,
+        "east3_3": -35,
+        "half1_3": 75,
+        "half2_3": 0,
+        "half3_3": -50
+      },
+      {
+        "id": 17,
+        "room": 2,
+        "rank": 14,
+        "name": 129,
+        "east1_4": 70,
+        "east2_4": 35,
+        "east3_4": -40,
+        "east4_4": -100,
+        "half1_4": 105,
+        "half2_4": 55,
+        "half3_4": -60,
+        "half4_4": -150,
+        "east1_3": 50,
+        "east2_3": 0,
+        "east3_3": -50,
+        "half1_3": 75,
+        "half2_3": 0,
+        "half3_3": -75
+      },
+      {
+        "id": 18,
+        "room": 2,
+        "rank": 15,
+        "name": 130,
+        "east1_4": 70,
+        "east2_4": 35,
+        "east3_4": -45,
+        "east4_4": -105,
+        "half1_4": 105,
+        "half2_4": 55,
+        "half3_4": -70,
+        "half4_4": -160,
+        "east1_3": 50,
+        "east2_3": 0,
+        "east3_3": -60,
+        "half1_3": 75,
+        "half2_3": 0,
+        "half3_3": -90
+      },
+      {
+        "id": 19,
+        "room": 2,
+        "rank": 16,
+        "name": 131,
+        "east1_4": 70,
+        "east2_4": 35,
+        "east3_4": -50,
+        "east4_4": -110,
+        "half1_4": 105,
+        "half2_4": 55,
+        "half3_4": -75,
+        "half4_4": -165,
+        "east1_3": 50,
+        "east2_3": 0,
+        "east3_3": -70,
+        "half1_3": 75,
+        "half2_3": 0,
+        "half3_3": -105
+      },
+      {
+        "id": 20,
+        "room": 3,
+        "rank": 14,
+        "name": 129,
+        "east1_4": 130,
+        "east2_4": 50,
+        "east3_4": -40,
+        "east4_4": -100,
+        "half1_4": 195,
+        "half2_4": 75,
+        "half3_4": -60,
+        "half4_4": -150,
+        "east1_3": 90,
+        "east2_3": 0,
+        "east3_3": -60,
+        "half1_3": 135,
+        "half2_3": 0,
+        "half3_3": -90
+      },
+      {
+        "id": 21,
+        "room": 3,
+        "rank": 15,
+        "name": 130,
+        "east1_4": 130,
+        "east2_4": 50,
+        "east3_4": -45,
+        "east4_4": -105,
+        "half1_4": 195,
+        "half2_4": 75,
+        "half3_4": -65,
+        "half4_4": -155,
+        "east1_3": 90,
+        "east2_3": 0,
+        "east3_3": -70,
+        "half1_3": 135,
+        "half2_3": 0,
+        "half3_3": -105
+      },
+      {
+        "id": 22,
+        "room": 3,
+        "rank": 16,
+        "name": 131,
+        "east1_4": 130,
+        "east2_4": 50,
+        "east3_4": -50,
+        "east4_4": -110,
+        "half1_4": 195,
+        "half2_4": 75,
+        "half3_4": -75,
+        "half4_4": -165,
+        "east1_3": 90,
+        "east2_3": 0,
+        "east3_3": -80,
+        "half1_3": 135,
+        "half2_3": 0,
+        "half3_3": -120
+      },
+      {
+        "id": 23,
+        "room": 3,
+        "rank": 17,
+        "name": 132,
+        "east1_4": 130,
+        "east2_4": 50,
+        "east3_4": -55,
+        "east4_4": -140,
+        "half1_4": 195,
+        "half2_4": 75,
+        "half3_4": -85,
+        "half4_4": -210,
+        "east1_3": 90,
+        "east2_3": 0,
+        "east3_3": -90,
+        "half1_3": 135,
+        "half2_3": 0,
+        "half3_3": -135
+      },
+      {
+        "id": 24,
+        "room": 3,
+        "rank": 18,
+        "name": 133,
+        "east1_4": 130,
+        "east2_4": 50,
+        "east3_4": -60,
+        "east4_4": -150,
+        "half1_4": 195,
+        "half2_4": 75,
+        "half3_4": -90,
+        "half4_4": -225,
+        "east1_3": 90,
+        "east2_3": 0,
+        "east3_3": -100,
+        "half1_3": 135,
+        "half2_3": 0,
+        "half3_3": -150
+      },
+      {
+        "id": 25,
+        "room": 3,
+        "rank": 19,
+        "name": 134,
+        "east1_4": 130,
+        "east2_4": 50,
+        "east3_4": -65,
+        "east4_4": -160,
+        "half1_4": 195,
+        "half2_4": 75,
+        "half3_4": -100,
+        "half4_4": -240,
+        "east1_3": 90,
+        "east2_3": 0,
+        "east3_3": -110,
+        "half1_3": 135,
+        "half2_3": 0,
+        "half3_3": -165
+      },
+      {
+        "id": 26,
+        "room": 3,
+        "rank": 20,
+        "name": 135,
+        "east1_4": 130,
+        "east2_4": 50,
+        "east3_4": -70,
+        "east4_4": -170,
+        "half1_4": 195,
+        "half2_4": 75,
+        "half3_4": -105,
+        "half4_4": -255,
+        "east1_3": 90,
+        "east2_3": 0,
+        "east3_3": -120,
+        "half1_3": 135,
+        "half2_3": 0,
+        "half3_3": -180
+      },
+      {
+        "id": 27,
+        "room": 3,
+        "rank": 21,
+        "name": 1857,
+        "east1_4": 6,
+        "east2_4": 0,
+        "east3_4": -4,
+        "east4_4": -8,
+        "half1_4": 9,
+        "half2_4": 0,
+        "half3_4": -6,
+        "half4_4": -12,
+        "east1_3": 4,
+        "east2_3": 0,
+        "east3_3": -4,
+        "half1_3": 6,
+        "half2_3": 0,
+        "half3_3": -6
+      },
+      {
+        "id": 28,
+        "room": 3,
+        "rank": 22,
+        "name": 3108,
+        "east1_4": 6,
+        "east2_4": 0,
+        "east3_4": -4,
+        "east4_4": -8,
+        "half1_4": 9,
+        "half2_4": 0,
+        "half3_4": -6,
+        "half4_4": -12,
+        "east1_3": 3,
+        "east2_3": 0,
+        "east3_3": -6,
+        "half1_3": 5,
+        "half2_3": 0,
+        "half3_3": -9
+      },
+      {
+        "id": 29,
+        "room": 4,
+        "rank": 17,
+        "name": 132,
+        "east1_4": 200,
+        "east2_4": 65,
+        "east3_4": -85,
+        "east4_4": -185,
+        "half1_4": 300,
+        "half2_4": 100,
+        "half3_4": -130,
+        "half4_4": -280,
+        "east1_3": 160,
+        "east2_3": 0,
+        "east3_3": -150,
+        "half1_3": 240,
+        "half2_3": 0,
+        "half3_3": -225
+      },
+      {
+        "id": 30,
+        "room": 4,
+        "rank": 18,
+        "name": 133,
+        "east1_4": 200,
+        "east2_4": 65,
+        "east3_4": -90,
+        "east4_4": -190,
+        "half1_4": 300,
+        "half2_4": 100,
+        "half3_4": -135,
+        "half4_4": -285,
+        "east1_3": 160,
+        "east2_3": 0,
+        "east3_3": -160,
+        "half1_3": 240,
+        "half2_3": 0,
+        "half3_3": -240
+      },
+      {
+        "id": 31,
+        "room": 4,
+        "rank": 19,
+        "name": 134,
+        "east1_4": 200,
+        "east2_4": 65,
+        "east3_4": -95,
+        "east4_4": -200,
+        "half1_4": 300,
+        "half2_4": 100,
+        "half3_4": -140,
+        "half4_4": -300,
+        "east1_3": 160,
+        "east2_3": 0,
+        "east3_3": -170,
+        "half1_3": 240,
+        "half2_3": 0,
+        "half3_3": -255
+      },
+      {
+        "id": 32,
+        "room": 4,
+        "rank": 20,
+        "name": 135,
+        "east1_4": 200,
+        "east2_4": 65,
+        "east3_4": -100,
+        "east4_4": -220,
+        "half1_4": 300,
+        "half2_4": 100,
+        "half3_4": -150,
+        "half4_4": -330,
+        "east1_3": 160,
+        "east2_3": 0,
+        "east3_3": -180,
+        "half1_3": 240,
+        "half2_3": 0,
+        "half3_3": -270
+      },
+      {
+        "id": 33,
+        "room": 4,
+        "rank": 21,
+        "name": 1857,
+        "east1_4": 8,
+        "east2_4": 2,
+        "east3_4": -4,
+        "east4_4": -8,
+        "half1_4": 12,
+        "half2_4": 3,
+        "half3_4": -6,
+        "half4_4": -12,
+        "east1_3": 6,
+        "east2_3": 0,
+        "east3_3": -4,
+        "half1_3": 9,
+        "half2_3": 0,
+        "half3_3": -6
+      },
+      {
+        "id": 34,
+        "room": 4,
+        "rank": 22,
+        "name": 3108,
+        "east1_4": 8,
+        "east2_4": 2,
+        "east3_4": -4,
+        "east4_4": -8,
+        "half1_4": 12,
+        "half2_4": 3,
+        "half3_4": -6,
+        "half4_4": -12,
+        "east1_3": 5,
+        "east2_3": 0,
+        "east3_3": -6,
+        "half1_3": 8,
+        "half2_3": 0,
+        "half3_3": -9
+      }
+    ]
+  };
+
+  // mockjs/shop.mjs
+  var SHOP_TYPE = Object.freeze(ECONOMY_CATALOG.shopTypes);
+  var SHOP_ERROR = Object.freeze({ INVALID: 1, INSUFFICIENT: 2010, LIMIT: 2011, NOT_FOUND: 2012 });
+  var TOKEN_IDS = [60002, 60001, 60009, 60010, 60011, 60012];
+  var DAY = 86400;
+  var OFFSET = 8 * 3600;
+  var P = () => globalThis.__mj.proto;
+  var dayStart = (now) => Math.floor((now + OFFSET) / DAY) * DAY - OFFSET;
+  var monthStart = (now) => {
+    const date = new Date((now + OFFSET) * 1e3);
+    return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1) / 1e3 - OFFSET;
+  };
+  var equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
+  var positive = (value) => Number.isSafeInteger(value) && value > 0;
+  function decodeMap(row, field) {
+    const result = /* @__PURE__ */ new Map();
+    for (const [number, wire, bytes] of P().parse(row)) {
+      if (number !== field || wire !== 2) continue;
+      const entry = P().dict(bytes);
+      result.set(entry[1], entry[2] || new Uint8Array());
+    }
+    return result;
+  }
+  function stockFor(user, now, refreshCount) {
+    let seed = (dayStart(now) / DAY ^ refreshCount * 2654435761 ^ user.uid) >>> 0;
+    const used = /* @__PURE__ */ new Set();
+    return ECONOMY_CATALOG.coinSlots.map((slot) => {
+      const pool = (slot.type === 7 ? ECONOMY_CATALOG.gifts : ECONOMY_CATALOG.materials).filter((item2) => item2.price > 0 && (!slot.rarity || item2.rarity === slot.rarity) && !used.has(item2.id));
+      if (!pool.length) throw new Error("\u96C0\u5E01\u5546\u5E97\u914D\u7F6E\u4E0D\u8DB3\u4EE5\u751F\u6210\u5546\u54C1");
+      seed ^= seed << 13;
+      seed ^= seed >>> 17;
+      seed ^= seed << 5;
+      const item = pool[(seed >>> 0) % pool.length];
+      used.add(item.id);
+      return { id: item.id, type: slot.type, rarity: slot.rarity, count: slot.count, price: item.price };
+    });
+  }
+  function normalizeLimits(map, catalog, countField, start, now) {
+    for (const item of catalog) {
+      const bytes = map.get(item.id);
+      if (!bytes || item.buyType !== 2 || Number(P().get(bytes, 4) || 0) >= start) continue;
+      map.set(item.id, P().setVarint(P().setVarint(bytes, countField, 0), 4, now));
+    }
+  }
+  function readState(user, now) {
+    const row = user.row(30, "0") || new Uint8Array();
+    const d = P().dict(row);
+    const state = {
+      row,
+      lastRefresh: Number(d[2] || 0),
+      // 对照 GetRefreshShopCount/FreeRefreshShopCount：f4 为总次数，f6 为免费额度。
+      refreshCount: Number(d[4] || 0),
+      freeAllowance: Number(d[6] || 0),
+      items: P().parse(row).filter(([n, w]) => n === 1 && w === 2).map(([, , bytes]) => {
+        const item = P().dict(bytes);
+        return { id: item[1], type: item[2], rarity: item[3] || 0, count: item[4] || 0, price: item[5] || 0 };
+      }),
+      grocery: decodeMap(row, 5),
+      honor: decodeMap(row, 8)
+    };
+    if (!state.items.length || state.lastRefresh < dayStart(now)) {
+      state.lastRefresh = now;
+      state.refreshCount = 0;
+      state.freeAllowance = 1;
+      state.items = stockFor(user, now, 0);
+    }
+    normalizeLimits(state.grocery, ECONOMY_CATALOG.grocery, 3, dayStart(now), now);
+    normalizeLimits(state.honor, ECONOMY_CATALOG.honor, 2, monthStart(now), now);
+    return state;
+  }
+  function encodeState(state) {
+    const w = P().W();
+    for (const field of P().parse(state.row)) {
+      if (![1, 2, 4, 5, 6, 8].includes(field[0])) P().reencode(w, ...field);
+    }
+    for (const item of state.items) {
+      w.s(1, P().W().v(1, item.id).v(2, item.type).v(3, item.rarity).v(4, item.count).v(5, item.price).bytes());
+    }
+    w.v(2, state.lastRefresh).v(4, state.refreshCount).v(6, state.freeAllowance);
+    for (const [field, map] of [[5, state.grocery], [8, state.honor]]) {
+      for (const [id, bytes] of map) w.s(field, P().W().v(1, id).s(2, bytes).bytes());
+    }
+    return w.bytes();
+  }
+  function synchronizeShop(user, now = Math.floor(Date.now() / 1e3)) {
+    const state = readState(user, now);
+    const bytes = encodeState(state);
+    return equal(state.row, bytes) ? null : { 30: [user.setRow(30, "0", bytes)] };
+  }
+  function uniqueReward(user, item) {
+    if (item.type === 26) {
+      if (user.row(26, item.id)) return { error: SHOP_ERROR.LIMIT };
+      const template2 = new user.constructor(P().b64decode(globalThis.__mj.data.userdataB64), user.uid);
+      const bytes2 = template2.row(26, item.id);
+      return bytes2 ? { dtype: 26, key: String(item.id), bytes: bytes2 } : { error: SHOP_ERROR.NOT_FOUND };
+    }
+    if (![14, 15, 17].includes(item.type)) return { error: SHOP_ERROR.NOT_FOUND };
+    const row = user.row(item.type, "0") || new Uint8Array();
+    const owned = decodeMap(row, 1);
+    if (owned.has(item.id)) return { error: SHOP_ERROR.LIMIT };
+    const template = new user.constructor(P().b64decode(globalThis.__mj.data.userdataB64), user.uid);
+    const original = decodeMap(template.row(item.type, "0") || new Uint8Array(), 1).get(item.id);
+    if (!original) return { error: SHOP_ERROR.NOT_FOUND };
+    const bytes = P().W().raw(row).s(1, P().W().v(1, item.id).s(2, original).bytes()).bytes();
+    return { dtype: item.type, key: "0", bytes };
+  }
+  function purchase(user, request, now = Math.floor(Date.now() / 1e3)) {
+    const { shopType, itemId, quantity, exchangeCount, gearIndex = 0 } = request;
+    if (!positive(itemId) || !positive(quantity) || quantity > 2147483647 || exchangeCount !== 1 || gearIndex !== 0) {
+      return { error: SHOP_ERROR.INVALID };
+    }
+    const state = readState(user, now);
+    let item, currency, limitMap, countField;
+    if (shopType === SHOP_TYPE.COIN) {
+      item = state.items.find((entry) => entry.id === itemId);
+      currency = 60001;
+    } else if (shopType === SHOP_TYPE.GROCERY) {
+      item = ECONOMY_CATALOG.grocery.find((entry) => entry.id === itemId);
+      currency = item && TOKEN_IDS[item.tokenType];
+      limitMap = state.grocery;
+      countField = 3;
+    } else if (shopType === SHOP_TYPE.RECRUIT) {
+      item = ECONOMY_CATALOG.recruit.find((entry) => entry.id === itemId);
+      currency = 60009;
+    } else if (shopType === SHOP_TYPE.HONOR) {
+      item = ECONOMY_CATALOG.honor.find((entry) => entry.id === itemId);
+      currency = 60012;
+      limitMap = state.honor;
+      countField = 2;
+    }
+    if (!item || !currency || !positive(item.price)) return { error: SHOP_ERROR.NOT_FOUND };
+    const oldLimit = limitMap?.get(itemId) || new Uint8Array();
+    const bought = Number(oldLimit.length ? P().get(oldLimit, countField) || 0 : 0);
+    if (shopType === SHOP_TYPE.COIN && quantity > item.count || item.limit > 0 && bought + quantity > item.limit) {
+      return { error: SHOP_ERROR.LIMIT };
+    }
+    const cost = item.price * quantity;
+    if (!Number.isSafeInteger(cost)) return { error: SHOP_ERROR.INVALID };
+    if (user.inventoryCount(6, currency) < cost) return { error: SHOP_ERROR.INSUFFICIENT };
+    const stackable = [6, 7, 8].includes(item.type);
+    const unique = stackable ? null : uniqueReward(user, item);
+    if (unique?.error) return unique;
+    if (!stackable && quantity !== 1) return { error: SHOP_ERROR.LIMIT };
+    if (shopType === SHOP_TYPE.COIN) item.count -= quantity;
+    if (limitMap) {
+      let bytes = P().setVarint(oldLimit, 1, item.id);
+      bytes = P().setVarint(bytes, countField, bought + quantity);
+      bytes = P().setVarint(bytes, countField === 3 ? 2 : 3, item.buyType);
+      limitMap.set(item.id, P().setVarint(bytes, 4, now));
+    }
+    const shopBytes = encodeState(state);
+    const deltas = [{ dtype: 6, id: currency, count: -cost }];
+    if (stackable) deltas.push({ dtype: item.type, id: item.id, count: quantity });
+    let changes;
+    try {
+      changes = user.changeInventory(deltas) || {};
+    } catch (error) {
+      if (error instanceof RangeError) return { error: SHOP_ERROR.INVALID };
+      throw error;
+    }
+    if (unique) changes[unique.dtype] = [user.setRow(unique.dtype, unique.key, unique.bytes)];
+    changes[30] = [user.setRow(30, "0", shopBytes)];
+    return { error: 0, changes, itemId, quantity, rewards: [[item.id, quantity]] };
+  }
+  function refreshShop(user, now = Math.floor(Date.now() / 1e3)) {
+    const state = readState(user, now);
+    const free = state.refreshCount < state.freeAllowance;
+    const index = Math.max(0, state.refreshCount - state.freeAllowance);
+    const offer = ECONOMY_CATALOG.refresh[Math.min(index, ECONOMY_CATALOG.refresh.length - 1)];
+    const currency = offer.tokenType === 0 ? 60001 : 60002;
+    const cost = free ? 0 : offer.price;
+    if (user.inventoryCount(6, currency) < cost) return { error: SHOP_ERROR.INSUFFICIENT };
+    state.refreshCount += 1;
+    state.lastRefresh = now;
+    state.items = stockFor(user, now, state.refreshCount);
+    const bytes = encodeState(state);
+    const changes = user.changeInventory([{ dtype: 6, id: currency, count: -cost }]) || {};
+    changes[30] = [user.setRow(30, "0", bytes)];
+    return { error: 0, changes };
+  }
+
   // mockjs/browser_entry.mjs
   var MSG_NAME = {
     1: "ReqPrepare",
@@ -14855,6 +17123,7 @@
   };
   var _g = typeof window !== "undefined" ? window : globalThis;
   var _MJ = _g.__mj || (_g.__mj = {});
+  _MJ.shop = shop_exports;
   _MJ.riichi = {
     RiichiSession,
     GameEngine,

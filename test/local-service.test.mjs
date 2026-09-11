@@ -24,8 +24,8 @@ test('本地档案原子写入并保留设置与累计成绩', async () => {
     const loaded = await loadProfile(directory);
     assert.equal(result.placement, 1);
     assert.equal(result.coins, 100);
-    assert.equal(result.rank.change, 30);
-    assert.equal(loaded.coins, 100);
+    assert.equal(result.rank.change, 300);
+    assert.equal(loaded.coins, 1_000_099);
     assert.equal(loaded.stats.yonma.hanchanGames, 1);
     assert.equal(loaded.stats.yonma.placements[0], 1);
     assert.equal(loaded.stats.yonma.hands, 8);
@@ -61,14 +61,14 @@ test('段位 PT 使用资源表并正确升降段', () => {
   const profile = createDefaultProfile();
   profile.ranks.yonma = { level: 11, point: 390 };
   assert.deepEqual(applyRankResult(profile, { players: 4, matchLength: 'east', placement: 1 }), {
-    oldLevel: 11, oldPoint: 390, level: 12, point: 400, change: 40, name: '二段',
+    oldLevel: 11, oldPoint: 390, level: 12, point: 400, change: 70, name: '二段',
   });
-  profile.ranks.yonma = { level: 12, point: 405 };
+  profile.ranks.yonma = { level: 12, point: 5 };
   assert.deepEqual(applyRankResult(profile, { players: 4, matchLength: 'east', placement: 4 }), {
-    oldLevel: 12, oldPoint: 405, level: 11, point: 399, change: -40, name: '初段',
+    oldLevel: 12, oldPoint: 5, level: 11, point: 200, change: -40, name: '初段',
   });
   profile.ranks.sanma = { level: 20, point: 2_100 };
-  assert.equal(applyRankResult(profile, { players: 3, matchLength: 'hanchan', placement: 3 }).change, -180);
+  assert.equal(applyRankResult(profile, { players: 3, matchLength: 'hanchan', placement: 3 }).change, -270);
 });
 
 test('loopback 服务提供静态文件、WebSocket，并拒绝第二活动页面', async () => {

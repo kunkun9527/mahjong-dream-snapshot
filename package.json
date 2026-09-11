@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node local/launcher.mjs",
     "build": "node mockjs/build_browser.mjs",
-    "check": "node --check mock/proto.js && node --check mock/data.js && node --check mock/userdata.js && node --check mock/server.js && node --check offline-patch.js && node --check local/profile.mjs && node --check local/server.mjs && node --check local/launcher.mjs && node --check mockjs/tiles.mjs && node --check mockjs/shanten.mjs && node --check mockjs/ai.mjs && node --check mockjs/proto_enum.mjs && node --check mockjs/yaku_map.mjs && node --check mockjs/engine.mjs && node --check mockjs/pb.mjs && node --check mockjs/browser_entry.mjs",
+    "check": "node --check mock/proto.js && node --check mock/data.js && node --check mock/userdata.js && node --check mock/server.js && node --check offline-patch.js && node --check local/profile.mjs && node --check local/economy.mjs && node --check local/server.mjs && node --check local/launcher.mjs && node --check mockjs/tiles.mjs && node --check mockjs/shanten.mjs && node --check mockjs/ai.mjs && node --check mockjs/proto_enum.mjs && node --check mockjs/yaku_map.mjs && node --check mockjs/engine.mjs && node --check mockjs/pb.mjs && node --check mockjs/shop.mjs && node --check mockjs/economy_catalog.mjs && node --check mockjs/browser_entry.mjs",
     "test": "node --test"
   },
   "dependencies": {
