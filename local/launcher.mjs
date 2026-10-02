@@ -17,11 +17,13 @@ const startupTimer = setTimeout(() => {
 }, 15_000);
 const requestedPlayers = process.argv.find((arg) => arg === '--players=3' || arg === '--players=4')?.slice(-1);
 const requestedLength = process.argv.find((arg) => arg === '--length=hanchan' || arg === '--length=east')?.split('=')[1];
+const requestedEnglish = process.argv.includes('--lang=en');
 
 function gameUrl(baseUrl) {
   const url = new URL(baseUrl);
   if (requestedPlayers) url.searchParams.set('mjPlayers', requestedPlayers);
   if (requestedLength) url.searchParams.set('mjLength', requestedLength);
+  if (requestedEnglish) url.searchParams.set('mjLang', 'en');
   return url.toString();
 }
 async function firstExisting(paths) {

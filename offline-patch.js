@@ -26,6 +26,19 @@
     stats.frames.push(frame);
     if (stats.frames.length > 200) stats.frames.shift();
   }
+  // ---------------- 界面语言 ----------------
+  // 原客户端按 navigator.language 选择内置语言表（English → 英文表）；mjLang=en 时只改这一个输入。
+  var LANGUAGES = { en: 'en-US', zh: 'zh-CN' };
+  var requestedLanguage = LANGUAGES[new URLSearchParams(location.search).get('mjLang')];
+  if (requestedLanguage) {
+    ['language', 'userLanguage'].forEach(function (key) {
+      try { Object.defineProperty(navigator, key, { configurable: true, get: function () { return requestedLanguage; } }); }
+      catch (e) { /* 只读环境忽略 */ }
+    });
+    try { Object.defineProperty(navigator, 'languages', { configurable: true, get: function () { return [requestedLanguage]; } }); }
+    catch (e) { /* 只读环境忽略 */ }
+  }
+
   window.__mjmock = {
     stats: stats,
     url: LOCAL_WS,

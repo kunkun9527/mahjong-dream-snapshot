@@ -103,7 +103,9 @@
         updateBannerVisibility();
       }
       
-      var buildUrl = "Build";
+      // 中文版渠道固定简体中文；mjLang=en 时改用快照自带的国际版构建，它按浏览器语言选择内置英文表。
+      var intl = new URLSearchParams(location.search).get("mjLang") === "en";
+      var buildUrl = intl ? "Build_intl" : "Build";
       var loaderUrl = buildUrl + "/mj-h5.loader.js";
       var config = {
         dataUrl: buildUrl + "/mj-h5.data.unityweb",
@@ -112,8 +114,8 @@
         symbolsUrl: buildUrl + "/mj-h5.symbols.json.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
-        productName: "激情麻将",
-        productVersion: "1.1.107241726.0",
+        productName: intl ? "Mahjong Dream" : "激情麻将",
+        productVersion: intl ? "1.1.107211826.0" : "1.1.107241726.0",
         showBanner: unityShowBanner,
       };
 
@@ -195,7 +197,51 @@
           progressBarFull.style.width = currentProgress + "%";
         }
       }, 50);
-      document.body.appendChild(script);
+      if (intl) {
+        if (!new URLSearchParams(location.search).has("uid")) {
+          // 国际版 H5SDK 没有 uid/sign 会停在资源初始化；沿用快照原国际版入口的离线占位值。
+          history.replaceState(null, "", location.pathname + location.search + "&uid=1&sign=19a5aaae0d826f5ac640a4dbfafb1612");
+        }
+        useEnglishPlayerPrefs().then(function () { document.body.appendChild(script); });
+      } else {
+        document.body.appendChild(script);
+      }
+
+      // 中文版启动时把 PlayerPrefs 的 LanguageID 写成 6（简中），国际版优先读这个存档值而不是浏览器语言；
+      // 英文入口在 Unity 挂载存档前把它改成 4（English）。记录格式：键长度、键名、0xFE、int32 小端。
+      function useEnglishPlayerPrefs() {
+        return new Promise(function (done) {
+          var open = indexedDB.open("/idbfs");
+          open.onerror = function () { done(); };
+          open.onsuccess = function () {
+            var db = open.result;
+            if (!db.objectStoreNames.contains("FILE_DATA")) { db.close(); return done(); }
+            var tx = db.transaction("FILE_DATA", "readwrite");
+            var cursor = tx.objectStore("FILE_DATA").openCursor();
+            cursor.onsuccess = function () {
+              var c = cursor.result;
+              if (!c) return;
+              if (/\/PlayerPrefs$/.test(c.key) && c.value && c.value.contents && setPrefsInt(c.value.contents, "LanguageID", 4)) c.update(c.value);
+              c.continue();
+            };
+            tx.oncomplete = tx.onerror = tx.onabort = function () { db.close(); done(); };
+          };
+        });
+      }
+
+      function setPrefsInt(bytes, key, value) {
+        outer: for (var i = 1; i + key.length + 5 <= bytes.length; i++) {
+          if (bytes[i - 1] !== key.length) continue;
+          for (var j = 0; j < key.length; j++) if (bytes[i + j] !== key.charCodeAt(j)) continue outer;
+          var at = i + key.length;
+          if (bytes[at] !== 0xfe) return false;
+          var old = bytes[at + 1] | (bytes[at + 2] << 8) | (bytes[at + 3] << 16) | (bytes[at + 4] << 24);
+          if (old === value) return false;
+          for (var k = 0; k < 4; k++) bytes[at + 1 + k] = (value >>> (8 * k)) & 0xff;
+          return true;
+        }
+        return false;
+      }
 
       function receiveOrientationFromUnity(param) {
         console.log("Received game html from Unity: " + param);

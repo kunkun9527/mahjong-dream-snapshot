@@ -18,6 +18,8 @@ start-game.bat --players=3 --length=east
 start-game.bat --players=3 --length=hanchan
 ```
 
+英文界面：加 `--lang=en`（例如 `start-game.bat --lang=en`），或在浏览器地址后加 `?mjLang=en`。英文入口使用快照自带的国际版客户端（雀梦 Mahjong Dream），后端与存档和中文版相同。
+
 昵称、设置、内容选择、三/四麻段位、金币和累计战绩保存在游戏目录的 `userdata/profile.json`。游戏运行时不需要访问外网。
 ## 开发
 
