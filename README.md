@@ -31,4 +31,8 @@ npm test
 npm run build
 ```
 
-麻将引擎的可维护源码位于 `mockjs/`；`mock/riichi.js` 是浏览器构建产物，请勿直接修改。完整修复计划见 [`docs/repair-backlog.md`](docs/repair-backlog.md)。
+麻将引擎的可维护源码位于 `mockjs/`；`mock/riichi.js` 是浏览器构建产物，请勿直接修改。
+
+- 代码结构、开发命令和修改规则：先读 [`codemap.md`](codemap.md)，再读各目录下的 `codemap.md`。
+- 接手说明与架构细节：[`docs/handoff.md`](docs/handoff.md)、[`docs/technical-architecture.md`](docs/technical-architecture.md)。
+- 修复清单：[`docs/repair-backlog.md`](docs/repair-backlog.md)。

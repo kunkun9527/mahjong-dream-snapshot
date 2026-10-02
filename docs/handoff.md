@@ -76,7 +76,7 @@ git checkout -- .
 3. [`adr/0002-use-mahjong-soul-ranked-rules.md`](adr/0002-use-mahjong-soul-ranked-rules.md)：唯一规则基线；
 4. [`technical-architecture.md`](technical-architecture.md)：完整技术架构和文件索引；
 5. [`repair-backlog.md`](repair-backlog.md)：完成状态与剩余验收项；
-6. [`../AGENTS.md`](../AGENTS.md)：开发和验证规范。
+6. [`../codemap.md`](../codemap.md)：代码地图、开发命令和修改规则（各目录另有 `codemap.md`）。
 
 恢复四川麻将、斗地主或掼蛋时，另读 [`multigame-backend-plan.md`](multigame-backend-plan.md)：实施顺序、规则证据要求和原 UI 验收门槛。上述日麻规则 ADR 不作为其他玩法的规则说明。
 
@@ -317,7 +317,7 @@ MJ_DEBUG=1 MJ_USERDATA_DIR=.tmp-userdata npm start
 截至本文核对时，Git 状态包含：
 
 - 已修改：`README.md`、`game.html`、`index.html`、`mock/proto.js`、`mock/riichi.js`、`mock/server.js`、`mock/userdata.js`、`offline-patch.js`；
-- 未跟踪：`.gitignore`、`AGENTS.md`、`CONTEXT.md`、`docs/`、`local/`、`mockjs/`、`package.json`、`package-lock.json`、`start-game.bat`、`test/` 等。
+- 未跟踪：`.gitignore`、`CONTEXT.md`、`docs/`、`local/`、`mockjs/`、`package.json`、`package-lock.json`、`start-game.bat`、`test/` 等。
 
 该列表只是交接时快照，不是提交建议。下一位接手者应重新运行 `git status --short`，并把维护者的本地改动视为不可覆盖资产。
 

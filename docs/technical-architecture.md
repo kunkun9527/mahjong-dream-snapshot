@@ -644,7 +644,7 @@ npm test
 | 路径 | 类型 | 职责 / 审查重点 |
 | --- | --- | --- |
 | `README.md` | 手写 | 用户启动和最小开发说明 |
-| `AGENTS.md` | 手写 | AI/协作者开发规范，不是运行时文件 |
+| `codemap.md`（根目录及 `local/`、`mock/`、`mockjs/`、`tools/`） | 手写 | 代码地图与开发规范，不是运行时文件；`.slim/codemap.json` 记录文件哈希，用于判断地图是否过期 |
 | `CONTEXT.md` | 手写 | 产品目标、验收边界和已确认决策 |
 | `start-game.bat` | 手写 | Windows 环境检查和一键入口 |
 | `index.html` | 原页面+小补丁 | iframe、方向和顶层页面边界 |
