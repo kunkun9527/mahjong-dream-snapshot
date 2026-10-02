@@ -47,10 +47,11 @@ function endUsers(humanSeat, caller = null, event = null) {
   }));
 }
 
-function claimEnd(event, humanSeat, { winners = [], action = Action.Guo, otherCards = [], moneyLogs = [], caller = null } = {}) {
+function claimEnd(event, humanSeat, { winners = [], action = Action.Guo, otherCards = [], moneyLogs = [], caller = null,
+  isFinish = action === Action.Hu } = {}) {
   return frame(event, 'NtfQiangCardEnd', {
     seats: winners, action, otherCards, userInfos: endUsers(humanSeat, caller, event),
-    moneyLogs, isFinish: action === Action.Hu,
+    moneyLogs, isFinish,
   });
 }
 
@@ -178,6 +179,8 @@ export class SichuanNotifications {
         }
         case 'win': {
           const tsumo = event.winType === 'tsumo';
+          // 血战胡牌即离场；血流胡后继续摸打，不能标记为已完成。
+          const isFinish = state.rules.gameType === 5022;
           if (tsumo ? pending !== null : pending === null) throw new Error('胡牌裁决与抢牌窗口不匹配');
           const logs = event.results.map((result) => moneyLog(tsumo ? 4 : 5, result.delta, result.scores,
             this.#initialScores, event.baseScore, result.score));
@@ -190,10 +193,10 @@ export class SichuanNotifications {
           if (tsumo) {
             const result = event.results[0];
             frames.push(play(event, humanSeat, { seat: result.seat, card: result.tile, action: Action.Hu,
-              moneyLogs: logs, isFinish: true,
+              moneyLogs: logs, isFinish,
             }));
           } else frames.push(claimEnd(event, humanSeat, { winners: event.results.map((result) => result.seat),
-            action: Action.Hu, moneyLogs: logs,
+            action: Action.Hu, moneyLogs: logs, isFinish,
           }));
           pending = null;
           break;
@@ -223,14 +226,14 @@ export class SichuanNotifications {
               changeScore: scores[seat], totalBei: scores[seat] / state.rules.baseScore,
               // 原34272已将自摸张移出暗手并单独展示；终局不能再次放回手牌区。
               handCards: player.hand.filter((tile) => !(player.win?.from === null && tile === player.win.tile)),
-              isFinish: player.won,
+              isFinish: player.won && state.rules.gameType === 5022,
               doorCardsInfos: player.melds.map((meld) => ({ cards: [...meld.tiles],
                 action: meld.type === 'pon' ? Action.Peng : meld.type === 'ankan' ? Action.AnGang
                   : meld.kongKind === 'added' ? Action.PengGang : Action.MingGang,
                 qiangSeat: meld.from ?? seat,
               })),
-              huInfos: player.win ? [{ huCard: player.win.tile,
-                huType: player.win.from === null ? 1 : player.win.score.winType === 'robKong' ? 3 : 2 }] : [],
+              huInfos: player.wins.map((record) => ({ huCard: record.tile,
+                huType: record.from === null ? 1 : record.score.winType === 'robKong' ? 3 : 2 })),
             })),
           }));
           ended = true;

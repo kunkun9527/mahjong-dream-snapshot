@@ -459,8 +459,9 @@ function verifyReplay(frames, state, humanSeat) {
         const player = state.players[row.seat];
         assert.deepEqual(row.doorCardsInfos.map((meld) => ({ cards: sort(meld.cards), action: meld.action, qiangSeat: meld.qiangSeat })),
           player.melds.map((meld) => ({ cards: sort(meld.tiles), action: meldAction(meld), qiangSeat: meld.from ?? row.seat })));
-        assert.deepEqual(row.huInfos.map((info) => ({ huCard: info.huCard, huType: info.huType })), player.win
-          ? [{ huCard: player.win.tile, huType: player.win.from === null ? 1 : player.win.score.winType === 'robKong' ? 3 : 2 }] : []);
+        // 血流可多次胡牌，摊牌逐次列出。
+        assert.deepEqual(row.huInfos.map((info) => ({ huCard: info.huCard, huType: info.huType })), player.wins.map((record) =>
+          ({ huCard: record.tile, huType: record.from === null ? 1 : record.score.winType === 'robKong' ? 3 : 2 })));
       }
     }
   }
@@ -476,7 +477,7 @@ function verifyReplay(frames, state, humanSeat) {
     assert.deepEqual(melds[seat].map(sort), state.players[seat].melds.map((meld, index) =>
       meld.type === 'ankan' && seat !== humanSeat ? [0, 0, 0, 0] : sort(shown[index].tiles)), '副露逐张实体与隐藏表示一致');
     assert.deepEqual(meldActions[seat], shown.map((entry) => entry.action));
-    assert.equal(won[seat], state.players[seat].won);
+    assert.equal(won[seat], state.rules.gameType === 5022 && state.players[seat].won, '只有血战胡牌离场');
     assert.equal(scores[seat], context().initialScores[seat] + state.scores[seat]);
   }
 }
@@ -500,7 +501,9 @@ function fakeClock() {
 
 test('真实会话三类房间四座位断线AI完成，逐更新重建暗手数、实体、副露及逐笔得分', () => {
   const observed = new Set();
-  for (const rules of [{ exchange: true, topBei: 128 }, { exchange: true, topBei: 256 }, { exchange: false, topBei: 256 }]) {
+  const observedRepeat = new Set();
+  for (const rules of [{ exchange: true, topBei: 128 }, { exchange: true, topBei: 256 }, { exchange: false, topBei: 256 },
+    { gameType: 5021, exchange: true, topBei: 128 }, { gameType: 5021, exchange: false, topBei: 256 }]) {
     for (const humanSeat of seats) {
       const timer = fakeClock();
       const frames = [];
@@ -528,11 +531,13 @@ test('真实会话三类房间四座位断线AI完成，逐更新重建暗手数
         }
         const stop = only(frames, 'NtfGameStop');
         const state = session.snapshot();
-        assert.equal(state.endReason, rules.exchange ? 'threeWinners' : 'wall');
+        assert.equal(state.endReason, rules.exchange && rules.gameType !== 5021 ? 'threeWinners' : 'wall');
+        if (rules.gameType === 5021 && state.players.some((player) => player.wins.length > 1)) observedRepeat.add(humanSeat);
         assert.deepEqual(stop.moneyLogs.map((log) => log.type), (state.settlement?.transfers ?? []).map((transfer) => ({ flower: 8, ready: 9, refund: 10 }[transfer.reason])));
         verifyReplay(frames, state, humanSeat);
       } finally { session.stop(); }
     }
   }
   assert.ok(observed.has(9), '覆盖荒牌查大叫');
+  assert.ok(observedRepeat.size, '覆盖血流同一玩家多次胡牌');
 });

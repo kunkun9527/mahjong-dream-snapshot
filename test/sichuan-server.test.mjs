@@ -90,6 +90,25 @@ test('四川血战乘风房：匹配组桌、托管打完并按输赢与台费�
   assert.deepEqual(rpc(session, 20018, 11, encodeMaJiangEnvelope(Msg.EReqTuoGuanChange, { tuoGuanStatus: 0 })), []);
 });
 
+test('四川血流乘风房：组桌回显5021，胡后不离场、终局只结算一次', async (t) => {
+  const { session, ws } = setup(t);
+  const before = mock.userdata.inventoryCount(6, COIN);
+  rpc(session, 20403, 3, matchRequest(502104, 5021));
+  await until(() => games(ws.frames).some((g) => g.cmd === Msg.ENtfToPrepare));
+  const table = P.dict(P.dict(ws.frames.find((f) => f[2] === 20408)[3])[2]);
+  assert.equal(table[1], 5021);
+  assert.equal(table[8], 502104);
+  rpc(session, 20018, 4, encodeMaJiangEnvelope(Msg.EReqTuoGuanChange, { tuoGuanStatus: 1 }));
+  await until(() => games(ws.frames).some((g) => g.cmd === Msg.ENtfGameStop));
+  const result = session.sichuan.session.result;
+  assert.equal(result.gameType, 5021);
+  assert.equal(result.reason, 'wall', '血流只在摸完牌墙时结束');
+  const stop = games(ws.frames).find((g) => g.cmd === Msg.ENtfGameStop).payload;
+  assert.ok(stop.userInfos.every((info) => !info.isFinish), '血流终局不标记离场');
+  rpc(session, 20102, 10, new Uint8Array(0));
+  assert.equal(mock.userdata.inventoryCount(6, COIN), before + result.scores[0] - 1250);
+});
+
 test('四川房间按原表雀币上下限准入，未实现玩法仍不组桌', (t) => {
   const { session } = setup(t);
   const balance = mock.userdata.inventoryCount(6, COIN);
@@ -98,7 +117,7 @@ test('四川房间按原表雀币上下限准入，未实现玩法仍不组桌',
   assert.equal(P.dict(rejected[0][3])[1], 1);
   assert.equal(session.tableId, 0);
   assert.equal(P.dict(rpc(session, 20403, 2, matchRequest(999999))[0][3])[1], 1);
-  const ignored = rpc(session, 20403, 3, matchRequest(502104, 5021));
+  const ignored = rpc(session, 20403, 3, matchRequest(502304, 5023));
   assert.equal(ignored[0][3], undefined);
   assert.equal(session.tableId, 0);
   assert.equal(session.matchTimer, null);

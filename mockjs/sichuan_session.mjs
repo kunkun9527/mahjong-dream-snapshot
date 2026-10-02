@@ -213,7 +213,7 @@ export class SichuanSession {
       this.#cancelAll();
       this.#status = 'ended';
       const state = this.#engine.snapshot();
-      this.#result = { gameType: 5022, seed: state.seed, rules: state.rules, scores: state.scores,
+      this.#result = { gameType: state.rules.gameType, seed: state.seed, rules: state.rules, scores: state.scores,
         winners: state.winners, reason: state.endReason };
       // 两个回调都只能看到副本；先封存终局再执行，重入不能再次结束或开局。
       this.#notify('finish');

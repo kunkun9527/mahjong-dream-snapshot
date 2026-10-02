@@ -1,12 +1,14 @@
 import { shuffle } from './tiles.mjs';
-import { buildSichuanWall, legalSichuanDiscards, sichuanKind } from './sichuan_hand.mjs';
+import { buildSichuanWall, legalSichuanDiscards, sichuanKind, sichuanWaitKinds } from './sichuan_hand.mjs';
 import { scoreSichuanHand, sichuanKongPayments, sichuanWinPayments } from './sichuan_score.mjs';
 import { settleSichuanDraw } from './sichuan_settlement.mjs';
 import { chooseSichuanClaim, chooseSichuanDiscard, chooseSichuanExchange, chooseSichuanMissingSuit } from './sichuan_ai.mjs';
 
 const clone = (value) => structuredClone(value);
 const suitOf = (tile) => Math.floor(sichuanKind(tile) / 9) + 1;
-const activeSeats = (state) => state.players.flatMap((player, seat) => player.won ? [] : [seat]);
+// 血战胡牌即离场；血流胡牌后继续摸打，仍承担后续付款（ADR 0004）。
+const exited = (state, seat) => state.rules.gameType === 5022 && state.players[seat].won;
+const activeSeats = (state) => [0, 1, 2, 3].filter((seat) => !exited(state, seat));
 const action = (type, tiles = []) => ({ type, tiles });
 const actionTypes = (options) => [...new Set(options.map((option) => option.type))];
 function sameAction(a, b) {
@@ -49,15 +51,29 @@ function score(state, seat, tile = null, winType = 'ron') {
     else if (seat !== state.dealer && player.drawCount === 1) opening = 'earth';
   }
   return scoreSichuanHand(tile === null ? player.hand : [...player.hand, tile], {
-    melds: player.melds, missingSuit: player.missingSuit, topBei: state.rules.topBei,
+    melds: player.melds, missingSuit: player.missingSuit, gameType: state.rules.gameType, topBei: state.rules.topBei,
     winType, opening, afterKong: winType === 'tsumo' && state.turnSource === 'kong',
     lastTile: winType === 'tsumo' && state.wall.length === 0,
   });
 }
 
+// 血流胡后锁牌（原文缺项，本地约定见ADR 0004）：不得改变胡牌牌形，只能摸切、再胡，或杠后听牌种类不变。
+const locked = (state, seat) => state.rules.gameType === 5021 && state.players[seat].won;
+
+function waitKey(hand, player, melds = player.melds) {
+  return sichuanWaitKinds(hand, { melds, missingSuit: player.missingSuit }).join(',');
+}
+
+function lockedKongKeepsWaits(player, before, remove, meld) {
+  const after = waitKey(player.hand.filter((tile) => !remove.includes(tile)), player, meld);
+  return after !== '' && after === before;
+}
+
 function ownOptions(state, seat) {
   const player = state.players[seat];
-  const options = legalSichuanDiscards(player.hand, player.missingSuit).map((tile) => action('discard', [tile]));
+  const isLocked = locked(state, seat);
+  const options = isLocked ? [action('discard', [state.drawnTile])]
+    : legalSichuanDiscards(player.hand, player.missingSuit).map((tile) => action('discard', [tile]));
   if (state.turnSource !== 'pon' && score(state, seat, null, 'tsumo')) options.push(action('hu'));
   if (state.turnSource === 'pon' || !state.wall.length) return options;
   const groups = new Map();
@@ -67,10 +83,16 @@ function ownOptions(state, seat) {
     if (!groups.has(kind)) groups.set(kind, []);
     groups.get(kind).push(tile);
   }
-  for (const tiles of groups.values()) if (tiles.length === 4) options.push(action('ankan', tiles));
+  const before = isLocked ? waitKey(player.hand.filter((tile) => tile !== state.drawnTile), player) : null;
+  const allowed = (tiles, melds) => !isLocked
+    || (tiles.includes(state.drawnTile) && lockedKongKeepsWaits(player, before, tiles, melds));
+  for (const tiles of groups.values()) {
+    if (tiles.length === 4 && allowed(tiles, [...player.melds, { type: 'ankan', tiles }])) options.push(action('ankan', tiles));
+  }
   for (const meld of player.melds.filter((item) => item.type === 'pon')) {
     const tiles = groups.get(sichuanKind(meld.tiles[0]));
-    if (tiles?.length === 1) options.push(action('kakan', tiles));
+    if (tiles?.length === 1 && allowed(tiles, player.melds.map((item) => item === meld
+      ? { ...item, type: 'kan', tiles: [...item.tiles, ...tiles] } : item))) options.push(action('kakan', tiles));
   }
   return options;
 }
@@ -78,7 +100,7 @@ function ownOptions(state, seat) {
 function optionsFor(state, seat) {
   if (!Number.isInteger(seat) || seat < 0 || seat > 3) throw new RangeError('无效座位');
   const player = state.players[seat];
-  if (state.phase === 'ended' || player.won) return [];
+  if (state.phase === 'ended' || exited(state, seat)) return [];
   if (state.phase === 'exchange') {
     if (state.exchanges[seat] !== null) return [];
     const options = [];
@@ -98,23 +120,41 @@ function optionsFor(state, seat) {
   return pending?.offers[seat] && pending.responses[seat] === null ? pending.offers[seat].options : [];
 }
 
+// 返回实际执行的转移。血流按「血流封顶」限制每家整局累计输分，超出部分不再支付；
+// 后续退税/呼叫转移只能依据这些实付账目。
 function applyTransfers(state, transfers, reason) {
+  const applied = [];
   for (const transfer of transfers) {
-    const { from, to, amount } = transfer;
+    const { from, to } = transfer;
+    let { amount } = transfer;
     if (!Number.isSafeInteger(amount) || amount <= 0 || from === to
         || !state.players[from] || !state.players[to]) throw new RangeError('无效积分转移');
+    if (state.rules.lossCap !== null) amount = Math.min(amount, Math.max(0, state.rules.lossCap + state.scores[from]));
+    if (!amount) continue;
     if (!Number.isSafeInteger(state.scores[from] - amount) || !Number.isSafeInteger(state.scores[to] + amount)) throw new RangeError('积分溢出');
     state.scores[from] -= amount;
     state.scores[to] += amount;
-    state.transfers.push({ ...transfer, reason });
+    state.transfers.push({ ...transfer, amount, reason });
+    applied.push({ ...transfer, amount });
   }
+  return applied;
+}
+
+function deltaOf(transfers) {
+  const delta = [0, 0, 0, 0];
+  for (const { from, to, amount } of transfers) {
+    delta[from] -= amount;
+    delta[to] += amount;
+  }
+  return delta;
 }
 
 function finish(state, reason) {
   state.pending = null;
   if (reason === 'wall') {
-    state.settlement = settleSichuanDraw(state.players, state.kongs, state.rules);
-    for (const transfer of state.settlement.transfers) applyTransfers(state, [transfer], transfer.reason);
+    const settlement = settleSichuanDraw(state.players, state.kongs, state.rules);
+    const transfers = settlement.transfers.flatMap((transfer) => applyTransfers(state, [transfer], transfer.reason));
+    state.settlement = { ...settlement, transfers, delta: deltaOf(transfers) };
   }
   setPhase(state, 'ended');
   state.endReason = reason;
@@ -140,7 +180,7 @@ function nextDraw(state, from) {
   if (activeSeats(state).length <= 1) return finish(state, 'threeWinners');
   for (let step = 1; step < 4; step += 1) {
     const seat = (from + step) % 4;
-    if (!state.players[seat].won) return draw(state, seat);
+    if (!exited(state, seat)) return draw(state, seat);
   }
   throw new Error('没有下一行动者');
 }
@@ -159,11 +199,11 @@ function commitKong(state, seat, kind, tiles, from = null, meldIndex = null) {
   }
   player.hand = player.hand.filter((tile) => !tiles.includes(tile));
   const payment = sichuanKongPayments({ seat, kind, from, activeSeats: activeSeats(state), baseScore: state.rules.baseScore, waived });
-  applyTransfers(state, payment.transfers, 'kong');
-  state.kongs.push({ seat, kind, transfers: payment.transfers, transferred: false });
+  const transfers = applyTransfers(state, payment.transfers, 'kong');
+  state.kongs.push({ seat, kind, transfers, transferred: false });
   state.pending = null;
   state.interrupted = true;
-  emit(state, 'kong', { seat, kind, tiles, from, waived, delta: payment.delta, scores: state.scores, baseScore: state.rules.baseScore });
+  emit(state, 'kong', { seat, kind, tiles, from, waived, delta: deltaOf(transfers), scores: state.scores, baseScore: state.rules.baseScore });
   draw(state, seat, 'kong', state.kongs.length - 1);
 }
 
@@ -179,13 +219,17 @@ function win(state, winners, from = null) {
   }
   const results = [];
   for (const seat of winners) {
+    const player = state.players[seat];
     const result = from === null ? score(state, seat, null, winType) : pending.offers[seat].score;
     const payment = sichuanWinPayments({ winner: seat, loser: from, activeSeats: active, bei: result.bei, baseScore: state.rules.baseScore });
-    applyTransfers(state, payment.transfers, 'win');
-    state.players[seat].won = true;
-    state.players[seat].win = { tile, from, score: result };
+    const transfers = applyTransfers(state, payment.transfers, 'win');
+    // 血流胡后继续打：自摸牌移入胡牌区，暗手回到13张。血战终局前保留在手中展示。
+    if (from === null && state.rules.gameType === 5021) player.hand = player.hand.filter((id) => id !== tile);
+    player.won = true;
+    player.win = { tile, from, score: result };
+    player.wins.push({ tile, from, score: result });
     state.winners.push(seat);
-    results.push({ seat, tile, from, score: result, delta: payment.delta, scores: [...state.scores] });
+    results.push({ seat, tile, from, score: result, delta: deltaOf(transfers), scores: [...state.scores] });
   }
   let callTransfer = null;
   if (from !== null && pending.kind === 'discard') {
@@ -194,9 +238,9 @@ function win(state, winners, from = null) {
       const kong = state.kongs[pending.kongIndex];
       const amount = kong.transfers.reduce((sum, transfer) => sum + transfer.amount, 0);
       if (amount > 0 && !kong.transferred) {
-        applyTransfers(state, [{ from, to: winners[0], amount }], 'callTransfer');
+        const [applied] = applyTransfers(state, [{ from, to: winners[0], amount }], 'callTransfer');
         kong.transferred = true;
-        callTransfer = { from, to: winners[0], amount, scores: [...state.scores] };
+        if (applied) callTransfer = { from, to: winners[0], amount: applied.amount, scores: [...state.scores] };
       }
     }
   }
@@ -248,11 +292,18 @@ function openClaims(state, pending) {
     if (result && result.bei > player.passBei) options.push(action('hu'));
     const matching = player.hand.filter((tile) => sichuanKind(tile) === sichuanKind(pending.tile));
     if (pending.kind === 'discard' && state.wall.length && suitOf(pending.tile) !== player.missingSuit) {
-      // 所有实体组合都是合法候选，不能要求客户端选中服务器偏好的副本。
-      for (let a = 0; a < matching.length - 1; a += 1) {
-        for (let b = a + 1; b < matching.length; b += 1) options.push(action('pon', [matching[a], matching[b]]));
+      if (locked(state, seat)) {
+        // 胡后锁牌不能碰；点杠只在听牌种类不变时允许。
+        const tiles = [...matching, pending.tile];
+        if (matching.length === 3 && lockedKongKeepsWaits(player, waitKey(player.hand, player), matching,
+          [...player.melds, { type: 'kan', tiles }])) options.push(action('kan', matching));
+      } else {
+        // 所有实体组合都是合法候选，不能要求客户端选中服务器偏好的副本。
+        for (let a = 0; a < matching.length - 1; a += 1) {
+          for (let b = a + 1; b < matching.length; b += 1) options.push(action('pon', [matching[a], matching[b]]));
+        }
+        if (matching.length === 3) options.push(action('kan', matching));
       }
-      if (matching.length === 3) options.push(action('kan', matching));
     }
     if (options.length > 1) pending.offers[seat] = { options, score: result };
   }
@@ -323,20 +374,22 @@ function applyAction(state, seat, chosen) {
 export class SichuanEngine {
   #state;
 
-  constructor({ seed = 1, dealer = 0, exchange = true, topBei = 128, baseScore = 1, wall = null } = {}) {
-    if (!Number.isSafeInteger(seed) || !Number.isInteger(dealer) || dealer < 0 || dealer > 3
+  constructor({ gameType = 5022, seed = 1, dealer = 0, exchange = true, topBei = 128, baseScore = 1, wall = null } = {}) {
+    if (![5021, 5022].includes(gameType) || !Number.isSafeInteger(seed) || !Number.isInteger(dealer) || dealer < 0 || dealer > 3
         || typeof exchange !== 'boolean' || ![128, 256].includes(topBei)
         || (!exchange && topBei !== 256) || !Number.isSafeInteger(baseScore) || baseScore <= 0
-        || baseScore > Math.floor(Number.MAX_SAFE_INTEGER / (256 * 1024))) throw new RangeError('无效的血战房间规则');
+        || baseScore > Math.floor(Number.MAX_SAFE_INTEGER / (256 * 1024))) throw new RangeError('无效的四川房间规则');
     const rng = seededRandom(seed);
     const source = wall === null ? shuffle(buildSichuanWall(), rng) : [...wall];
     if (source.length !== 108 || new Set(source).size !== 108) throw new RangeError('牌山必须包含108张唯一实体牌');
     source.forEach(sichuanKind);
     const players = Array.from({ length: 4 }, () => ({ hand: source.splice(0, 13), melds: [], river: [],
-      missingSuit: null, won: false, win: null, passBei: 0, drawCount: 0, discardCount: 0, allDiscardsMissing: true }));
+      missingSuit: null, won: false, win: null, wins: [], passBei: 0, drawCount: 0, discardCount: 0, allDiscardsMissing: true }));
     const drawnTile = source.shift();
     players[dealer].hand.push(drawnTile);
-    this.#state = { rules: { gameType: 5022, topBei, baseScore, exchange }, seed, dealer, players, wall: source,
+    // 原文「血流封顶：免费场5120倍、其它场10240倍」恰为房间单次封顶128/256的40倍，按每家整局累计输分上限执行。
+    const lossCap = gameType === 5021 ? 40 * topBei * baseScore : null;
+    this.#state = { rules: { gameType, topBei, baseScore, exchange, lossCap }, seed, dealer, players, wall: source,
       phase: exchange ? 'exchange' : 'missing', windowId: 1, turn: null, turnSource: 'initial', drawnTile,
       exchanges: [null, null, null, null], exchangeOffset: 1 + Math.floor(rng() * 3), interrupted: false,
       pending: null, lastKong: null, kongs: [], robbedTiles: [], scores: [0, 0, 0, 0], transfers: [],
@@ -375,10 +428,11 @@ export class SichuanEngine {
     const visible = new Set(state.robbedTiles);
     for (const [other, entry] of state.players.entries()) {
       for (const discard of entry.river) if (!discard.claimed) visible.add(discard.tile);
+      // 中途胡牌通知只公开胡牌张（含血流本人已移出暗手的自摸牌），不含整副暗手。
+      for (const record of entry.wins) visible.add(record.tile);
       if (other !== seat) {
         for (const meld of entry.melds) if (meld.type !== 'ankan' || state.phase === 'ended') for (const tile of meld.tiles) visible.add(tile);
-        // 中途胡牌通知只公开胡牌张，不含整副暗手；终局摊牌前不能让AI读取已胡者暗牌。
-        if (entry.win) visible.add(entry.win.tile);
+        // 终局摊牌前不能让AI读取已胡者暗牌。
         if (state.phase === 'ended') for (const tile of entry.hand) visible.add(tile);
       }
     }
@@ -403,6 +457,8 @@ export class SichuanEngine {
     if (view.options.some((option) => option.type === 'hu')) return action('hu');
     // 基础AI只执行权威候选中的自家杠；牌效搜索可单独增强，不读取未来补牌。
     const kong = view.options.find((option) => ['ankan', 'kakan'].includes(option.type));
-    return kong ?? action('discard', [chooseSichuanDiscard(view).tile]);
+    if (kong) return kong;
+    const discards = view.options.filter((option) => option.type === 'discard');
+    return discards.length === 1 ? discards[0] : action('discard', [chooseSichuanDiscard(view).tile]);
   }
 }

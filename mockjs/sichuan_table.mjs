@@ -5,8 +5,8 @@ import { SICHUAN_CATALOG } from './sichuan_catalog.mjs';
 import { MaJiangMsg as Msg, MaJiangResult as Result, decodeMaJiangEnvelope,
   encodeMaJiangEnvelope } from './majiang_pb.mjs';
 
-// 只有血战（5022）有权威局序；血流/红中仍需独立规则实现，不能借用血战引擎。
-export const SICHUAN_PLAYABLE_GAME_TYPES = Object.freeze([5022]);
+// 血战（5022）与普通血流（5021）共用权威局序，按 gameType 区分胡后离场/继续；红中血流仍未实现。
+export const SICHUAN_PLAYABLE_GAME_TYPES = Object.freeze([5021, 5022]);
 const SCORE_TYPE_MONEY = 1; // 原 ScoreType_Score / ScoreType_Money 的第二项。
 const REPLY_CACHE = 64;
 
@@ -27,7 +27,7 @@ export function defaultSichuanRoom(gameType) {
 /** 房间标签1是“不换三张”；原表中不换牌房间均为256倍封顶。 */
 export function sichuanRoomRules(room) {
   const exchange = !room.ruleTags.includes(1);
-  return { exchange, topBei: room.topBei === 128 && exchange ? 128 : 256, baseScore: room.moneyBase };
+  return { gameType: room.gameType, exchange, topBei: room.topBei === 128 && exchange ? 128 : 256, baseScore: room.moneyBase };
 }
 
 /**
@@ -133,8 +133,10 @@ export class SichuanTable {
     }
     if (request.name === 'ReqExit') {
       // 血战胡牌后本人分数已冻结，可离桌；未胡牌离桌会逃避后续支付，不允许。
+      // 血流胡后仍要继续摸打和付款，只有终局后才可离桌。
       const state = this.#session.snapshot();
-      if (request.extraLogicData.length || !(state.players[view.seat].won || this.#session.matchOver)) {
+      const frozen = state.rules.gameType === 5022 && state.players[view.seat].won;
+      if (request.extraLogicData.length || !(frozen || this.#session.matchOver)) {
         return reply(Msg.ERspExit, Result.Fail_InvalidSequence, 'exitBeforeWin');
       }
       this.#exited = true;

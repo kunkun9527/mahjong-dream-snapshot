@@ -54,7 +54,7 @@ test('原规则页27种可见番型逐项由实体牌和明确情境命中且复
   const found = new Set();
   for (const gameType of [5021, 5022]) {
     for (const [name, expected, fixture] of fixtures) {
-      const result = score(fixture, { gameType, topBei: gameType === 5021 ? 10240 : 256 });
+      const result = score(fixture, { gameType, topBei: 256 });
       assert.equal(result.rawBei, expected, `${gameType} ${name}`);
       assert.deepEqual(names(result), [name]);
       for (const item of result.yaku) {
@@ -155,7 +155,9 @@ test('最终乘积统一封顶，原将三龙七对126保持原值而不改成12
   const clearKongs = fixtures.find(([name]) => name === '清十八罗汉')[2];
   assert.equal(score(clearKongs, { topBei: 128 }).bei, 128);
   assert.equal(score(clearKongs).capped, false);
-  for (const context of [{ topBei: undefined }, { topBei: 100 }, { gameType: 5023 }, { gameType: 5021, topBei: 256 }]) {
+  // 血流单次和牌同样按房间128/256封顶；5120/10240是整局累计输分上限，由局序执行。
+  assert.equal(score(fixture, { gameType: 5021, winType: 'tsumo', topBei: 128 }).bei, 128);
+  for (const context of [{ topBei: undefined }, { topBei: 100 }, { gameType: 5023 }, { gameType: 5021, topBei: 10240 }]) {
     assert.throws(() => score(fixture, context), RangeError);
   }
 });

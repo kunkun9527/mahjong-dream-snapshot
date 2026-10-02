@@ -63,7 +63,7 @@
 - `mockjs/sichuan_turn_notifications.mjs`：摸牌/普通弃牌事件构造器，白名单投影当时的实体、余牌与候选；11项回归包含三个种子无鸣牌完整单局的四视角手牌重建及真实会话更新。它本身不做事件订阅。
 - `mockjs/sichuan_notifications.mjs`：统一消费开局与局中事件，新增13项回归覆盖碰、暗杠/明杠/无人可抢的补杠、自摸、多响、呼叫转移、荒牌退税/查叫及终局；三类房间四视角逐更新重建手牌、副露、已胡状态和余额。抢补杠候选仍明确阻塞，不是完整原UI闭环。
 - 本阶段已执行 `npm run build`、`npm run check` 和全部282项测试，均通过；bundle重建后内容未变。规则目录及协议描述符此前已重复提取逐字节一致；Unity资源、运行时存档及依赖锁文件未改动。
-- 5022 已接通匹配、原UI通知、重连、离桌与雀币结算（`mockjs/sichuan_table.mjs`、`mock/server.js`，回归见 `test/sichuan-server.test.mjs`）；剩余为原界面人工验收。5021普通血流、5023红中血流尚无独立局序实现。
+- 5022/5021 已接通匹配、原UI通知、重连、离桌与雀币结算（`mockjs/sichuan_table.mjs`、`mock/server.js`，回归见 `test/sichuan-server.test.mjs`）；剩余为原界面人工验收。5021 与 5022 共用局序，按 gameType 区分胡后离场/继续（ADR 0004 普通血流补充约定）；5023红中血流尚无局序实现。
 
 ### 已核验的四川协议资料
 

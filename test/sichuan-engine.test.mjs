@@ -6,7 +6,7 @@ import { buildSichuanWall, sichuanKind } from '../mockjs/sichuan_hand.mjs';
 const act = (type, tiles = []) => ({ type, tiles });
 const waiting = [11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 25, 26, 29];
 
-function rig({ hands = [[], [], [], []], extra = 29, draws = [], tail = [], missing = [3, 3, 3, 3] } = {}) {
+function rig({ hands = [[], [], [], []], extra = 29, draws = [], tail = [], missing = [3, 3, 3, 3], gameType = 5022 } = {}) {
   const pool = buildSichuanWall();
   const take = (kind) => {
     const index = pool.findIndex((tile) => Math.floor(tile / 10) === kind);
@@ -18,7 +18,7 @@ function rig({ hands = [[], [], [], []], extra = 29, draws = [], tail = [], miss
   const head = draws.map(take);
   const end = tail.map(take);
   for (const hand of initial) while (hand.length < 13) hand.push(pool.shift());
-  const engine = new SichuanEngine({ exchange: false, topBei: 256,
+  const engine = new SichuanEngine({ gameType, exchange: false, topBei: 256,
     wall: [...initial.flat(), additional, ...head, ...pool, ...end] });
   for (let seat = 0; seat < 4; seat += 1) submit(engine, seat, act('missing', [missing[seat]]));
   return engine;
@@ -46,15 +46,18 @@ function passAll(engine) {
 
 function invariant(engine) {
   const state = engine.snapshot();
+  const flowing = state.rules.gameType === 5021;
   const owned = [...state.wall, ...state.robbedTiles];
   for (const [seat, player] of state.players.entries()) {
     owned.push(...player.hand, ...player.melds.flatMap((meld) => meld.tiles),
-      ...player.river.filter((entry) => !entry.claimed).map((entry) => entry.tile));
+      ...player.river.filter((entry) => !entry.claimed).map((entry) => entry.tile),
+      // 血流自摸张移出暗手进胡牌区；血战终局前留在手中。
+      ...(flowing ? player.wins.filter((record) => record.from === null).map((record) => record.tile) : []));
     const extra = ['exchange', 'missing'].includes(state.phase) ? seat === state.dealer
       : state.phase === 'turn' && state.turn === seat || state.pending?.kind === 'added' && state.pending.from === seat
-        || player.won && player.win.from === null;
+        || !flowing && player.won && player.win.from === null;
     assert.equal(player.hand.length + player.melds.length * 3, 13 + Number(extra), `seat ${seat}: ${state.phase}`);
-    if (player.won) assert.deepEqual(engine.legalActions(seat), []);
+    if (player.won && !flowing) assert.deepEqual(engine.legalActions(seat), []);
     for (const meld of player.melds) {
       assert.equal(new Set(meld.tiles.map(sichuanKind)).size, 1);
       assert.equal(meld.tiles.length, meld.type === 'pon' ? 3 : 4);
@@ -355,6 +358,104 @@ test('三类血战房间多庄位AI自战逐动作守恒、确定终局且固定
           submit(engine, seat, chosen);
         }
         assert.ok(['wall', 'threeWinners'].includes(engine.snapshot().endReason));
+        return engine.snapshot();
+      };
+      assert.deepEqual(play(), play());
+    }
+  }
+});
+
+test('血流胡后不离场：荣和者继续摸打、只能摸切且不能碰，再次荣和与后续付款都照常结算', () => {
+  // 座位1听29，座位0连打两张29；座位1第二次仍可胡，期间轮到自己时只能打摸到的牌。
+  const engine = rig({ gameType: 5021, hands: [[29, 29], waiting, [], []], extra: 19, missing: [2, 3, 3, 1], draws: [31, 32, 33, 34] });
+  discardKind(engine, 29);
+  submit(engine, 1, act('hu'));
+  passAll(engine);
+  let state = engine.snapshot();
+  assert.equal(state.phase, 'turn');
+  assert.equal(state.turn, 1, '放铳者下家继续摸牌，已胡者不离场');
+  assert.equal(state.players[1].hand.length, 14);
+  assert.deepEqual(engine.legalActions(1), [act('discard', [state.drawnTile])], '胡后锁牌只能摸切');
+  const firstScore = state.scores[1];
+  submit(engine, 1, act('discard', [state.drawnTile]));
+  passAll(engine);
+  while (engine.snapshot().turn !== 0) {
+    const turn = engine.snapshot().turn;
+    submit(engine, turn, engine.chooseAction(turn));
+    passAll(engine);
+  }
+  discardKind(engine, 29);
+  state = engine.snapshot();
+  assert.ok(engine.legalActions(1).some((option) => option.type === 'hu'), '已胡者可再次荣和');
+  assert.ok(!engine.legalActions(1).some((option) => option.type === 'pon'));
+  submit(engine, 1, act('hu'));
+  passAll(engine);
+  state = engine.snapshot();
+  assert.equal(state.players[1].wins.length, 2);
+  assert.equal(state.transfers.filter((entry) => entry.reason === 'win' && entry.to === 1).length, 2);
+  assert.ok(firstScore > 0);
+  assert.notEqual(state.phase, 'ended');
+});
+
+test('血流自摸张移入胡牌区、暗手回到13张，已胡者继续承担他家自摸付款', () => {
+  const engine = rig({ gameType: 5021, hands: [waiting, [], [], []], missing: [3, 3, 3, 3] });
+  submit(engine, 0, act('hu'));
+  const state = engine.snapshot();
+  assert.equal(state.players[0].hand.length, 13);
+  assert.ok(!state.players[0].hand.includes(state.players[0].wins[0].tile));
+  assert.equal(state.turn, 1);
+  assert.equal(state.transfers.filter((entry) => entry.to === 0).length, 3);
+  // 下一位自摸时，已胡的0号仍在付款名单。
+  const view = engine.view(1);
+  assert.ok(view.visibleTiles.includes(state.players[0].wins[0].tile), '自摸张对他家公开');
+});
+
+test('血流整局累计输分不超过40倍单次封顶，超出部分不付且账目守恒', () => {
+  const engine = new SichuanEngine({ gameType: 5021, seed: 3, exchange: true, topBei: 128, baseScore: 1 });
+  let count = 0;
+  while (engine.phase !== 'ended') {
+    assert.ok(count++ < 600);
+    const seat = [0, 1, 2, 3].find((value) => engine.legalActions(value).length);
+    submit(engine, seat, engine.chooseAction(seat));
+  }
+  const state = engine.snapshot();
+  assert.equal(state.rules.lossCap, 5120);
+  assert.ok(state.scores.every((points) => points >= -5120));
+});
+
+test('血流胡后杠牌仅在含摸到的牌且听牌种类不变时允许', () => {
+  // 0号听 23/26（暗刻11+顺子）后摸到第4张11：暗杠不改变听牌，可杠；摸到其他牌不可杠。
+  const hand = [11, 11, 11, 12, 13, 14, 21, 22, 23, 24, 25, 29, 29];
+  const engine = rig({ gameType: 5021, hands: [hand, [], [], []], extra: 26, missing: [3, 3, 3, 3], draws: [32, 33, 34, 11] });
+  // 庄家第14张为26，起手自摸。
+  submit(engine, 0, act('hu'));
+  for (let guard = 0; engine.snapshot().turn !== 0 || engine.snapshot().phase !== 'turn'; guard += 1) {
+    assert.ok(guard < 20);
+    const state = engine.snapshot();
+    if (state.phase === 'claim') { passAll(engine); continue; }
+    const turn = state.turn;
+    submit(engine, turn, engine.legalActions(turn).find((option) => option.type === 'discard'));
+  }
+  const state = engine.snapshot();
+  assert.equal(Math.floor(state.drawnTile / 10), 11);
+  const types = engine.legalActions(0).map((option) => option.type);
+  assert.ok(types.includes('ankan'), JSON.stringify(types));
+  assert.equal(types.filter((type) => type === 'discard').length, 1);
+});
+
+test('普通血流AI自战逐动作守恒、只在牌墙摸完时结束且固定种子可复现', { timeout: 120000 }, () => {
+  for (const rules of [{ exchange: true, topBei: 128 }, { exchange: false, topBei: 256 }]) {
+    for (const seed of [4, 5, 6]) {
+      const play = () => {
+        const engine = new SichuanEngine({ gameType: 5021, seed, dealer: seed % 4, ...rules });
+        let count = 0;
+        while (engine.phase !== 'ended') {
+          assert.ok(count++ < 600, `seed ${seed} 卡局`);
+          const seat = [0, 1, 2, 3].find((value) => engine.legalActions(value).length);
+          assert.notEqual(seat, undefined);
+          submit(engine, seat, engine.chooseAction(seat));
+        }
+        assert.equal(engine.snapshot().endReason, 'wall');
         return engine.snapshot();
       };
       assert.deepEqual(play(), play());

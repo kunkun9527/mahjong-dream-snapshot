@@ -7,8 +7,8 @@ const catalogs = new Map([5021, 5022].map((gameType) => [gameType,
 
 function checkRules(gameType, topBei) {
   if (!catalogs.has(gameType)) throw new RangeError('此计分器仅支持普通血战/血流，不支持红中赖子');
-  const caps = gameType === 5022 ? [128, 256] : [5120, 10240];
-  if (!caps.includes(topBei)) throw new RangeError('必须由房间规则明确指定合法封顶倍数');
+  // 单次和牌按房间封顶（两种玩法原表均为128/256）；血流整局累计上限由局序执行。
+  if (![128, 256].includes(topBei)) throw new RangeError('必须由房间规则明确指定合法封顶倍数');
 }
 
 function yaku(gameType, calcYiType) {

@@ -3,10 +3,10 @@ import { maxSichuanReadyScore } from './sichuan_score.mjs';
 
 // 只接收权威局序记录；不读钱包。已胡者保留既有所得，不参加查叫/退税。
 // 花猪不叠加查叫；全程打缺免花猪费但不免退税。补充约定见ADR 0004。
-export function settleSichuanDraw(players, kongs, { topBei, baseScore }) {
+export function settleSichuanDraw(players, kongs, { gameType = 5022, topBei, baseScore }) {
   if (!Array.isArray(players) || players.length !== 4 || !Array.isArray(kongs)
       || ![128, 256].includes(topBei) || !Number.isSafeInteger(baseScore) || baseScore <= 0) {
-    throw new RangeError('无效的血战荒牌清算参数');
+    throw new RangeError('无效的四川荒牌清算参数');
   }
   const used = new Set();
   const status = Array.from(players, (player) => {
@@ -21,7 +21,7 @@ export function settleSichuanDraw(players, kongs, { topBei, baseScore }) {
     if (player.hand.length !== 13 - 3 * player.melds.length) throw new RangeError('荒牌时手牌张数不符');
     const flower = player.hand.some((tile) => Math.floor(sichuanKind(tile) / 9) + 1 === player.missingSuit);
     if (flower) return { type: 'flower', bei: 0, exempt: player.discardCount > 0 && player.allDiscardsMissing };
-    const score = maxSichuanReadyScore(player.hand, { ...player, topBei });
+    const score = maxSichuanReadyScore(player.hand, { melds: player.melds, missingSuit: player.missingSuit, gameType, topBei });
     return { type: score ? 'ready' : 'notReady', bei: score?.bei ?? 0 };
   });
   const delta = [0, 0, 0, 0];
