@@ -209,4 +209,4 @@ function discardOptionsOfCounts(counts, meldCount = 0, remainOf = null) {
   return { shanten: bestSh, options };
 }
 
-export { tileIndex, indexToTileId, countsOf, shantenOfCounts, waitsOfCounts, discardOptionsOfCounts };
+export { tileIndex, indexToTileId, countsOf, stdShanten as standardShantenOfCounts, shantenOfCounts, waitsOfCounts, discardOptionsOfCounts };

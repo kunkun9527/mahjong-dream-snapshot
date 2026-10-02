@@ -236,7 +236,7 @@ websocketServer.on('connection', (websocket) => {
       time: new Date().toISOString(), code, reason: reason.toString(),
       source: serverClose ? 'server' : 'peer-or-transport', serverClose,
       connectedMs: Date.now() - connectedAt, recentRequests,
-      inMatch: !!session.riichi?.engine && !session.riichi.matchOver,
+      inMatch: session.liveMatch(),
     }));
     if (activeSocket === websocket) activeSocket = null;
     adapter.readyState = 3;
@@ -251,7 +251,10 @@ websocketServer.on('connection', (websocket) => {
       session.table = null;
     }
     session.suspend();
-    if (session.riichi?.engine && !session.riichi.matchOver) {
+    if (session.sichuan && session.liveMatch()) {
+      session.detachMatch();
+      console.log('[local] 页面断开，AI 已接管四川牌桌真人席');
+    } else if (session.riichi?.engine && !session.riichi.matchOver) {
       session.riichi.engine.speed = 0;
       session.riichi.engine.setHumanAutoplay(true);
       console.log('[local] 页面断开，AI 已接管真人席并快速完成当前比赛');

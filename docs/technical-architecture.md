@@ -826,3 +826,35 @@ local/server.mjs
 10. `docs/repair-backlog.md`：确认尚未完成的能力没有被误判为完成。
 
 审查引擎时尤其关注三个问题：客户端能否伪造实体牌、非法动作是否会部分修改状态、任何异步 timer/重复包是否能越过当前动作窗口。这三类问题是当前架构中风险最高的正确性边界。
+
+## 22. 四川血战（5022）后端
+
+日麻运行链路不变。`mockjs/sichuan_table.mjs` 组合会话、下行投影、上行裁决与 RPC 去重，经 `browser_entry.mjs` 导出为 `__mj.sichuan`；`mock/server.js` 的 `startSichuanMatch()` 负责组桌、帧缓存/重放和雀币记账，`local/server.mjs` 断线时调用 `detachMatch()` 让 AI 接管。原 Unity 四川页面尚未人工验收。
+
+| 层 | 文件 | 职责 |
+| --- | --- | --- |
+| 原规则与协议 | `sichuan_catalog.mjs`、`majiang_desc.mjs`、`majiang_pb.mjs` | 只读提取的原页面规则、独立地方麻将schema与严格编解码 |
+| 牌形/计分 | `sichuan_hand.mjs`、`sichuan_score.mjs` | 实体牌校验、合法和牌、番型择优及纯积分支付 |
+| 策略 | `sichuan_ai.mjs` | 仅从本人暗牌及公开信息选择换牌、定缺和合法动作 |
+| 权威局序 | `sichuan_engine.mjs`、`sichuan_settlement.mjs` | 血战单局、多响/抢补杠/已胡退出、荒牌退税/查叫/花猪 |
+| 生命周期 | `sichuan_session.mjs` | 准备、超时、AI任务、同进程连接代次、托管及一次性结束回调 |
+| 上行适配 | `sichuan_requests.mjs` | 原地方麻将请求映射到当前合法实体动作，封装对应响应；不读取暗牌快照、不执行未实现请求 |
+| 开局下行 | `sichuan_opening_notifications.mjs` | 从会话更新白名单投影准备/发牌/换牌/定缺通知；隐藏他家暗牌，不负责发送、重连或钱包 |
+| 摸打下行构造 | `sichuan_turn_notifications.mjs` | 将权威draw及discard/claimWindow事件构造成摸牌/弃牌帧；只公开本人候选，不是完整下行分派器 |
+| 统一下行投影 | `sichuan_notifications.mjs` | 复用开局/摸打构造，按序处理碰杠胡、多响、呼叫转移与终局；有抢补杠候选时明确阻塞，不是网络订阅或重连快照 |
+
+以上路径均在 `mockjs/` 下。状态机采用校验后提交副本，`submit` 需要内部 `windowId`；会话另外需要可信连接代次。`snapshot()` 含所有暗牌与未来牌山，仅供服务端诊断及受控协议投影，不得原样发送或传给AI；`view(seat)` 才是本人可见数据。会话的阶段期限独立于日麻时间库；重连不会重置本窗口期限，停止/终局取消全部任务。
+
+四川仍复用外层 `20018`，其载荷是 `GameServerLogicData` 信封，`serialized` 才是 `majiang` 消息；信封本身不属于 `majiang.proto`，不能交给日麻 `pb.mjs`。原客户端上行未设置 `GameNumber`；`handleSichuanRequest()` 只使用可信入口传入的连接代次和窗口，不拿客户端局编号或超时标记授予动作权限。它尚无外层RPC去重，正式接线必须区分入站请求序列与当前窗口，不能每次重读最新窗口就宣称已阻止跨窗口重放。
+
+`SichuanOpeningNotifications` 必须在会话启动前建立并消费每次更新；准备至定缺结束生成原协议帧，不换牌房间省略换牌链。四座位数组按客户端索引排列，隐藏他家手牌、换牌和未公开定缺；定缺收齐后才下发庄家本人的合法操作。桌面余额与币种由调用方显式提供，投影不做钱包推断。重复读取不重发，遗漏更新明确失败；它不是可重放的历史缓存或重连快照。
+
+`buildSichuanDrawNotification(event, humanSeat)` 与 `buildSichuanDiscardNotification(discard, claimWindow, humanSeat)` 仅构造单次摸牌/普通弃牌帧。引擎事件保存动作发生时的去重候选类型和精确实体摸切标记；构造器不依赖之后的手牌、窗口或余牌。四席数组固定排列，摸牌仅本人显示实体及按钮；弃牌公开，但抢牌按钮仅下发本人候选，不把可胡当作已胡。基础计时沿用开局的出牌/抢牌秒数，附加时间为0。返回的 `eventIndex` 是服务端排序元数据，不写入原协议字段。
+
+这些纯构造器没有消费游标、请求去重或网络发送，不能遍历事件仅过滤draw/discard后直接发送。现由 `SichuanNotifications.read()` 按原事件序消费，整批编码成功才提交游标及显示积分；未知事件或抢补杠阻塞均不交付半批，也不能通过重复读取越过。听牌提示尚未接入，不伪造tingInfos。
+
+`SichuanNotifications` 在会话启动前建立、每次更新读取。抢牌响应不提前提交碰杠，裁决才公开两张/三张实体并更新副露；暗杠仅本人显示代表实体，他家以0隐藏。自摸通过出牌通知移出胡牌张，终局暗手必须排除该张，另以huInfos展示；引擎仍保留自摸实体归属。逐笔moneyLogs使用事件中的增量和余额，胡牌或杠费在终局不重复计入；荒牌按退税/查叫/花猪转移顺序累加。未核验的段位、经验和排名奖励不伪造。
+
+**抢补杠显示约定**：原34272收到补杠通知会立即升级碰副露，34266胡牌裁决没有回退路径。现沿原协议时序发 PengGang 开抢和窗口；抢和成立时客户端暂显示为杠，不收杠款、不补摸，终局 `doorCardsInfos` 按权威碰摊牌；全部过牌则由窗口结束通知收杠款再补摸。
+
+服务接线：20403 的 5022 请求按原 `MatchSeparateCfg` 房间与雀币上下限准入，组桌后发 20408（TableInfo gameType=5022、roomType/roomID 回显请求）与三组 20164/20014；20018 应答回显 f11，通知不带 f11，均经异步 push 保序。断线时真人席交 AI 并继续计时，重连在 20162 返回 f2=gameType、f4=完整牌桌、f5=roomID 后从缓存重放（已开牌跳过 NtfToPrepare）。终局或离桌只结算一次：雀币变化=牌局输赢−台费，余额最多扣到 0，增量随 20103/20026 的 f24 下发。不写日麻段位或战绩；5021/5023 仍不组桌。新增13项下行回归含三类房间×四视角整局重建、逐笔退税/查叫及阻塞不越过；全量282项、build/check均通过，bundle重建后内容未变。Node重建模型不等于Unity演出验收；本轮未做浏览器复现。具体依据与剩余门槛见 [`multigame-backend-plan.md`](multigame-backend-plan.md) 和 [ADR 0004](adr/0004-sichuan-scoring-clarifications.md)。

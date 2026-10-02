@@ -252,6 +252,9 @@
     this.socket = null;         // 绑定的 FakeWebSocket，服务端主动下推时用
     this.lastSeq = 0;           // 最近一次请求的 seq，主动推送时沿用
     this.riichi = null;         // 立直麻将对局会话（惰性创建）
+    this.sichuan = null;        // 四川血战牌桌（20403 匹配 5022 时创建）
+    this.handKind = 'riichi';   // handFrames 的信封类型：riichi=KRiichiMsg，sichuan=已编码 GameServerLogicData
+    this.walletChanges = null;  // 四川结算后的雀币增量，随下一次离桌应答的 f24 下发
     // 断线重连恢复用（见 HANDLERS[20162]）：
     this.table = null;          // 牌桌快照 { sanma, self, robots }，20403 匹配成型时写入
     this.handFrames = [];       // 本局已下发的 20018 通知帧，重连后按序重放以重建局面
@@ -285,7 +288,26 @@
       try { this.riichi.stop(); } catch (e) { /* ignore */ }
       this.riichi = null;
     }
+    if (this.sichuan) {
+      try { this.sichuan.leave(); } catch (e) { /* ignore */ }
+      this.sichuan = null;
+    }
     this.socket = null;
+  };
+
+  /** 是否有进行中的对局（日麻或四川）；断线托管、重连与重放共用此判据。 */
+  Session.prototype.liveMatch = function () {
+    if (!this.tableId) return false;
+    if (this.riichi && !this.riichi.matchOver) return true;
+    return !!(this.sichuan && !this.sichuan.matchOver);
+  };
+
+  /** 断线：日麻由 local/server 切托管；四川由牌桌切换为 AI 并沿用会话计时。 */
+  Session.prototype.detachMatch = function () {
+    if (this.sichuan && !this.sichuan.matchOver) {
+      var outcome = this.sichuan.detach();
+      if (outcome && outcome.ok) log('[mock] 四川牌桌断线，AI 接管真人席');
+    }
   };
 
   /** 暂停会话（保留引擎，供重连后复用） */
@@ -309,7 +331,11 @@
     // 抓包里这中间隔了约 4 秒。这段时间引擎照旧在摸打，如果实时下推，客户端会
     // 先看到「当前这一巡」、再看到重放的「本局开头」，牌局直接错乱。
     // 所以一重连就先把下推挂起攒着，等 20162 触发重放时按序补齐。
-    if (this.tableId && this.riichi && !this.riichi.matchOver) {
+    if (this.sichuan && this.liveMatch()) {
+      var attached = this.sichuan.attach();
+      if (attached && attached.ok) log('[mock] 四川牌桌重新绑定连接');
+    }
+    if (this.liveMatch()) {
       this.replaying = true;
       // 兜底：客户端始终没来问 20162（例如它压根不打算恢复对局），到点就恢复
       // 实时下推，不能把帧无限期扣在缓存里。
@@ -698,6 +724,7 @@
     var uids = [sess.uid];
     for (var i = 0; i + 1 < CONFIG.players; i++) uids.push(ROBOTS[i].uid);
 
+    sess.handKind = 'riichi';
     sess.riichi = new R.RiichiSession({
       players: CONFIG.players,
       // 三麻起点 35000（抓包 NtfGameStart 里 score/initScore 就是 35000）
@@ -760,14 +787,23 @@
    *
    *  注意 f3 恒为 -1：抓包里有对局时它也是 -1，判据是 f4 在不在，不是 f3。 */
   HANDLERS[20162] = function (sess) {
-    var live = !!(sess.tableId && sess.table && sess.riichi && !sess.riichi.matchOver);
+    var live = !!(sess.table && sess.liveMatch());
+    var sichuan = live && sess.table.kind === 'sichuan';
 
     var w = P.W();
     w.v(1, sess.uid);
+    if (sichuan) w.v(2, sess.table.gameType);
     w.tag(3, 0);
     w.raw([0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01]);
-    if (live) w.s(4, encTableInfo(sess, true));   // 有进行中对局：带上完整牌桌
-    w.v(5, 3);                                    // 游戏状态
+    // 有进行中对局：带上完整牌桌
+    if (live) w.s(4, sichuan ? encSichuanTableInfo(sess, true) : encTableInfo(sess, true));
+    if (sichuan) {
+      // 按 ClientGameServerOffline2OnlineResponse：f5=roomID、f9=roomType。
+      w.v(5, sess.table.room.id);
+      if (sess.table.roomType) w.v(9, sess.table.roomType);
+    } else {
+      w.v(5, 3);                                  // 游戏状态（日麻抓包原值）
+    }
 
     if (live && !sess._replayStarted) {
       sess._replayStarted = true;
@@ -795,6 +831,15 @@
    *  重放期间 onFrame 只记账不实时下推（sess.replaying），新帧统一排在队尾，
    *  否则「正在回放的历史帧」和「引擎刚产生的新帧」会交错，客户端牌局直接错乱。
    *  这里直接按下标遍历活数组 sess.handFrames，引擎边跑边追加，追平即收工。 */
+  function handFrameKind(sess) {
+    if (sess.handKind === 'sichuan' && MJ.sichuan) {
+      return { toPrepare: MJ.sichuan.MaJiangMsg.ENtfToPrepare, gameStart: MJ.sichuan.MaJiangMsg.ENtfGameStart,
+        encode: function (f) { return f[1]; } };
+    }
+    return { toPrepare: RIICHI_NTF_TO_PREPARE, gameStart: RIICHI_NTF_GAME_START,
+      encode: function (f) { return encodeKRiichi(f[0], f[1]); } };
+  }
+
   function replayHand(sess) {
     var frames = sess.handFrames || [];
     if (!frames.length || !sess.socket || sess.socket.readyState !== OPEN) {
@@ -805,9 +850,10 @@
     // 本局是否已经开牌。已开牌就跳过 NtfToPrepare —— 客户端收到它会再回一次
     // ReqPrepare，把引擎的 _prepared 预置成 true，害得下一局不等客户端就发牌。
     // 还停在准备阶段（没有 NtfGameStart）则要原样重放，让客户端补回 ReqPrepare。
+    var kind = handFrameKind(sess);
     var skipToPrepare = false;
     for (var k = 0; k < frames.length; k++) {
-      if (frames[k][0] === RIICHI_NTF_GAME_START) { skipToPrepare = true; break; }
+      if (frames[k][0] === kind.gameStart) { skipToPrepare = true; break; }
     }
 
     log('  [resync] 开始重放（已开牌=%s）', skipToPrepare);
@@ -822,8 +868,8 @@
       while (i < sess.handFrames.length && sent < BATCH) {
         var f = sess.handFrames[i];
         i++;
-        if (!(skipToPrepare && f[0] === RIICHI_NTF_TO_PREPARE)) {
-          sess.push(20018, encodeKRiichi(f[0], f[1]), 1, null, null);
+        if (!(skipToPrepare && f[0] === kind.toPrepare)) {
+          sess.push(20018, kind.encode(f), 1, null, null);
         }
         sent++;
       }
@@ -1022,7 +1068,11 @@
       }).join(''));
     }
 
-    // 非立直麻将游戏类型：忽略，只回 20404 空包
+    if (MJ.sichuan && MJ.sichuan.SICHUAN_PLAYABLE_GAME_TYPES.indexOf(srm[1]) >= 0) {
+      return startSichuanMatch(sess, srm);
+    }
+
+    // 其他未实现的游戏类型：忽略，只回 20404 空包
     if (!RIICHI_GAME_TYPES[srm[1]]) {
       log('  [match] gameType=%s 非立直，忽略', srm[1]);
       return [[20404, new Uint8Array(0), 1, null]];
@@ -1043,6 +1093,7 @@
 
     // 重新匹配（取消后再点、或上一局残留）时必须丢掉旧会话，
     // 否则 ensureEngine 拿到的是上一局的引擎，不会再推 NtfToPrepare。
+    closeSichuan(sess);
     if (sess.riichi) {
       try { sess.riichi.stop(); } catch (e) { /* ignore */ }
       sess.riichi = null;
@@ -1102,9 +1153,133 @@
     return [[20404, new Uint8Array(0), 1, null]];
   };
 
+  // ------------------------------------------- 四川血战（5022）牌桌
+  // 匹配沿用 20403 → 20404 → 20408 → 20164/20014，局内仍走 20018，但信封是
+  // GameServerLogicData + majiang.proto（见 mockjs/majiang_pb.mjs），与 KRiichiMsg 不通用。
+  // 牌局状态、合法性校验、AI 与结算全在 mockjs/sichuan_*.mjs；这里只做组桌、
+  // 帧缓存/重放和钱包记账。四川输赢只写雀币，不写日麻段位与战绩。
+  var COIN_ID = 60001;
+
+  function encSichuanTableInfo(sess, withRobots) {
+    var t = sess.table;
+    var w = P.W()
+      .v(1, t.gameType)
+      .v(2, sess.tableId || 1)
+      .v(3, 4)
+      .s(4, encTableUser(0, t.self, false));
+    if (withRobots) {
+      for (var i = 0; i < t.robots.length; i++) w.s(4, encTableUser(i + 1, t.robots[i], true));
+    }
+    if (t.subType) w.v(5, t.subType);
+    if (t.roomType) w.v(6, t.roomType);
+    return w.v(8, t.room.id).s(11, t.logId).s(12, t.gameId).bytes();
+  }
+
+  function recordSichuanFrame(sess, cmd, bytes) {
+    if (cmd === MJ.sichuan.MaJiangMsg.ENtfToPrepare) sess.handFrames = [];
+    sess.handFrames.push([cmd, bytes]);
+    if (sess.replaying) return;
+    sess.push(20018, bytes, 1, null, null);
+  }
+
+  /** 离桌/重新匹配：未结算的牌桌按当前已发生的收付结算一次，然后停止。 */
+  function closeSichuan(sess) {
+    if (!sess.sichuan) return;
+    try { sess.sichuan.leave(); } catch (e) { log('  [sichuan] 离桌异常: %s', e.message); }
+    sess.sichuan = null;
+  }
+
+  function takeWalletChanges(sess) {
+    var changes = sess.walletChanges;
+    sess.walletChanges = null;
+    return changes;
+  }
+
+  /** 牌局输赢加台费一次写入雀币；余额最多扣到 0，不产生负债。 */
+  function settleSichuanWallet(sess, room, delta, reason) {
+    var balance = USERDATA.inventoryCount(6, COIN_ID);
+    var change = Math.max(-balance, delta - room.moneyCost);
+    var changes = change ? USERDATA.changeInventory([{ dtype: 6, id: COIN_ID, count: change }]) : null;
+    if (changes) sess.walletChanges = changes;
+    log('  [sichuan] 结算(%s)：牌局 %d，台费 %d，雀币 %d -> %d', reason, delta, room.moneyCost,
+      balance, balance + change);
+    if (typeof sess.onMatchFinish === 'function') sess.onMatchFinish(null, null);
+  }
+
+  function startSichuanMatch(sess, srm) {
+    var roomId = Number(srm[4] || 0);
+    var room = MJ.sichuan.sichuanRoom(srm[1], roomId);
+    var balance = USERDATA.inventoryCount(6, COIN_ID);
+    if (!room || balance < room.moneyNeedMin || (room.moneyNeedMax && balance > room.moneyNeedMax)) {
+      log('  [match] 四川房间 %s 拒绝：雀币 %d 不在准入范围', roomId, balance);
+      return [[20404, P.W().v(1, 1).bytes(), 1, null]];
+    }
+    log('  [match] gameType=%s roomType=%s roomID=%s -> 四川%s', srm[1], srm[3], roomId, room.name);
+
+    if (sess.riichi) { try { sess.riichi.stop(); } catch (e) {} sess.riichi = null; }
+    closeSichuan(sess);
+    sess.tableId = 1;
+    sess.seat = 0;
+    sess.rankRoomId = null;
+    if (sess.matchTimer) clearTimeout(sess.matchTimer);
+    if (sess.engineStartTimer) { clearTimeout(sess.engineStartTimer); sess.engineStartTimer = null; }
+    var matchToken = ++sess.matchToken;
+    var delay = CONFIG.matchDelay != null ? CONFIG.matchDelay : 1500;
+    sess.matchTimer = setTimeout(function () {
+      sess.matchTimer = null;
+      if (sess.matchToken !== matchToken) return;
+      if (!sess.socket || sess.socket.readyState !== OPEN) return;
+      var selfProfile = getSelfProfile(sess, false);
+      var seed = CONFIG.seed != null ? Number(CONFIG.seed) >>> 0 : randomSeed();
+      var rng = seededRng(seed);
+      sess.table = {
+        kind: 'sichuan', gameType: srm[1], subType: Number(srm[2] || 0), roomType: Number(srm[3] || 0),
+        room: room, seed: seed, self: selfProfile, robots: [],
+        logId: String(5118685 + Math.floor(rng() * 1000)), gameId: randGameId(rng)
+      };
+      sess.handKind = 'sichuan';
+      sess.handFrames = [];
+      sess.walletChanges = null;
+      sess.push(20408, P.W().s(2, encSichuanTableInfo(sess, false)).bytes(), 1, null);
+      var scores = [USERDATA.inventoryCount(6, COIN_ID)];
+      for (var i = 0; i < 3; i++) {
+        var r = makeRobot(i, selfProfile.warrior, rng);
+        sess.table.robots.push(r);
+        // 机器人只用于桌面显示的携带额：取房间准入下限的 5~24 倍。
+        scores.push(Math.max(room.moneyNeedMin, 1000) * (5 + Math.floor(rng() * 20)));
+        sess.push(20164, P.W().v(1, r.uid).bytes(), 1, null);
+        sess.push(20014, P.W().s(1, encTableUser(i + 1, r, true)).v(2, sess.table.roomType || 0).bytes(), 1, null);
+      }
+      var engineStartDelay = CONFIG.engineStartDelay != null ? CONFIG.engineStartDelay : 200;
+      sess.engineStartTimer = setTimeout(function () {
+        sess.engineStartTimer = null;
+        if (sess.matchToken !== matchToken || !sess.tableId) return;
+        if (!sess.socket || sess.socket.readyState !== OPEN) return;
+        var speed = Number(CONFIG.speed);
+        var aiDelayMs = Math.min(60000, Math.max(0, Math.round(800 * (Number.isFinite(speed) ? speed : 1))));
+        var table;
+        table = new MJ.sichuan.SichuanTable({
+          room: room, seed: seed, gameID: sess.table.gameId, aiDelayMs: aiDelayMs,
+          userIds: [sess.uid].concat(sess.table.robots.map(function (x) { return x.uid; })),
+          initialScores: scores,
+          onFrame: function (cmd, bytes) {
+            if (sess.sichuan !== table) return;
+            recordSichuanFrame(sess, cmd, bytes);
+          },
+          onSettle: function (info) { settleSichuanWallet(sess, room, info.delta, info.reason); },
+          log: function (line) { log(line); }
+        });
+        sess.sichuan = table;
+        table.start();
+      }, engineStartDelay);
+    }, delay);
+    return [[20404, new Uint8Array(0), 1, null]];
+  }
+
   /** 20405 取消匹配 -> 20406 */
   HANDLERS[20405] = function (sess) {
     log('  [match] 取消匹配');
+    closeSichuan(sess);
     if (sess.matchTimer) { clearTimeout(sess.matchTimer); sess.matchTimer = null; }
     if (sess.engineStartTimer) { clearTimeout(sess.engineStartTimer); sess.engineStartTimer = null; }
     sess.matchToken += 1;
@@ -1123,7 +1298,8 @@
     sess.tableId = 0; sess.seat = -1;
     sess.table = null; sess.handFrames = []; sess.replaying = false; sess._replayStarted = false;
     if (sess.riichi) { try { sess.riichi.stop(); } catch (e) {} sess.riichi = null; }
-    return [[20026, new Uint8Array(0), 1, null]];
+    closeSichuan(sess);
+    return withChange(20026, takeWalletChanges(sess));
   };
 
   /** 20102 ClientFinishGameStopRequest -> 20103
@@ -1136,7 +1312,8 @@
     sess.tableId = 0; sess.seat = -1;
     sess.table = null; sess.handFrames = []; sess.replaying = false; sess._replayStarted = false;
     if (sess.riichi) { try { sess.riichi.stop(); } catch (e) {} sess.riichi = null; }
-    return [[20103, P.W().v(1, 0).bytes(), 1, null]];
+    closeSichuan(sess);
+    return withChange(20103, takeWalletChanges(sess), P.W().v(1, 0).bytes());
   };
 
   /** 20018 上行：交给引擎，所有回帧都走 sess.push 异步下推 */
@@ -1145,6 +1322,15 @@
     // 否则客户端结算界面残留的 ReqPrepare 会凭空拉起一局新对局。
     // 真实服在这种状态下对 20018 上行零响应（见 capture/dongfeng1/ws.jsonl 终局段）。
     if (!sess.tableId) { log('  <riichi> 已离桌，忽略 20018 上行'); return []; }
+    if (sess.table && sess.table.kind === 'sichuan') {
+      // 四川牌桌未建好（组桌计时中）或已结束时，不惰性拉起日麻引擎。
+      if (!sess.sichuan) { log('  <sichuan> 牌桌未就绪，忽略 20018 上行'); return []; }
+      var out = sess.sichuan.handleClient(payload, seq || 0);
+      // 应答与通知都走异步 push，保证「先应答、后通知」的投递顺序。
+      if (out.response) sess.push(20018, out.response, 1, null, seq || 0);
+      for (var fi = 0; fi < out.frames.length; fi++) recordSichuanFrame(sess, out.frames[fi][0], out.frames[fi][1]);
+      return [];
+    }
     var r = getRiichi(sess);
     if (!r) return [];
     var d = P.dict(payload);
@@ -1237,7 +1423,7 @@
     this.onclose = null;
     this._listeners = {};
     // 重连复用旧的 riichi 对局会话
-    if (_lastSession && _lastSession.riichi) {
+    if (_lastSession && (_lastSession.riichi || _lastSession.liveMatch())) {
       this._session = _lastSession;
       this._session.resume(this);
       _lastSession = null;
@@ -1330,10 +1516,7 @@
   FakeWebSocket.prototype.close = function (code, reason) {
     if (this.readyState === CLOSED || this.readyState === CLOSING) return;
     var self = this;
-    var activeGame = !!(
-      self._session && self._session.tableId &&
-      self._session.riichi && !self._session.riichi.matchOver
-    );
+    var activeGame = !!(self._session && self._session.liveMatch());
     if (!activeGame) {
       // 非对局中：正常优雅关闭（回 1000 或客户端给的码，关帧握手照常完成）
       this.readyState = CLOSING;
