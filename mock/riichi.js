@@ -12993,6 +12993,7 @@
       return ((seat - this.dealerSeat) % this.playersN + this.playersN) % this.playersN + 1;
     }
     isAllLast() {
+      if (this.maxHands === 1) return true;
       return this.roundWind > this.regularWinds || this.roundWind === this.regularWinds && this.juNum === this.playersN - 1;
     }
     // ================= 摸牌 =================
@@ -14036,7 +14037,8 @@
           redBaoFan: doraBreak.aka,
           baBeiFan: doraBreak.babei,
           fu: win2.fu,
-          totalFan: win2.han
+          totalFan: win2.han,
+          yakuman: win2.yakuman || 0
         });
       }
       const stickBonus = this.riichiSticks * 1e3;
@@ -14048,7 +14050,7 @@
       });
       this.renchanCount = dealerContinues ? this.renchanCount + 1 : 0;
       this.recordHumanHandStats(res, huDelta, dealerContinues);
-      this.prepareFinalResult(scores, gameOver);
+      this.prepareFinalResult(scores, gameOver, details.get(0) || null);
       ui = this.buildStopUserInfos(scores, winners, details, null, gameOver, huDelta);
       this.emit(RiichiMsg.ENtfGameStop, {
         huSeats: winners,
@@ -14141,9 +14143,10 @@
       if (result.type === "ron" && result.loser === 0) stats.dealIns += 1;
       if (dealerContinues && this.dealerSeat === 0) stats.maxRenchan = Math.max(stats.maxRenchan, this.renchanCount);
     }
-    prepareFinalResult(scores, isFinal) {
+    // humanWin：本手真人席的和牌明细（未和为 null），供一局战按番数发奖。
+    prepareFinalResult(scores, isFinal, humanWin = null) {
       if (!isFinal || this._finalResult || !this.onFinalResult) return;
-      this._finalResult = this.onFinalResult(scores.slice(), this) || null;
+      this._finalResult = this.onFinalResult(scores.slice(), this, humanWin) || null;
     }
     buildStopUserInfos(scores, winner, detail, tenpai, isFinal, huDelta) {
       const out = [];
@@ -14208,8 +14211,8 @@
           ptPoint: rankResult?.point || 0,
           oldPTLevel: rankResult?.oldLevel || 0,
           oldPTPoint: rankResult?.oldPoint || 0,
-          itemRewardLevel: 0,
-          itemRewards: []
+          itemRewardLevel: isFinal && s === 0 ? this._finalResult?.itemRewardLevel || 0 : 0,
+          itemRewards: isFinal && s === 0 ? this._finalResult?.itemRewards || [] : []
         });
       }
       return out;
@@ -16753,6 +16756,718 @@
         "half2_3": 0,
         "half3_3": -9
       }
+    ],
+    "oneRound": [
+      {
+        "id": 10001,
+        "cost": [
+          {
+            "id": 60002,
+            "count": 50
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60002,
+              "count": 25
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 35
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 40
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 65
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 75
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 150
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 225
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 300
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 875
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 1750
+            }
+          ]
+        ]
+      },
+      {
+        "id": 10002,
+        "cost": [
+          {
+            "id": 60002,
+            "count": 100
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60002,
+              "count": 50
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 70
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 80
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 130
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 150
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 300
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 450
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 600
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 1750
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 3500
+            }
+          ]
+        ]
+      },
+      {
+        "id": 10003,
+        "cost": [
+          {
+            "id": 60002,
+            "count": 150
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60002,
+              "count": 75
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 105
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 120
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 195
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 225
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 450
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 675
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 900
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 2625
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 5250
+            }
+          ]
+        ]
+      },
+      {
+        "id": 10004,
+        "cost": [
+          {
+            "id": 60002,
+            "count": 250
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60002,
+              "count": 125
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 175
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 200
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 325
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 375
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 750
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 1125
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 1500
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 4375
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 8750
+            }
+          ]
+        ]
+      },
+      {
+        "id": 10005,
+        "cost": [
+          {
+            "id": 60002,
+            "count": 350
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60002,
+              "count": 175
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 245
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 280
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 455
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 525
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 1050
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 1575
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 2100
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 6125
+            }
+          ],
+          [
+            {
+              "id": 60002,
+              "count": 12250
+            }
+          ]
+        ]
+      },
+      {
+        "id": 20001,
+        "cost": [
+          {
+            "id": 60001,
+            "count": 25e3
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60001,
+              "count": 12500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 17500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 2e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 32500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 37500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 75e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 112500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 15e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 437500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 875e3
+            }
+          ]
+        ]
+      },
+      {
+        "id": 20002,
+        "cost": [
+          {
+            "id": 60001,
+            "count": 5e4
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60001,
+              "count": 25e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 35e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 4e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 65e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 75e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 15e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 225e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 3e5
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 875e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 175e4
+            }
+          ]
+        ]
+      },
+      {
+        "id": 20003,
+        "cost": [
+          {
+            "id": 60001,
+            "count": 75e3
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60001,
+              "count": 37500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 52500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 6e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 97500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 112500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 225e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 337500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 45e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 1312500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 2625e3
+            }
+          ]
+        ]
+      },
+      {
+        "id": 20004,
+        "cost": [
+          {
+            "id": 60001,
+            "count": 125e3
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60001,
+              "count": 62500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 87500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 1e5
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 162500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 187500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 375e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 562500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 75e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 2187500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 4375e3
+            }
+          ]
+        ]
+      },
+      {
+        "id": 20005,
+        "cost": [
+          {
+            "id": 60001,
+            "count": 175e3
+          }
+        ],
+        "rewards": [
+          [
+            {
+              "id": 60001,
+              "count": 87500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 122500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 14e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 227500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 262500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 525e3
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 787500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 105e4
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 3062500
+            }
+          ],
+          [
+            {
+              "id": 60001,
+              "count": 6125e3
+            }
+          ]
+        ]
+      }
     ]
   };
 
@@ -16935,6 +17650,39 @@
     const changes = user.changeInventory([{ dtype: 6, id: currency, count: -cost }]) || {};
     changes[30] = [user.setRow(30, "0", bytes)];
     return { error: 0, changes };
+  }
+
+  // mockjs/one_round.mjs
+  var one_round_exports = {};
+  __export(one_round_exports, {
+    ONE_ROUND_ROOM_TYPE: () => ONE_ROUND_ROOM_TYPE,
+    canAffordOneRound: () => canAffordOneRound,
+    oneRoundRewardLevel: () => oneRoundRewardLevel,
+    oneRoundRoom: () => oneRoundRoom,
+    settleOneRound: () => settleOneRound
+  });
+  var ONE_ROUND_ROOM_TYPE = 6;
+  function oneRoundRoom(roomId, roomLevel) {
+    return ECONOMY_CATALOG.oneRound.find((row) => row.id === roomId * 1e4 + roomLevel) || null;
+  }
+  function oneRoundRewardLevel(win2) {
+    if (!win2) return 0;
+    if (win2.yakuman >= 2) return 10;
+    if (win2.manType >= ManType.ManGuan) return 4 + win2.manType;
+    return Math.min(Math.max(win2.totalFan || 0, 0), 4);
+  }
+  function settleOneRound(user, room, humanWin) {
+    const level = oneRoundRewardLevel(humanWin);
+    const rewards = level ? room.rewards[level - 1] : [];
+    const deltas = room.cost.map((item) => ({ dtype: 6, id: item.id, count: -item.count })).concat(rewards.map((item) => ({ dtype: 6, id: item.id, count: item.count })));
+    return {
+      itemRewardLevel: level,
+      itemRewards: rewards.map((item) => ({ itemId: item.id, itemCount: item.count })),
+      changes: user.changeInventory(deltas)
+    };
+  }
+  function canAffordOneRound(user, room) {
+    return room.cost.every((item) => user.inventoryCount(6, item.id) >= item.count);
   }
 
   // mockjs/sichuan_hand.mjs
@@ -25686,7 +26434,7 @@
         internalState: this.clientInternalState,
         uids: o.uids,
         autoHuman: o.autoHuman,
-        onFinalResult: (scores, engine) => this.onFinalResult(scores, engine),
+        onFinalResult: (scores, engine, humanWin) => this.onFinalResult(scores, engine, humanWin),
         // false=0号位真人，true=AI代打（测试用）
         emit: (ev, payload) => this.send(ev, payload),
         onFinish: (scores) => {
@@ -25782,6 +26530,7 @@
   var _g = typeof window !== "undefined" ? window : globalThis;
   var _MJ = _g.__mj || (_g.__mj = {});
   _MJ.shop = shop_exports;
+  _MJ.oneRound = one_round_exports;
   _MJ.sichuan = { SichuanTable, SICHUAN_PLAYABLE_GAME_TYPES, sichuanRoom, MaJiangMsg };
   _MJ.riichi = {
     RiichiSession,

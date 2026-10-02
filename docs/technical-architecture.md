@@ -858,3 +858,15 @@ local/server.mjs
 **抢补杠显示约定**：原34272收到补杠通知会立即升级碰副露，34266胡牌裁决没有回退路径。现沿原协议时序发 PengGang 开抢和窗口；抢和成立时客户端暂显示为杠，不收杠款、不补摸，终局 `doorCardsInfos` 按权威碰摊牌；全部过牌则由窗口结束通知收杠款再补摸。
 
 服务接线：20403 的 5022/5021 请求按原 `MatchSeparateCfg` 房间与雀币上下限准入，组桌后发 20408（TableInfo gameType=5022、roomType/roomID 回显请求）与三组 20164/20014；20018 应答回显 f11，通知不带 f11，均经异步 push 保序。断线时真人席交 AI 并继续计时，重连在 20162 返回 f2=gameType、f4=完整牌桌、f5=roomID 后从缓存重放（已开牌跳过 NtfToPrepare）。终局或离桌只结算一次：雀币变化=牌局输赢−台费，余额最多扣到 0，增量随 20103/20026 的 f24 下发。不写日麻段位或战绩；5021 共用同一牌桌与引擎（胡后继续、锁牌、整局累计封顶，见 ADR 0004），5023 仍不组桌。新增13项下行回归含三类房间×四视角整局重建、逐笔退税/查叫及阻塞不越过；全量282项、build/check均通过，bundle重建后内容未变。Node重建模型不等于Unity演出验收；本轮未做浏览器复现。具体依据与剩余门槛见 [`multigame-backend-plan.md`](multigame-backend-plan.md) 和 [ADR 0004](adr/0004-sichuan-scoring-clarifications.md)。
+
+## 23. 立直一局战（1-Round，roomType=6）
+
+国际版大厅的 1-Round（中文“一局战”）走立直匹配 `20403`，请求带 `roomType=6`、`roomID`（1 梦石场 / 2 雀币场）和 `roomLevel`（1..5 报名档）。`mock/server.js` 按 `roomID × 10000 + roomLevel` 查 `mockjs/one_round.mjs`（数据来自原配置 `DailyCompetitionOneMatchRewardTb`，由 `tools/extract_economy_config.py` 提取到 `economy_catalog.mjs` 的 `catalog.oneRound`），与客户端 `OneRoundGameCfgMgr.GetOneMatchRewardCfg` 的键一致。
+
+- 准入：档位不存在或背包（DT 6）报名费不足时，`20404` 返回 f1=1，不组桌。
+- 牌桌：`TableInfo` 按 `common_define` 编码——5 subType（东风 0 / 半庄 1 / 一局 3）、6 roomType（回显请求）、8 roomID。此前把常量 7 写进 subType，导致普通段位战牌桌也被标成 “1-Round”，已一并修正。
+- 局序：引擎 `maxHands=1`，首手即视为 All Last，打完一手直接终局；其余规则与段位战相同。
+- 结算：终局时一次扣报名费并按真人和牌档位发奖（1..4 番、满贯、跳满、倍满、三倍满、役满、双倍役满 → `EnumItemRewardLevel` 1..10；未和牌只扣费）。奖励写入真人席 `GameStopUserInfo.itemRewardLevel(111)/itemRewards(112)`，客户端 `GameEndResultView.TryShowOneRoundGameReward` 据此弹奖励窗；背包增量随 `20103` 或“再来一局”的 `20404` 的 f24 下发。
+- 不写段位 PT 和累计战绩。
+
+回归测试：`test/one-round.test.mjs`。已在国际版客户端实测三麻梦石 5 档：报名 350 梦石，跳满领取 1050 梦石，奖励弹窗、结果页和返回大厅正常。

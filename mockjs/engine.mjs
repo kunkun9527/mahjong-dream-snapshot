@@ -232,6 +232,7 @@ var GameEngine = class {
     return ((seat - this.dealerSeat) % this.playersN + this.playersN) % this.playersN + 1;
   }
   isAllLast() {
+    if (this.maxHands === 1) return true;  // 一局战只打一手，开局即 All Last
     return this.roundWind > this.regularWinds || this.roundWind === this.regularWinds && this.juNum === this.playersN - 1;
   }
   // ================= 摸牌 =================
@@ -1293,7 +1294,8 @@ var GameEngine = class {
         redBaoFan: doraBreak.aka,
         baBeiFan: doraBreak.babei,
         fu: win.fu,
-        totalFan: win.han
+        totalFan: win.han,
+        yakuman: win.yakuman || 0
       });
     }
     const stickBonus = this.riichiSticks * 1e3;
@@ -1305,7 +1307,7 @@ var GameEngine = class {
     });
     this.renchanCount = dealerContinues ? this.renchanCount + 1 : 0;
     this.recordHumanHandStats(res, huDelta, dealerContinues);
-    this.prepareFinalResult(scores, gameOver);
+    this.prepareFinalResult(scores, gameOver, details.get(0) || null);
     ui = this.buildStopUserInfos(scores, winners, details, null, gameOver, huDelta);
     this.emit(RiichiMsg.ENtfGameStop, {
       huSeats: winners,
@@ -1399,9 +1401,10 @@ var GameEngine = class {
     if (dealerContinues && this.dealerSeat === 0) stats.maxRenchan = Math.max(stats.maxRenchan, this.renchanCount);
   }
 
-  prepareFinalResult(scores, isFinal) {
+  // humanWin：本手真人席的和牌明细（未和为 null），供一局战按番数发奖。
+  prepareFinalResult(scores, isFinal, humanWin = null) {
     if (!isFinal || this._finalResult || !this.onFinalResult) return;
-    this._finalResult = this.onFinalResult(scores.slice(), this) || null;
+    this._finalResult = this.onFinalResult(scores.slice(), this, humanWin) || null;
   }
 
   buildStopUserInfos(scores, winner, detail, tenpai, isFinal, huDelta) {
@@ -1470,8 +1473,8 @@ var GameEngine = class {
         ptPoint: rankResult?.point || 0,
         oldPTLevel: rankResult?.oldLevel || 0,
         oldPTPoint: rankResult?.oldPoint || 0,
-        itemRewardLevel: 0,
-        itemRewards: []
+        itemRewardLevel: isFinal && s === 0 ? this._finalResult?.itemRewardLevel || 0 : 0,
+        itemRewards: isFinal && s === 0 ? this._finalResult?.itemRewards || [] : []
       });
     }
     return out;

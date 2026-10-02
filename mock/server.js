@@ -729,6 +729,8 @@
       players: CONFIG.players,
       // 三麻起点 35000（抓包 NtfGameStart 里 score/initScore 就是 35000）
       startScore: CONFIG.players === 3 ? 35000 : 25000,
+      // 一局战只打一手；其余规则与段位战相同
+      maxHands: sess.table && sess.table.oneRound ? 1 : undefined,
       matchLength: CONFIG.matchLength,
       akaCount: CONFIG.akaCount,
       speed: CONFIG.speed,
@@ -740,7 +742,9 @@
         sess.internalState = state;
         if (typeof sess.onSettingsChange === 'function') sess.onSettingsChange(state);
       },
-      onFinalResult: function (scores, engine) {
+      onFinalResult: function (scores, engine, humanWin) {
+        var oneRound = sess.table && sess.table.oneRound;
+        if (oneRound) return settleOneRound(sess, oneRound, humanWin);
         if (typeof sess.onFinalResult === 'function') return sess.onFinalResult(scores, engine);
         return null;
       },
@@ -1044,9 +1048,10 @@
       }
     }
     return w
-      .v(5, 7)
-      .v(6, t.roomId || 1)
-      .v(7, t.matchLength === 'hanchan' ? 1 : 0)
+      // common_define.TableInfo：5 subType（东风 0 / 半庄 1 / 一局 3）、6 roomType（回显请求）、8 roomID。
+      .v(5, t.oneRound ? 3 : t.matchLength === 'hanchan' ? 1 : 0)
+      .v(6, t.roomType || 7)
+      .v(8, t.roomId || 1)
       .s(9, t.logId)
       .s(10, t.gameId)
       // 旧版客户端还从这两个字段读取同一组标识。
@@ -1083,10 +1088,20 @@
     if (CONFIG.playersExplicit) sanma = CONFIG.players === 3;
     else CONFIG.players = sanma ? 3 : 4;
     if (!CONFIG.matchLengthExplicit) CONFIG.matchLength = Number(srm[2] || 0) === 1 ? 'hanchan' : 'east';
-    sess.rankRoomId = [1, 2, 3, 4].includes(Number(srm[4])) ? Number(srm[4]) : null;
+    var oneRound = null;
+    if (Number(srm[3]) === MJ.oneRound.ONE_ROUND_ROOM_TYPE) {
+      var orRoom = MJ.oneRound.oneRoundRoom(Number(srm[4] || 0), Number(srm[5] || 0));
+      if (!orRoom || !MJ.oneRound.canAffordOneRound(USERDATA, orRoom)) {
+        log('  [match] 一局战 roomID=%s roomLevel=%s 拒绝：配置不存在或报名费不足', srm[4], srm[5]);
+        return [[20404, P.W().v(1, 1).bytes(), 1, null]];
+      }
+      oneRound = { id: orRoom.id, cost: orRoom.cost, rewards: orRoom.rewards };
+    }
+    sess.rankRoomId = !oneRound && [1, 2, 3, 4].includes(Number(srm[4])) ? Number(srm[4]) : null;
 
     log('  [match] gameType=%s roomType=%s roomID=%s -> %s麻%s',
-      srm[1], srm[3], srm[4], sanma ? '三' : '四', CONFIG.matchLength === 'hanchan' ? '半庄' : '东风');
+      srm[1], srm[3], srm[4], sanma ? '三' : '四',
+      oneRound ? '一局战(' + oneRound.id + ')' : CONFIG.matchLength === 'hanchan' ? '半庄' : '东风');
 
     sess.tableId = 1;
     sess.seat = 0;
@@ -1118,6 +1133,8 @@
         matchLength: CONFIG.matchLength,
         seed: matchSeed,
         roomId: Number(srm[4] || 1),
+        roomType: Number(srm[3] || 0),
+        oneRound: oneRound,
         self: selfProfile,
         robots: [],
         logId: String(5118685 + Math.floor(matchRng() * 1000)),
@@ -1136,7 +1153,7 @@
         sess.table.robots.push(r);
         log('  [match] => 20164/20014 seat%d %s(%d) warrior=%s', seat, r.nick, r.uid, r.warrior);
         sess.push(20164, P.W().v(1, r.uid).bytes(), 1, null);
-        sess.push(20014, P.W().s(1, encTableUser(seat, r, true)).v(2, 7).bytes(), 1, null);
+        sess.push(20014, P.W().s(1, encTableUser(seat, r, true)).v(2, sess.table.roomType || 7).bytes(), 1, null);
       }
 
       // 3) 牌桌就绪，拉起引擎 —— 它会主动推 NtfToPrepare(1001)
@@ -1150,7 +1167,8 @@
       }, engineStartDelay);
     }, delay);
 
-    return [[20404, new Uint8Array(0), 1, null]];
+    // 一局战「再来一局」不经 20102 离桌，上一局未下发的奖励/报名费增量随本应答送达。
+    return withChange(20404, takeWalletChanges(sess));
   };
 
   // ------------------------------------------- 四川血战（5022）牌桌
@@ -1193,6 +1211,24 @@
     var changes = sess.walletChanges;
     sess.walletChanges = null;
     return changes;
+  }
+
+  /** 一局战终局：报名费与番数奖励一次入账，增量随离桌应答 f24 下发；不写段位与战绩。
+   *  返回值由引擎写进真人席 GameStopUserInfo.itemRewardLevel/itemRewards，
+   *  客户端 GameEndResultView.TryShowOneRoundGameReward 据此弹奖励窗。 */
+  function settleOneRound(sess, room, humanWin) {
+    var result;
+    try {
+      result = MJ.oneRound.settleOneRound(USERDATA, room, humanWin);
+    } catch (e) {
+      // 开局后余额被别处花掉时不记负债，也不发奖。
+      log('  [oneRound] 结算失败：%s', e.message);
+      return null;
+    }
+    if (result.changes) sess.walletChanges = result.changes;
+    log('  [oneRound] %s 结算：奖励档 %d，报名费 %s，奖励 %s', room.id, result.itemRewardLevel,
+      JSON.stringify(room.cost), JSON.stringify(result.itemRewards));
+    return { itemRewardLevel: result.itemRewardLevel, itemRewards: result.itemRewards };
   }
 
   /** 牌局输赢加台费一次写入雀币；余额最多扣到 0，不产生负债。 */

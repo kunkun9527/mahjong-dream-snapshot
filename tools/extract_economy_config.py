@@ -79,6 +79,30 @@ def shop_types():
     raise ValueError('缺少 ShopType 枚举')
 
 
+# CreateOneMatchRewardCfg(ID, Cost, OneHan, TwoHan, ThreeHan, FourHan, Mangan, JumpFullHan,
+# DoubleFullHan, TripleFullHan, Yakuman, DoubleYakuman)；后 10 项依次对应 riichi.EnumItemRewardLevel 1..10。
+# 每项是 [道具 ID, 数量] 子表，两个字段在原表里都是 float。
+def one_round_rewards(assets):
+    data = assets['DailyCompetitionOneMatchRewardTb']
+
+    def items(table, index):
+        result = []
+        for item in table.tables(index):
+            item_id, count = (struct.unpack('<f', struct.pack('<i', item.integer(i)))[0] for i in range(2))
+            assert item_id.is_integer() and count.is_integer()
+            result.append({'id': int(item_id), 'count': int(count)})
+        return result
+
+    rows = []
+    for table in Table(data, struct.unpack_from('<I', data)[0]).tables(0):
+        rows.append({
+            'id': table.integer(0),
+            'cost': items(table, 1),
+            'rewards': [items(table, index) for index in range(2, 12)],
+        })
+    return rows
+
+
 def main():
     bundle = (ROOT / SOURCE).read_bytes()
     assert bundle[33:41] == b'UnityFS\0'
@@ -130,6 +154,7 @@ def main():
     for mode, table in [('yonma', 'Rank2RankFourCfgTb'), ('sanma', 'Rank2RankThreeCfgTb')]:
         catalog[mode + 'Ranks'] = rows(table, ['id', 'room', 'name', None, 'initial', 'up', 'canDecrease', 'inherit', 'special', 'down'])
     catalog['rankPoints'] = rows('Rank2DojoRankCfgTb', ['id', 'room', 'rank', 'name', 'east1_4', 'east2_4', 'east3_4', 'east4_4', 'half1_4', 'half2_4', 'half3_4', 'half4_4', 'east1_3', 'east2_3', 'east3_3', 'half1_3', 'half2_3', 'half3_3'])
+    catalog['oneRound'] = one_round_rewards(assets)
     body = '// 由 tools/extract_economy_config.py 从原客户端配置生成；勿手改。\n'
     body += 'export const ECONOMY_CATALOG = ' + json.dumps(catalog, ensure_ascii=False, indent=2) + ';\n'
     (ROOT / 'mockjs/economy_catalog.mjs').write_text(body, encoding='utf-8', newline='\n')
